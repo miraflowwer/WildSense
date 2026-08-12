@@ -69,7 +69,9 @@ zero-config options:
 
 ### Vercel (fastest — no config file needed)
 
-1. Create a repo on GitHub and push the `app/` folder contents:
+1. The repo already exists at `https://github.com/miraflowwer/GAHM-Prototype`
+   (branch `main`) — push new commits with `git push`. For a fresh repo instead,
+   create one on GitHub and push the `app/` folder contents:
 
 ```bash
 git init
@@ -97,13 +99,13 @@ Metered-flow, no CLI required:
 
 ### Not on GitHub yet?
 
-1. Push your first commit (3 commands above).
-2. Then either platform has a **drag-and-drop deploy**: `npm run build`, then drag the
-   `dist/` folder onto [vercel.com/new](https://vercel.com/new) or the Netlify dashboard.
+The repo now exists on GitHub. For a fresh repo: push your first commit (3 commands
+above). To deploy without git at all: `npm run build`, then drag the `dist/` folder
+onto [vercel.com/new](https://vercel.com/new) or the Netlify dashboard.
 
 ### Updating the hosted app
 
-Both platforms auto-deploy from git, so updating is one command once the repo exists:
+Both platforms auto-deploy from git, so updating is one command:
 
 ```bash
 npm run update
