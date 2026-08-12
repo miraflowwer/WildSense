@@ -17,7 +17,6 @@ function App() {
   const { state, dispatch } = useGahm()
 
   const [adding, setAdding] = useState(false)
-  const [clickPos, setClickPos] = useState<{ lat: number; lng: number } | null>(null)
 
   if (isBooting) {
     return (
@@ -69,10 +68,7 @@ function App() {
           {!demoMode ? (
             <button
               type="button"
-              onClick={() => {
-                setAdding(true)
-                setClickPos(null)
-              }}
+              onClick={() => setAdding(true)}
               className="rounded-md bg-emerald-600 px-2.5 py-1 font-semibold text-white transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
             >
               Log detection
@@ -107,7 +103,7 @@ function App() {
       <main className="flex min-h-0 flex-1">
         <div className="min-w-0 flex-1">
           <div className="h-full w-full">
-            <MapView addMode={adding} clickPosition={clickPos} onMapClick={(p) => setClickPos(p)} />
+            <MapView />
           </div>
         </div>
         <div className="flex min-h-0 w-[360px] shrink-0 flex-col border-l border-neutral-200 bg-white">
@@ -117,15 +113,7 @@ function App() {
       </main>
 
       {state.sms.openEventId ? <SmsSimulator /> : null}
-      {adding ? (
-        <NewDetectionForm
-          position={clickPos}
-          onClose={() => {
-            setAdding(false)
-            setClickPos(null)
-          }}
-        />
-      ) : null}
+      {adding ? <NewDetectionForm onClose={() => setAdding(false)} /> : null}
     </div>
   )
 }

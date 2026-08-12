@@ -13,12 +13,6 @@ interface LatLngPoint {
 
 type StoreDispatch = ReturnType<typeof useGahm>['dispatch']
 
-interface MapViewProps {
-  addMode?: boolean
-  clickPosition?: { lat: number; lng: number } | null
-  onMapClick?: (p: { lat: number; lng: number }) => void
-}
-
 const toRad = (deg: number): number => (deg * Math.PI) / 180
 const toDeg = (rad: number): number => (rad * 180) / Math.PI
 
@@ -92,11 +86,7 @@ function addDetection(
     .addTo(group)
 }
 
-export default function MapView({
-  addMode = false,
-  clickPosition = null,
-  onMapClick,
-}: MapViewProps = {}) {
+export default function MapView() {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<L.Map | null>(null)
   const staticGroupRef = useRef<L.LayerGroup | null>(null)
@@ -192,34 +182,6 @@ export default function MapView({
   }, [])
 
   useEffect(() => {
-    const map = mapRef.current
-    if (!map || !addMode || !onMapClick) return
-    const handler = (e: L.LeafletMouseEvent) => {
-      onMapClick({ lat: e.latlng.lat, lng: e.latlng.lng })
-    }
-    map.on('click', handler)
-    return () => {
-      map.off('click', handler)
-    }
-  }, [addMode, onMapClick])
-
-  useEffect(() => {
-    const map = mapRef.current
-    if (!map || !clickPosition) return
-    const marker = L.circleMarker([clickPosition.lat, clickPosition.lng], {
-      radius: 10,
-      color: '#dc2626',
-      weight: 2,
-      dashArray: '4 4',
-      fillColor: '#dc2626',
-      fillOpacity: 0.25,
-    }).addTo(map)
-    return () => {
-      marker.remove()
-    }
-  }, [clickPosition])
-
-  useEffect(() => {
     const group = detectionsGroupRef.current
     if (!group) return
     const st = stateRef.current
@@ -230,10 +192,7 @@ export default function MapView({
   }, [state.events, state.selectedId, state.filter, dispatch])
 
   return (
-    <div
-      ref={containerRef}
-      className={`h-full w-full relative ${addMode ? 'cursor-crosshair' : ''}`}
-    >
+    <div ref={containerRef} className="h-full w-full relative">
       {state.mode === 'demo' && (
         <div className="absolute top-2 right-2 z-[1000] pointer-events-none rounded bg-black/60 px-2 py-0.5 text-[11px] text-white">
           Demo data

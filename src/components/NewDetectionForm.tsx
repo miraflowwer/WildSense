@@ -10,9 +10,9 @@ import { computeRisk } from '../engine/riskEngine'
 import { distanceToCircleKm } from '../engine/geo'
 import { farmZones, nearestCommunityName } from '../data/demoData'
 import type { DetectionEvent } from '../types'
+import LocationPickerMap from './LocationPickerMap'
 
 interface NewDetectionFormProps {
-  position: { lat: number; lng: number } | null
   onClose: () => void
 }
 
@@ -21,28 +21,31 @@ const inputCls =
 
 const labelCls = 'mb-1 block text-xs font-semibold uppercase tracking-wide text-neutral-600'
 
-function NewDetectionForm({ position, onClose }: NewDetectionFormProps) {
+function NewDetectionForm({ onClose }: NewDetectionFormProps) {
   const { dispatch } = useGahm()
   const [species, setSpecies] = useState('elephant')
   const [count, setCount] = useState('1')
   const [confidence, setConfidence] = useState(0.8)
   const [weather, setWeather] = useState('dry')
   const [towardFarm, setTowardFarm] = useState(true)
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null)
+  const [picking, setPicking] = useState(false)
 
   useEffect(() => {
     const onKey = (ev: KeyboardEvent) => {
+      if (picking) return
       if (ev.key === 'Escape') onClose()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [onClose])
+  }, [onClose, picking])
 
   const submit = () => {
-    if (!position) return
+    if (!location) return
     const timestamp = new Date().toISOString()
     const distance = Math.min(
       ...farmZones.map((f) =>
-        distanceToCircleKm(position, { lat: f.center[0], lng: f.center[1] }, f.radiusKm),
+        distanceToCircleKm(location, { lat: f.center[0], lng: f.center[1] }, f.radiusKm),
       ),
     )
     const risk = computeRisk(
@@ -72,10 +75,10 @@ function NewDetectionForm({ position, onClose }: NewDetectionFormProps) {
       movementKnown: true,
       historical_incidents_nearby: 0,
       weather_condition: weather,
-      position: { lat: position.lat, lng: position.lng },
-      trail: [{ lat: position.lat, lng: position.lng, ts: timestamp }],
+      position: { lat: location.lat, lng: location.lng },
+      trail: [{ lat: location.lat, lng: location.lng, ts: timestamp }],
       speed_kmh: null,
-      community: nearestCommunityName(position),
+      community: nearestCommunityName(location),
       risk_score: risk.risk_score,
       risk_level: risk.risk_level,
       reasons: risk.reasons,
@@ -91,7 +94,7 @@ function NewDetectionForm({ position, onClose }: NewDetectionFormProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 p-4">
       <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-xl bg-white p-5 shadow-2xl">
         <div className="mb-4 flex items-center justify-between">
           <div>
@@ -189,15 +192,21 @@ function NewDetectionForm({ position, onClose }: NewDetectionFormProps) {
             Moving toward farm?
           </label>
 
-          <div>
+          <div className="rounded-lg border border-neutral-200 p-3">
             <span className={labelCls}>Location</span>
-            <p className="text-xs text-neutral-500">Click on the map to place the detection</p>
-            <p className="mt-1 font-mono text-sm text-neutral-900">
-              {position
-                ? `${position.lat.toFixed(5)}, ${position.lng.toFixed(5)}`
-                : 'No location yet — click the map'}
+            <p className="font-mono text-sm text-neutral-900">
+              {location
+                ? `${location.lat.toFixed(5)}, ${location.lng.toFixed(5)}`
+                : 'No location yet'}
             </p>
-            <p className="mt-1 text-[11px] text-neutral-500">
+            <button
+              type="button"
+              onClick={() => setPicking(true)}
+              className="mt-3 w-full rounded-md border border-emerald-600 px-3 py-2 text-xs font-semibold text-emerald-700 transition-colors hover:bg-emerald-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+            >
+              {location ? 'Change location' : 'Select location'}
+            </button>
+            <p className="mt-2 text-[11px] text-neutral-500">
               Distance to the nearest farm boundary is computed automatically.
             </p>
           </div>
@@ -214,13 +223,24 @@ function NewDetectionForm({ position, onClose }: NewDetectionFormProps) {
           <button
             type="button"
             onClick={submit}
-            disabled={!position}
+            disabled={!location}
             className="rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Log detection
           </button>
         </div>
       </div>
+
+      {picking ? (
+        <LocationPickerMap
+          initial={location}
+          onConfirm={(pos) => {
+            setLocation(pos)
+            setPicking(false)
+          }}
+          onClose={() => setPicking(false)}
+        />
+      ) : null}
     </div>
   )
 }
