@@ -37,12 +37,13 @@ npm run uninstall-demo  # remove local installation: node_modules, dist, .git, .
 > Stop it with Ctrl+C first, then run `npm run clean` again (the script retries and
 > explains this automatically).
 
-### One-click dev menu (`gahm.bat`)
+### One-click dev menu (`app/gahm.bat`)
 
-From the repo root, `gahm.bat` opens a Windows menu TUI that wraps the scripts
-above: launch the demo (1), test dependencies (2), run the tests (3), update
-(4), or uninstall (5). Full documentation:
-[`docs/developer-menu.md`](../docs/developer-menu.md).
+Run `app/gahm.bat` (double-click, or from any terminal — it finds the app folder
+on its own): a Windows menu TUI wraps the scripts above: launch the demo (1),
+test dependencies (2), run the tests (3), update (4), or uninstall (5). Full
+documentation:
+[`docs/implementations/developer-menu.md`](../docs/implementations/developer-menu.md).
 
 ### Demo flow (under one minute)
 
