@@ -5,6 +5,15 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v0.4.0] — 2026-08-13 — Interactive Guided Tour
+
+### Added
+
+- Interactive step-by-step guided tutorial powered by `react-joyride` that walks demo-day presenters through the full detection → decision workflow.
+- "Guided tour" header button in demo mode allowing presenters to trigger or restart the guided walkthrough at any time.
+- Reactive state machine in `DemoTour` that automatically advances steps as rangers take actions (Acknowledge alert, Contact ranger unit, Prepare SMS, Send SMS, Record outcome, Inspect uncertainty).
+- Styled tooltip overlays matching GAHM design tokens (emerald green highlights, clean typography, proper overlay layer).
+
 ## [v0.3.2] — 2026-08-13 — Demo mode server reachability fix
 
 ### Fixed

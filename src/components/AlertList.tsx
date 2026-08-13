@@ -62,6 +62,7 @@ function AlertList() {
           return (
             <button
               key={e.event_id}
+              data-tour={`alert-${e.event_id}`}
               type="button"
               onClick={() => dispatch({ type: 'SELECT_ALERT', id: e.event_id })}
               className={`block w-full border-l-2 px-3 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 ${

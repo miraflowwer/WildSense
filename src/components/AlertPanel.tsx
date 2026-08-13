@@ -164,7 +164,7 @@ function AlertPanel({ event }: { event: DetectionEvent }) {
           </section>
 
           {uncertainty ? (
-            <div className="rounded-md border-l-4 border-amber-500 bg-[repeating-linear-gradient(45deg,#fef3c7,#fef3c7_10px,#fde68a_10px,#fde68a_20px)] p-3 text-xs text-amber-900">
+            <div data-tour="uncertainty-warning" className="rounded-md border-l-4 border-amber-500 bg-[repeating-linear-gradient(45deg,#fef3c7,#fef3c7_10px,#fde68a_10px,#fde68a_20px)] p-3 text-xs text-amber-900">
               {uncertainty}
             </div>
           ) : null}
@@ -215,6 +215,7 @@ function AlertPanel({ event }: { event: DetectionEvent }) {
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
+                  data-tour="btn-acknowledge"
                   disabled={event.status !== 'awaiting_review'}
                   onClick={() => dispatch({ type: 'ACKNOWLEDGE', id: event.event_id })}
                   className={btnCls}
@@ -231,6 +232,7 @@ function AlertPanel({ event }: { event: DetectionEvent }) {
                 </button>
                 <button
                   type="button"
+                  data-tour="btn-contact-ranger"
                   disabled={event.rangerContactedAt != null || event.risk_score < 40}
                   onClick={() => dispatch({ type: 'CONTACT_RANGER', id: event.event_id })}
                   className={btnCls}
@@ -247,6 +249,7 @@ function AlertPanel({ event }: { event: DetectionEvent }) {
                 </button>
                 <button
                   type="button"
+                  data-tour="btn-prepare-sms"
                   disabled={event.risk_score < 40}
                   onClick={() => dispatch({ type: 'OPEN_SMS', id: event.event_id })}
                   className={`${btnCls} col-span-2`}
@@ -277,6 +280,7 @@ function AlertPanel({ event }: { event: DetectionEvent }) {
 
               <button
                 type="button"
+                data-tour="btn-close-record"
                 onClick={() => setShowOutcome(true)}
                 className={`${btnPrimaryCls} w-full`}
               >

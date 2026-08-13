@@ -10,6 +10,7 @@ import FiltersBar from './components/FiltersBar'
 import AlertList from './components/AlertList'
 import AlertPanel from './components/AlertPanel'
 import SmsSimulator from './components/SmsSimulator'
+import DemoTour from './components/DemoTour'
 
 const MapView = lazy(() => import('./components/MapView'))
 const NewDetectionForm = lazy(() => import('./components/NewDetectionForm'))
@@ -19,6 +20,7 @@ function App() {
   const { state, dispatch } = useGahm()
 
   const [adding, setAdding] = useState(false)
+  const [runTour, setRunTour] = useState(true)
 
   if (isBooting) {
     return (
@@ -41,6 +43,9 @@ function App() {
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-neutral-100 text-neutral-900">
+      {demoMode ? (
+        <DemoTour runTour={runTour} onFinishTour={() => setRunTour(false)} />
+      ) : null}
       <header className="flex flex-wrap items-center gap-x-3 gap-y-1.5 bg-neutral-900 px-4 py-2.5 text-white">
         <div className="flex items-baseline gap-2">
           <span className="text-lg font-bold tracking-tight">GAHM</span>
@@ -63,13 +68,25 @@ function App() {
             <span className="hidden font-medium text-neutral-100 sm:inline">{state.rangerName}</span>
           ) : null}
           {demoMode ? (
-            <button
-              type="button"
-              onClick={() => dispatch({ type: 'RESET_DEMO' })}
-              className="rounded-md border border-neutral-600 px-2.5 py-1 text-neutral-200 transition-colors hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
-            >
-              Reset demo
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={() => setRunTour(true)}
+                className="rounded-md bg-emerald-600 px-2.5 py-1 font-semibold text-white transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+              >
+                Guided tour
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  dispatch({ type: 'RESET_DEMO' })
+                  setRunTour(true)
+                }}
+                className="rounded-md border border-neutral-600 px-2.5 py-1 text-neutral-200 transition-colors hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+              >
+                Reset demo
+              </button>
+            </>
           ) : null}
           {!demoMode ? (
             <button

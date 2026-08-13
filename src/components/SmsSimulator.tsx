@@ -124,6 +124,7 @@ function SmsSimulator() {
 
         <button
           type="button"
+          data-tour="btn-send-sms"
           onClick={sendWarning}
           disabled={state.sms.sending}
           className="w-full rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"

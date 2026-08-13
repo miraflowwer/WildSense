@@ -33,7 +33,7 @@ function OperationsBar() {
   const avg = state.kpis.avgResponseMinutes
 
   return (
-    <div className="grid grid-cols-2 gap-2 border-b border-neutral-200 bg-neutral-100 px-4 py-2.5 sm:grid-cols-5">
+    <div data-tour="ops-bar" className="grid grid-cols-2 gap-2 border-b border-neutral-200 bg-neutral-100 px-4 py-2.5 sm:grid-cols-5">
       <Stat
         label="Active high-risk incidents"
         value={String(highRisk)}

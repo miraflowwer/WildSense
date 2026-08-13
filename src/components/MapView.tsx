@@ -192,7 +192,7 @@ export default function MapView() {
   }, [state.events, state.selectedId, state.filter, dispatch])
 
   return (
-    <div ref={containerRef} className="h-full w-full relative">
+    <div data-tour="map-view" ref={containerRef} className="h-full w-full relative">
       {state.mode === 'demo' && (
         <div className="absolute top-2 right-2 z-[1000] pointer-events-none rounded bg-black/60 px-2 py-0.5 text-[11px] text-white">
           Demo data
