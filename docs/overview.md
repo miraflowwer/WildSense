@@ -71,8 +71,8 @@ confidence** (how sure the sensor is that it saw a species) and **conflict risk*
 - **Honest uncertainty** — when movement data is missing, the engine says so and
   lowers the score, rather than pretending everything is known.
 - **Community safety and privacy** — warnings never expose exact wildlife
-  coordinates, are written for basic phones and local languages (English +
-  Hindi), and include opt-out; alerts are never prioritized by farm size or
+  coordinates, are written for basic phones and local languages (Kannada, Tamil,
+  Hindi, English), and include opt-out; alerts are never prioritized by farm size or
   economic value.
 - **Indian legal compliance** — designed with the Digital Personal Data
   Protection (DPDP) Act, 2023 and the Wildlife (Protection) Act, 1972 in mind:

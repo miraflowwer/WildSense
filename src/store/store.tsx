@@ -44,6 +44,22 @@ const EMPTY_SMS: SmsState = {
   allClearSent: false,
 }
 
+// Actions that mutate the shared demo scenario and are safe to sync across windows.
+// Session-local actions (identity, tabs, filters, selections, modals, tour state)
+// are deliberately excluded so a teammate window never reconfigures the main window.
+const BROADCAST_ACTIONS = new Set<StoreAction['type']>([
+  'ACKNOWLEDGE',
+  'CONTACT_RANGER',
+  'MONITOR',
+  'ESCALATE',
+  'MARK_FALSE',
+  'RESOLVE',
+  'SEND_SMS',
+  'SEND_ALL_CLEAR',
+  'SMS_REPLY',
+  'ADD_EVENT',
+])
+
 const SEED_PROFILES: RangerProfile[] = [
   {
     userId: 'demo-p1',
@@ -768,6 +784,10 @@ export function GahmProvider({ children }: { children: ReactNode }) {
   const [state, rawDispatch] = useReducer(reducer, undefined, () => initialState('user'))
   const stateRef = useRef(state)
   stateRef.current = state
+  // Optimistic mirror of the reducer for same-tick dispatch chains (kept in sync so
+  // write-through persistence sees the state after the current action, including any
+  // prior actions dispatched before React re-rendered).
+  const pendingRef = useRef<StoreState | null>(null)
 
   const prevAuthModeRef = useRef<'demo' | 'user' | null>(null)
   const channelRef = useRef<BroadcastChannel | null>(null)
@@ -783,7 +803,16 @@ export function GahmProvider({ children }: { children: ReactNode }) {
       if (!data || typeof data !== 'object') return
 
       if (data.type === 'SYNC_ACTION' && data.action) {
-        const incomingAction = data.action as StoreAction
+        // BroadcastChannel messages never loop back to the sender, but guard anyway:
+        // session-scoped channels should never overwrite the live database-backed flow.
+        if (stateRef.current.mode !== 'demo') return
+        pendingRef.current = null
+        // Attribute the remote action to its acting ranger so the shared audit trail
+        // and notification feed show the true author, not this window's identity.
+        const incomingAction = {
+          ...(data.action as StoreAction),
+          actor: typeof data.actor === 'string' ? data.actor : undefined,
+        } as StoreAction
         rawDispatch(incomingAction)
 
         // Generate in-app toast notification for remote action
@@ -829,7 +858,10 @@ export function GahmProvider({ children }: { children: ReactNode }) {
     if (auth.isBooting) return
     const prev = prevAuthModeRef.current
     prevAuthModeRef.current = auth.mode
-    if (auth.mode !== prev) rawDispatch({ type: 'SET_MODE', mode: auth.mode ?? 'user' })
+    if (auth.mode !== prev) {
+      pendingRef.current = null
+      rawDispatch({ type: 'SET_MODE', mode: auth.mode ?? 'user' })
+    }
   }, [auth.mode, auth.isBooting])
 
   // Sync user profile name on sign-in
@@ -848,6 +880,7 @@ export function GahmProvider({ children }: { children: ReactNode }) {
     Promise.all([loadEvents(), loadProfiles(), loadSubscribers()])
       .then(([events, profiles, subscribers]) => {
         if (cancelled) return
+        pendingRef.current = null
         rawDispatch({ type: 'HYDRATE_EVENTS', events, rangerName: auth.user?.name ?? '' })
         rawDispatch({ type: 'SET_PROFILES', profiles })
         rawDispatch({ type: 'SET_SUBSCRIBERS', subscribers })
@@ -875,6 +908,7 @@ export function GahmProvider({ children }: { children: ReactNode }) {
         (payload) => {
           if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
             loadEvents().then((refreshed) => {
+              pendingRef.current = null
               rawDispatch({
                 type: 'HYDRATE_EVENTS',
                 events: refreshed,
@@ -910,11 +944,18 @@ export function GahmProvider({ children }: { children: ReactNode }) {
 
   const dispatch = useCallback(
     (action: StoreAction) => {
+      // Chain through the optimistic preview so same-tick dispatch sequences (e.g.
+      // appends to the audit trail followed by a persisted update) each see the
+      // state produced by the previous action before React re-renders.
+      const base = pendingRef.current ?? stateRef.current
+      const next = reducer(base, action)
+      pendingRef.current = next
       rawDispatch(action)
-      const s = stateRef.current
+      const s = base
 
-      // In demo mode: broadcast action to other open tabs/windows
-      if (s.mode === 'demo' && channelRef.current) {
+      // In demo mode: broadcast shared-scenario actions to other open tabs/windows.
+      // Session-local actions (identity, tabs, filters, modals, tour state) stay local.
+      if (s.mode === 'demo' && channelRef.current && BROADCAST_ACTIONS.has(action.type)) {
         try {
           channelRef.current.postMessage({
             type: 'SYNC_ACTION',

@@ -5,6 +5,15 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v1.4.1] — 2026-08-14 — Collaboration Attribution & Refinements
+
+### Fixed
+
+- **Cross-window attribution** — actions taken from a teammate session are now attributed to the acting ranger's identity across the shared audit trail, notification feed, and team board, instead of the primary window's name.
+- **Notification bell tour step** — the guided tour's bell step now advances as soon as the activity feed has been opened, instead of stalling until an outside action occurs.
+- **Filter counter accuracy** — the default "awaiting review" status no longer counts as an active filter, so the filters bar collapses cleanly and the badge reflects real filter choices only.
+- **Docs alignment with schema** — `unified-operations.md` and `auth-and-workspaces.md` subscriber documentation corrected to the deployed DPDP §6 consent model (`consent_given_at` + `terms_version`, unique phone), and `overview.md` language coverage corrected to the four SMS languages (Kannada, Tamil, Hindi, English).
+
 ## [v1.4.0] — 2026-08-14 — Unified Corridor Operations & Multi-Ranger Collaboration
 
 ### Added

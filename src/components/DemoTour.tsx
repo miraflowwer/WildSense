@@ -280,12 +280,19 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
       setStepIndex(10)
     } else if (stepIndex === 11 && state.railTab === 'team') {
       setStepIndex(12)
+    } else if (
+      stepIndex === 12 &&
+      state.notifications.length > 0 &&
+      state.notifications.every((n) => n.read)
+    ) {
+      setStepIndex(13)
     }
   }, [
     state.selectedId,
     state.sms.openEventId,
     state.sms.sentAt,
     state.railTab,
+    state.notifications,
     stepIndex,
     runTour,
     evt1042,

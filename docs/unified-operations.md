@@ -48,11 +48,12 @@ Stores authenticated ranger identity and status:
 Manages community alert recipients with strict data privacy:
 - `id` (UUID, primary key)
 - `name` (text, recipient name)
-- `phone` (text, contact number)
+- `phone` (text, unique — one subscription per number; re-subscribing refreshes consent)
 - `community` (text, settlement name)
-- `consent_given` (boolean, check constraint `consent_given = true`)
-- `consent_given_at` (timestamptz)
+- `consent_given_at` (timestamptz, required — enforced by check constraint `consent_given_at IS NOT NULL AND terms_version IS NOT NULL`)
+- `terms_version` (text, consent terms the subscriber accepted, e.g. `2026-08-14`)
 - `opted_out` (boolean, default false)
+- `opted_out_at` (timestamptz)
 
 ### 3. `corridor_activity` View
 A sanitized public summary view used by the public landing page to show aggregate conflict status without disclosing sensitive animal coordinates.

@@ -54,9 +54,9 @@ screen exposes them through the "Try the demo" card.
 - **Data tables**:
   - `events`: Active wildlife incident reports with `audit_trail` JSON array tracking every action taken by rangers.
   - `profiles`: Authenticated ranger roster with sector assignments (`Kabini`, `Bandipur`, `Mudumalai`) and live duty status.
-  - `subscribers`: Verified village alert recipients with enforced `consent_given = true` check constraint per DPDP Act §6.
+  - `subscribers`: Verified village alert recipients with enforced DPDP Act §6 consent — a required `consent_given_at` timestamp plus accepted `terms_version` (check constraint `consent_given_at IS NOT NULL AND terms_version IS NOT NULL`), one subscription per phone number.
   - `sms_log`: Record of dispatched community warning transmissions.
-- **Auto-seeding on sign-up**: when a new user signs up and `loadEvents()` returns an empty database (`0` events), `store.tsx` automatically invokes `seedUserEvents()` to seed the standard corridor incidents into Supabase.
+- **Shared corridor seed**: the reserve's corridor incidents are seeded once into the shared database; every ranger signing in reads the same live feed (no per-account seeding — sign-ups join the existing reserve state).
 - The demo account is shared: anyone signing in with it enters `demo` mode, which runs the local scenario and communicates via `BroadcastChannel` for multi-window team collaboration without writing to the database.
 
 ## Write-through API (`src/auth/api.ts`)

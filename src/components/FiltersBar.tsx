@@ -45,7 +45,11 @@ function FiltersBar() {
 
   const set = (patch: Partial<FilterState>) => dispatch({ type: 'SET_FILTER', patch })
 
-  const activeCount = Object.values(filter).filter(Boolean).length
+  // The default status filter is the baseline view, not an active filter choice.
+  const DEFAULT_STATUS = 'awaiting_review'
+  const activeCount = Object.entries(filter).filter(
+    ([key, value]) => Boolean(value) && !(key === 'status' && value === DEFAULT_STATUS),
+  ).length
   const isExpanded = filtersExpanded || activeCount > 0
 
   return (

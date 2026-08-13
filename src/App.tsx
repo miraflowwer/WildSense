@@ -43,6 +43,14 @@ function App() {
 
   const isTeammate = typeof window !== 'undefined' && window.location.search.includes('teammate')
 
+  // Teammate window: adopt the assigned sector identity so live actions, the shared
+  // audit trail, and the notification feed attribute work to the right ranger.
+  useEffect(() => {
+    if (mode === 'demo' && isTeammate) {
+      dispatch({ type: 'SET_RANGER_NAME', name: 'K. Rao' })
+    }
+  }, [mode, isTeammate, dispatch])
+
   const rawRangerName = state.rangerName.trim() || user?.name || ''
   const displayRangerName = isTeammate
     ? 'K. Rao (Masinagudi)'
@@ -180,7 +188,7 @@ function App() {
       ) : null}
 
       {/* Header */}
-      <header className="flex h-14 shrink-0 items-center justify-between border-b border-neutral-800 bg-neutral-950 px-4 text-white">
+      <header className="relative z-30 flex h-14 shrink-0 items-center justify-between border-b border-neutral-800 bg-neutral-950 px-4 text-white">
         {/* Left: Brand & Status */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
@@ -242,7 +250,10 @@ function App() {
             <button
               type="button"
               data-tour="bell-btn"
-              onClick={() => setShowNotifications((s) => !s)}
+              onClick={() => {
+                setShowNotifications((s) => !s)
+                dispatch({ type: 'MARK_NOTIFICATIONS_READ' })
+              }}
               aria-label={t('app.notificationsAria', { count: unreadCount })}
               className="relative inline-flex min-h-[40px] min-w-[40px] items-center justify-center rounded-lg border border-neutral-700 bg-neutral-850 p-2 text-neutral-300 transition-colors hover:bg-neutral-750 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
             >
