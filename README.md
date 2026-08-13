@@ -43,3 +43,7 @@ code in `src/`; if a prose document ever disagrees with the code, the code wins
   1. Open terminal inside `app/` and run `npm install`.
   2. Run `npm run dev` and open `http://localhost:5173`.
   3. Click **Try the demo** on the sign-in screen to launch the EVT-1042 scenario.
+- **TUI launcher (Windows)**: instead of typing npm commands, run [`gahm.bat`](gahm.bat) — a
+  text-menu helper that launches the demo at `http://localhost:5173`, installs/checks
+  dependencies, runs the verify gate, updates (verify + commit + push), or uninstalls. It
+  locates the app folder whether you double-click it inside `app/` or one level above.
