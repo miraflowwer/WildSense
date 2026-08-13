@@ -6,6 +6,8 @@ import { useGahm } from '../store/storeContext'
 interface DemoTourProps {
   runTour: boolean
   onFinishTour: () => void
+  showNotifications?: boolean
+  setShowNotifications?: (show: boolean) => void
 }
 
 const STEPS: Step[] = [
@@ -99,11 +101,17 @@ const STEPS: Step[] = [
     placement: 'left',
   },
   {
-    target: '[data-tour="bell-btn"]',
-    content:
-      'The Notification Bell provides a live activity feed of multi-ranger dispatches, SMS broadcasts, and field acknowledgments.',
+    target: '[data-tour="notif-item-k-rao"]',
+    content: (
+      <div className="space-y-1.5">
+        <div className="text-sm font-bold text-neutral-900">Real-Time Team Notifications</div>
+        <p className="text-xs leading-relaxed text-neutral-600">
+          Notice the live feed update from <strong>K. Rao</strong> in the Masinagudi sector. The notification bell gives you instant visibility when fellow rangers claim incidents, dispatch patrols, or broadcast warnings.
+        </p>
+      </div>
+    ),
     skipScroll: true,
-    placement: 'bottom',
+    placement: 'left',
   },
   {
     target: '[data-tour="ops-bar"]',
@@ -120,7 +128,12 @@ const STEPS: Step[] = [
   },
 ]
 
-export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
+export default function DemoTour({
+  runTour,
+  onFinishTour,
+  showNotifications,
+  setShowNotifications,
+}: DemoTourProps) {
   const { state, dispatch } = useGahm()
   const [stepIndex, setStepIndex] = useState(0)
 
@@ -225,16 +238,32 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
       case 11:
         // Step 12 of 14: target team-tab
         if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
+        if (setShowNotifications && showNotifications) setShowNotifications(false)
         break
 
       case 12:
-        // Step 13 of 14: target bell-btn
+        // Step 13 of 14: target notif-item-k-rao
         if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
+        if (!state.notifications.some((n) => n.actor === 'K. Rao' || n.id === 'seed-notif-1')) {
+          dispatch({
+            type: 'ADD_NOTIFICATION',
+            notification: {
+              id: 'seed-notif-1',
+              message: 'K. Rao acknowledged EVT-1043 (Elephant herd in Masinagudi sector)',
+              timestamp: new Date().toISOString(),
+              read: false,
+              actor: 'K. Rao',
+              eventId: 'EVT-1043',
+            },
+          })
+        }
+        if (setShowNotifications && !showNotifications) setShowNotifications(true)
         break
 
       case 13:
         // Step 14 of 14: final completion prompt
         if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
+        if (setShowNotifications && showNotifications) setShowNotifications(false)
         break
     }
   }, [
@@ -243,6 +272,9 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
     state.selectedId,
     state.sms.openEventId,
     state.railTab,
+    state.notifications,
+    showNotifications,
+    setShowNotifications,
     evt1042?.status,
     evt1042?.rangerContactedAt,
     evt1042,
@@ -280,12 +312,6 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
       setStepIndex(10)
     } else if (stepIndex === 11 && state.railTab === 'team') {
       setStepIndex(12)
-    } else if (
-      stepIndex === 12 &&
-      state.notifications.length > 0 &&
-      state.notifications.every((n) => n.read)
-    ) {
-      setStepIndex(13)
     }
   }, [
     state.selectedId,
@@ -317,6 +343,7 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
     // lockdown exemption too, or the user cannot save the outcome and the tour stalls.
     const EXTRA_ACTIVE_TARGETS: Record<number, string[]> = {
       8: ['[data-tour="outcome-form"]'],
+      12: ['[data-tour="bell-btn"]', '[data-tour="notif-popover"]', '[data-tour="notif-item-k-rao"]'],
     }
 
     const updateActiveTarget = () => {
@@ -396,6 +423,9 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
       action === 'skip' ||
       action === 'stop'
     ) {
+      if (setShowNotifications && showNotifications) {
+        setShowNotifications(false)
+      }
       onFinishTour()
       return
     }

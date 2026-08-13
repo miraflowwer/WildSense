@@ -172,7 +172,12 @@ function App() {
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-neutral-100 font-sans text-neutral-900 antialiased">
-      <DemoTour runTour={runTour} onFinishTour={handleFinishTour} />
+      <DemoTour
+        runTour={runTour}
+        onFinishTour={handleFinishTour}
+        showNotifications={showNotifications}
+        setShowNotifications={setShowNotifications}
+      />
 
       {/* Teammate Mode Banner */}
       {isTeammate ? (
@@ -188,7 +193,7 @@ function App() {
       ) : null}
 
       {/* Header */}
-      <header className="relative z-30 flex h-14 shrink-0 items-center justify-between border-b border-neutral-800 bg-neutral-950 px-4 text-white">
+      <header className="relative z-[1200] flex h-14 shrink-0 items-center justify-between border-b border-neutral-800 bg-neutral-950 px-4 text-white">
         {/* Left: Brand & Status */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
@@ -246,7 +251,7 @@ function App() {
           ) : null}
 
           {/* Notification Bell Dropdown */}
-          <div ref={notifRef} className="relative">
+          <div ref={notifRef} className="relative z-[1210]">
             <button
               type="button"
               data-tour="bell-btn"
@@ -267,7 +272,10 @@ function App() {
 
             {/* Notification Popover Dropdown */}
             {showNotifications ? (
-              <div className="absolute right-0 top-12 z-50 w-80 max-w-[90vw] rounded-xl border border-neutral-700 bg-neutral-900 p-3 text-white shadow-2xl space-y-2">
+              <div
+                data-tour="notif-popover"
+                className="absolute right-0 top-12 z-[1250] w-80 max-w-[90vw] rounded-xl border border-neutral-700 bg-neutral-900 p-3 text-white shadow-2xl space-y-2"
+              >
                 <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
                   <span className="text-xs font-bold">{t('notifications.title')}</span>
                   {state.notifications.length > 0 ? (
@@ -287,23 +295,35 @@ function App() {
                       {t('notifications.empty')}
                     </p>
                   ) : (
-                    state.notifications.map((n) => (
-                      <div
-                        key={n.id}
-                        onClick={() => dispatch({ type: 'MARK_NOTIFICATION_READ', id: n.id })}
-                        className={`rounded-lg p-2 text-xs transition-colors cursor-pointer ${
-                          n.read ? 'bg-neutral-800/40 text-neutral-400' : 'bg-neutral-800 text-neutral-100'
-                        }`}
-                      >
-                        <div className="flex items-baseline justify-between gap-1">
-                          <span className="font-bold">{n.title}</span>
-                          <span className="text-[10px] text-neutral-400">
-                            {fmtNotificationTime(n.timestamp, LOCALE_IDS[lang])}
-                          </span>
+                    state.notifications.map((n) => {
+                      const isKRao = n.actor === 'K. Rao' || n.id === 'seed-notif-1'
+                      return (
+                        <div
+                          key={n.id}
+                          data-tour={isKRao ? 'notif-item-k-rao' : undefined}
+                          onClick={() => dispatch({ type: 'MARK_NOTIFICATION_READ', id: n.id })}
+                          className={`rounded-lg p-2.5 text-xs transition-colors cursor-pointer ${
+                            isKRao
+                              ? 'border border-sky-400/80 bg-sky-950/70 text-white shadow-sm ring-1 ring-sky-400/30'
+                              : n.read
+                              ? 'bg-neutral-800/40 text-neutral-400'
+                              : 'bg-neutral-800 text-neutral-100'
+                          }`}
+                        >
+                          <div className="flex items-baseline justify-between gap-1">
+                            <span className={`font-bold ${isKRao ? 'text-sky-300' : 'text-neutral-200'}`}>
+                              {n.actor ?? n.title ?? 'System'}
+                            </span>
+                            <span className="text-[10px] text-neutral-400">
+                              {fmtNotificationTime(n.timestamp, LOCALE_IDS[lang])}
+                            </span>
+                          </div>
+                          <p className={`mt-0.5 text-[11px] leading-tight ${isKRao ? 'text-sky-100 font-medium' : 'text-neutral-300'}`}>
+                            {n.message}
+                          </p>
                         </div>
-                        <p className="mt-0.5 text-[11px] leading-tight text-neutral-300">{n.message}</p>
-                      </div>
-                    ))
+                      )
+                    })
                   )}
                 </div>
               </div>
@@ -430,7 +450,7 @@ function App() {
         </div>
       ) : null}
 
-      <div data-tour="ops-bar">
+      <div data-tour="ops-bar" className="relative z-10 isolate">
         <OperationsBar />
       </div>
 
@@ -477,7 +497,7 @@ function App() {
         </button>
       </div>
 
-      <main className="flex min-h-0 flex-1 flex-col md:flex-row">
+      <main className="relative z-0 isolate flex min-h-0 flex-1 flex-col md:flex-row">
         {/* Left / Center: Interactive Map */}
         <div
           className={
