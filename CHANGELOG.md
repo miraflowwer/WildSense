@@ -5,6 +5,18 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v0.3.1] — 2026-08-13 — Supabase project update & security hardening
+
+### Changed
+
+- Updated Supabase project instance credentials (`VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`) in `app/.env` and `app/netlify.toml`.
+
+### Security
+
+- Resolved `public.rls_auto_enable()` `SECURITY DEFINER` vulnerability warnings by revoking execution permissions from `PUBLIC`, `anon`, and `authenticated` roles and restricting access to `service_role` and `postgres`.
+- Added consolidated database migration & security patch script in `docs/supabase-schema-and-fixes.sql`.
+- Updated developer documentation in `app/docs/auth-and-workspaces.md` and `docs/implementations/auth-and-user-workspaces.md`.
+
 ## [v0.3.0] — 2026-08-13 — Ethics & Indian rebrand
 
 ### Added

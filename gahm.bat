@@ -151,7 +151,7 @@ call npm outdated
 echo.
 if exist .git goto :git_repo
 echo No local git repository was found - skipping commit and push.
-echo To deploy updates: push the app folder to GitHub, Netlify/Vercel redeploys automatically.
+echo To deploy updates: push the app folder to GitHub, Vercel redeploys automatically.
 goto :update_done
 :git_repo
 echo Git repository found - creating a commit and pushing now...
@@ -179,10 +179,10 @@ echo.
 echo This PERMANENTLY removes from the app folder:
 echo   - node_modules   installed packages (several hundred MB)
 echo   - dist           build output
-echo   - .git .netlify   local git history and Netlify settings, if present
+echo   - .git .vercel   local git history and Vercel settings, if present
 echo.
 echo Your source code (src, package.json, docs) is NOT touched.
-echo Any hosted site on Netlify/Vercel stays live until you delete it in their dashboard.
+echo Any hosted site on Vercel stays live until you delete it in their dashboard.
 echo.
 choice /c yn /n /m "Type y to uninstall for real, n to cancel: "
 if errorlevel 2 goto :eof

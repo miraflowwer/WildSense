@@ -69,3 +69,10 @@ The store dispatches actions first (instant UI) and writes through in the
 background; failures flip `notPersisted` so the UI can indicate offline-ish
 state. See [`data-model.md`](data-model.md) for the action → API mapping.
 
+## Security Hardening (SECURITY DEFINER Functions)
+
+- Helper functions defined in `public` with `SECURITY DEFINER` (such as `public.rls_auto_enable()`) can present security risks if exposed to `anon` or `authenticated` roles via PostgREST RPC endpoints.
+- **Remediation**: Execute `REVOKE EXECUTE ON FUNCTION public.rls_auto_enable() FROM PUBLIC, anon, authenticated;` in Supabase SQL Editor and restrict execution to `service_role` and `postgres`.
+- Consolidated schema and patch scripts are stored in `docs/supabase-schema-and-fixes.sql`.
+
+

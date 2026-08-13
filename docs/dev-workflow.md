@@ -25,7 +25,7 @@ npm run dev     # dev server at http://localhost:5173
 | `npm run preview` | Serve the production build locally |
 | `npm run clean` | Delete `node_modules` + `dist` (recreated by install/build) |
 | `npm run update` | Verify + `git commit -m "Update GAHM demo"` + push to `origin/main` |
-| `npm run uninstall-demo` | Remove `node_modules`, `dist`, `.git`, `.netlify` — **deletes local git history**; never run casually |
+| `npm run uninstall-demo` | Remove `node_modules`, `dist`, `.git`, `.vercel` — **deletes local git history**; never run casually |
 
 Windows gotchas:
 
@@ -68,12 +68,10 @@ shows "Server unreachable"). See
 
 ## Hosting and updates
 
-The build is fully static (`dist/`). Zero-config options, both auto-deploying
-from git push:
+The build is fully static (`dist/`). Deployed on **Vercel** with auto-deploy on git push:
 
 - **Vercel** — repo `miraflowwer/GAHM-Prototype` (branch `main`); import at
-  vercel.com/new, Vite is auto-detected.
-- **Netlify** — settings already in `netlify.toml`; import at app.netlify.com.
+  vercel.com/new. Vite is auto-detected, and SPA route rewrites are configured in `vercel.json`.
 
 Updating the hosted app is one command:
 
@@ -87,11 +85,11 @@ Manual equivalent with a custom message: `npm run verify` then
 ## Teardown
 
 ```bash
-npm run uninstall-demo   # removes node_modules, dist, .git, .netlify — source stays
+npm run uninstall-demo   # removes node_modules, dist, .git, .vercel — source stays
 ```
 
 Full removal order: delete the local folder → delete the GitHub repo
-(Settings → Danger Zone) → delete the hosted site in the Vercel/Netlify
+(Settings → Danger Zone) → delete the hosted site in the Vercel
 dashboard **last** (it stays live until then).
 
 ## Troubleshooting

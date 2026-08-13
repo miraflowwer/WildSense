@@ -23,8 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 
-# Hosting state (netlify CLI links)
-.netlify
+# Hosting state (vercel CLI links)
+.vercel
 
 # Local secrets (see .env.example)
 .env

@@ -11,7 +11,7 @@
     "clean": "node -e \"try{['node_modules','dist'].forEach(d=>require('fs').rmSync(d,{recursive:true,force:true,maxRetries:8,retryDelay:150}))}catch(e){console.error('Clean failed: a file is locked (dev server still running?). Stop it with Ctrl+C, then run npm run clean again.');process.exit(1)}\"",
     "verify": "npm run lint && npm run build",
     "update": "npm run verify && git add -A && git commit -m \"Update GAHM demo\" && git push",
-    "uninstall-demo": "npm run clean && node -e \"try{['.git','.netlify'].forEach(d=>require('fs').rmSync(d,{recursive:true,force:true,maxRetries:8,retryDelay:150}))}catch(e){console.error('Uninstall warning: could not fully remove local state.');process.exit(1)}console.log('Local installation removed. Hosted site still live until you delete it in the dashboard.')\""
+    "uninstall-demo": "npm run clean && node -e \"try{['.git','.vercel'].forEach(d=>require('fs').rmSync(d,{recursive:true,force:true,maxRetries:8,retryDelay:150}))}catch(e){console.error('Uninstall warning: could not fully remove local state.');process.exit(1)}console.log('Local installation removed. Hosted site still live until you delete it in the dashboard.')\""
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.3",
