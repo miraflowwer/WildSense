@@ -14,7 +14,7 @@ import { haversineKm } from '../engine/geo'
 export const USER = { name: 'Ranger Demo' }
 
 export const riskLevelColor: Record<RiskLevel, string> = {
-  low: '#10b981',
+  low: '#2563eb',
   medium: '#f59e0b',
   high: '#ef4444',
 }

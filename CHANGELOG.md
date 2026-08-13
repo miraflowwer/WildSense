@@ -5,6 +5,36 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v0.7.2] — 2026-08-13 — Map Territory Overlay & Contrast Color Refactor
+
+### Changed
+
+- **Shaded Territory Overlay**: Replaced heavy green zone shading (`rgba(22,163,74,0.25)`) with a clean, neutral slate territory overlay (`rgba(51,65,85,0.12)`) and slate boundary line (`#475569`), preventing map markers inside the reserve from blending with green terrain.
+- **Online Sensor Markers**: Updated online sensor circle markers on the map from green (`#22c55e`) to bright sky blue (`#0284c7`) for high contrast against territory boundaries.
+- **Low-Risk Detection Markers**: Updated low-risk incident marker color from emerald green (`#10b981`) to royal blue (`#2563eb`) across `demoData.ts`, `AlertList.tsx`, and `AlertPanel.tsx`.
+
+## [v0.7.1] — 2026-08-13 — Desktop Sidebar Fixed-Width Layout Fix
+
+### Fixed
+
+- **Desktop Sidebar Expansion Bug**: Fixed issue where clicking on alerts in the right sidebar caused the sidebar to flex-grow and expand beyond its fixed width (`360px`/`380px`). Added `md:flex-none md:shrink-0` to the sidebar container in `App.tsx` to strictly constrain sidebar width on desktop displays regardless of mobile view tab state.
+
+## [v0.7.0] — 2026-08-13 — Mobile Phone Compatibility, Positioning Redesign & Distinct Borders System
+
+### Added
+
+- **Mobile Phone Segmented View Switcher (`md:hidden`)**: Added interactive view mode toggle (`[ 🗺️ Map View | 🔔 Alerts & Details ]`) on screens `< 768px` allowing rangers on mobile phones to switch between full-height interactive map view and detailed incident review without squeezed vertical scrolling.
+- **Auto-Switching Alert Focus**: Configured reactive state hook in `App.tsx` that automatically switches mobile viewport focus to the Alerts & Details view whenever an alert event is selected or targeted during guided tours.
+
+### Changed
+
+- **Distinct Card & Section Borders Design System**: Applied crisp, high-contrast borders (`border border-neutral-300 bg-white shadow-2xs`) across all dashboard components (`OperationsBar`, `FiltersBar`, `AlertList`, `AlertPanel`, `MapView`).
+- **Color-Coded Left Accent KPI Indicators**: Added visual metric prioritization left borders in `OperationsBar` (Red for Active High-Risk Incidents, Amber for Unreviewed Alerts, Blue for Response Time, Emerald for Sensors Online, Purple for Communities Affected).
+- **Responsive KPI Grid Layout**: Compacted `OperationsBar` card grid for mobile phone displays to maximize vertical map workspace.
+- **Alert Cards Visual Polish**: Wrapped `AlertList` items in individual cards with crisp borders, shadow elevation (`shadow-2xs`), hover feedback, and high-contrast risk level badges.
+- **Alert Detail Panel Hardening**: Enclosed `AlertPanel` signal reasons, risk breakdown cards, and suggested next action boxes in distinct card panels with touch-friendly action button hit targets (≥ 44px height).
+- **Framed Map Container**: Added distinct border separation (`border-r border-neutral-300/70`) and styled floating demo data badge (`border border-neutral-700 bg-neutral-900/90 text-amber-300`) around `MapView`.
+
 ## [v0.6.0] — 2026-08-13 — WCAG 2.1 AA Navigation Header & Visual Hierarchy Refactor
 
 ### Changed

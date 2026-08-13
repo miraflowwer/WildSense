@@ -120,9 +120,9 @@ export default function MapView() {
     zones.forEach((z: ZonePolygon) => {
       const pts: L.LatLngTuple[] = z.polygon.map((p): L.LatLngTuple => [p[0], p[1]])
       L.polygon(pts, {
-        fillColor: 'rgba(22,163,74,0.25)',
+        fillColor: 'rgba(51,65,85,0.12)',
         fillOpacity: 1,
-        color: '#16a34a',
+        color: '#475569',
         weight: 2,
         dashArray: '6 6',
       }).addTo(staticGroup)
@@ -156,10 +156,10 @@ export default function MapView() {
       const on = s.online
       L.circleMarker([s.position[0], s.position[1]], {
         radius: 6,
-        color: on ? '#22c55e' : '#dc2626',
+        color: on ? '#0284c7' : '#dc2626',
         weight: 2,
-        fillColor: on ? '#22c55e' : '#dc2626',
-        fillOpacity: 0.8,
+        fillColor: on ? '#0284c7' : '#dc2626',
+        fillOpacity: 0.85,
       })
         .bindTooltip(`${s.name} — ${on ? 'online' : 'offline'}`)
         .addTo(staticGroup)
@@ -193,9 +193,9 @@ export default function MapView() {
   }, [state.events, state.selectedId, state.filter, dispatch])
 
   return (
-    <div data-tour="map-view" ref={containerRef} className="h-full w-full relative">
+    <div data-tour="map-view" ref={containerRef} className="relative h-full w-full border-r border-neutral-300/70">
       {state.mode === 'demo' && (
-        <div className="absolute top-2 right-2 z-[1000] pointer-events-none rounded bg-black/60 px-2 py-0.5 text-[11px] text-white">
+        <div className="pointer-events-none absolute right-3 top-3 z-[1000] rounded-md border border-neutral-700 bg-neutral-900/90 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-amber-300 shadow-sm backdrop-blur-xs">
           Demo data
         </div>
       )}

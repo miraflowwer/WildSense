@@ -37,10 +37,10 @@ function signed(points: number) {
 }
 
 const btnCls =
-  'rounded-md border border-neutral-300 bg-white px-3 py-1.5 text-xs font-medium text-neutral-700 transition-colors hover:border-neutral-400 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 disabled:cursor-not-allowed disabled:opacity-40'
+  'inline-flex min-h-[44px] items-center justify-center rounded-lg border border-neutral-300 bg-white px-3 py-2 text-xs font-semibold text-neutral-800 shadow-2xs transition-all hover:border-emerald-600 hover:bg-emerald-50/60 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-neutral-300 disabled:hover:bg-white'
 
 const btnPrimaryCls =
-  'rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:cursor-not-allowed disabled:opacity-40'
+  'inline-flex min-h-[44px] items-center justify-center rounded-lg bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white shadow-xs transition-all hover:bg-emerald-700 active:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:cursor-not-allowed disabled:opacity-40'
 
 function AlertPanel({ event }: { event: DetectionEvent }) {
   const { state, dispatch } = useGahm()
@@ -49,13 +49,13 @@ function AlertPanel({ event }: { event: DetectionEvent }) {
 
   const settled = event.status === 'dismissed' || event.status === 'resolved'
 
-  const riskText = event.risk_level === 'high' ? 'text-red-600' : event.risk_level === 'medium' ? 'text-amber-600' : 'text-emerald-600'
+  const riskText = event.risk_level === 'high' ? 'text-red-600' : event.risk_level === 'medium' ? 'text-amber-600' : 'text-blue-600'
   const riskBox =
     event.risk_level === 'high'
-      ? 'border-red-200 bg-red-50'
+      ? 'border-red-300 bg-red-50/90'
       : event.risk_level === 'medium'
-        ? 'border-amber-200 bg-amber-50'
-        : 'border-emerald-200 bg-emerald-50'
+        ? 'border-amber-300 bg-amber-50/90'
+        : 'border-blue-300 bg-blue-50/90'
 
   const suggested =
     event.risk_level === 'high'
@@ -73,105 +73,107 @@ function AlertPanel({ event }: { event: DetectionEvent }) {
   return (
     <>
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="flex items-center gap-2 border-b border-neutral-200 px-3 py-2">
+        <div className="flex items-center gap-2 border-b border-neutral-300 bg-neutral-50 px-3 py-2.5">
           <button
             type="button"
             onClick={() => dispatch({ type: 'SELECT_ALERT', id: '' })}
-            className="rounded-md px-1.5 py-0.5 text-xs font-semibold text-emerald-700 transition-colors hover:bg-emerald-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+            className="inline-flex min-h-[36px] items-center rounded-md border border-neutral-300 bg-white px-2.5 py-1 text-xs font-bold text-emerald-700 shadow-2xs transition-colors hover:bg-emerald-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
           >
             ← Back to alerts
           </button>
-          <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_PILL[event.status] ?? 'bg-neutral-100 text-neutral-600'}`}>
+          <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${STATUS_PILL[event.status] ?? 'bg-neutral-100 text-neutral-600'}`}>
             {STATUS_LABELS[event.status] ?? event.status}
           </span>
-          <span className="ml-auto font-mono text-xs text-neutral-500">{event.event_id}</span>
+          <span className="ml-auto font-mono text-xs font-semibold text-neutral-600">{event.event_id}</span>
         </div>
 
-        <div className="space-y-4 p-3">
+        <div className="space-y-3.5 p-3">
           <div>
-            <h2 className="text-lg font-bold text-neutral-900">{formatSpeciesName(event.species)}</h2>
+            <h2 className="text-lg font-extrabold text-neutral-900">{formatSpeciesName(event.species)}</h2>
             <p className="text-xs text-neutral-500">
               {fmtTime(event.timestamp)} · {event.sensor_zone} · {event.estimated_count} animal
               {event.estimated_count === 1 ? '' : 's'}
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
-            <div className="rounded-lg border border-neutral-200 p-3">
-              <div className="text-[10px] font-semibold uppercase tracking-wide text-neutral-500">
+          <div className="grid grid-cols-2 gap-2.5">
+            <div className="rounded-lg border border-neutral-300 bg-white p-3 shadow-2xs">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">
                 Detection confidence
               </div>
-              <div className="mt-1 text-2xl font-bold text-neutral-900">
+              <div className="mt-1 text-2xl font-extrabold text-neutral-900">
                 {Math.round(event.detection_confidence * 100)}%
               </div>
             </div>
-            <div className={`rounded-lg border p-3 ${riskBox}`}>
-              <div className="text-[10px] font-semibold uppercase tracking-wide text-neutral-500">
+            <div className={`rounded-lg border p-3 shadow-2xs ${riskBox}`}>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-neutral-600">
                 Conflict risk
               </div>
-              <div className={`mt-1 text-2xl font-bold ${riskText}`}>
+              <div className={`mt-1 text-2xl font-extrabold ${riskText}`}>
                 {event.risk_score}
-                <span className="text-sm font-medium text-neutral-400">/100</span>
+                <span className="text-sm font-medium text-neutral-500">/100</span>
               </div>
-              <div className="text-[11px] font-semibold uppercase tracking-wide text-neutral-500">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-neutral-600">
                 {event.risk_level}
               </div>
             </div>
           </div>
 
-          <section>
-            <h3 className="mb-1.5 text-xs font-bold uppercase tracking-wide text-neutral-500">
+          <section className="rounded-lg border border-neutral-300 bg-neutral-50/60 p-3 shadow-2xs">
+            <h3 className="mb-2 text-xs font-extrabold uppercase tracking-wider text-neutral-600">
               Contributing signals
             </h3>
-            <ul className="space-y-1.5">
+            <ul className="space-y-2">
               {event.reasons.map((r, i) => (
-                <li key={i} className="flex gap-2 text-xs">
+                <li key={i} className="flex items-start gap-2 text-xs">
                   <span
-                    className={`w-9 shrink-0 font-mono font-bold ${r.points >= 0 ? 'text-red-600' : 'text-emerald-600'}`}
+                    className={`shrink-0 rounded-md px-1.5 py-0.5 font-mono font-extrabold ${
+                      r.points >= 0 ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'
+                    }`}
                   >
                     {signed(r.points)}
                   </span>
-                  <span className="text-neutral-700">
-                    <span className="font-semibold text-neutral-800">{r.label}</span> — {r.description}
+                  <span className="text-neutral-800">
+                    <span className="font-bold text-neutral-900">{r.label}</span> — {r.description}
                   </span>
                 </li>
               ))}
             </ul>
           </section>
 
-          <section className="space-y-1.5 text-xs text-neutral-700">
+          <section className="space-y-1.5 rounded-lg border border-neutral-300 bg-white p-3 text-xs text-neutral-700 shadow-2xs">
             <div>
-              <span className="font-semibold">Distance from community:</span>{' '}
+              <span className="font-bold text-neutral-900">Distance from community:</span>{' '}
               {event.distance_to_farm_km.toFixed(1)} km
             </div>
             <div>
-              <span className="font-semibold">Movement:</span>{' '}
+              <span className="font-bold text-neutral-900">Movement:</span>{' '}
               {event.movement_toward_farm ? 'Toward farm boundary' : 'Away / other'}
               {event.speed_kmh != null ? ` at ${event.speed_kmh.toFixed(1)} km/h` : ''}
               {!event.movementKnown ? (
-                <span className="ml-1 text-amber-700">
+                <span className="ml-1 font-medium text-amber-700">
                   — no recent movement data, direction relies on the last detection.
                 </span>
               ) : null}
             </div>
             <div>
-              <span className="font-semibold">History:</span> {event.historical_incidents_nearby} past
+              <span className="font-bold text-neutral-900">History:</span> {event.historical_incidents_nearby} past
               incident{event.historical_incidents_nearby === 1 ? '' : 's'} in this area
             </div>
             <div>
-              <span className="font-semibold">Weather:</span>{' '}
+              <span className="font-bold text-neutral-900">Weather:</span>{' '}
               <span className="capitalize">{event.weather_condition}</span>
             </div>
           </section>
 
           {uncertainty ? (
-            <div data-tour="uncertainty-warning" className="rounded-md border-l-4 border-amber-500 bg-[repeating-linear-gradient(45deg,#fef3c7,#fef3c7_10px,#fde68a_10px,#fde68a_20px)] p-3 text-xs text-amber-900">
+            <div data-tour="uncertainty-warning" className="rounded-lg border-l-4 border-amber-500 bg-[repeating-linear-gradient(45deg,#fef3c7,#fef3c7_10px,#fde68a_10px,#fde68a_20px)] p-3 text-xs font-medium text-amber-950 shadow-2xs">
               {uncertainty}
             </div>
           ) : null}
 
-          <section className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-900">
-            <h3 className="mb-1 text-[10px] font-bold uppercase tracking-wide text-emerald-700">
+          <section className="rounded-lg border border-emerald-300 bg-emerald-50/90 p-3 text-xs text-emerald-950 shadow-2xs">
+            <h3 className="mb-1 text-[10px] font-extrabold uppercase tracking-wider text-emerald-800">
               Suggested next action
             </h3>
             {suggested}
@@ -179,27 +181,26 @@ function AlertPanel({ event }: { event: DetectionEvent }) {
 
           <p className="text-[11px] leading-relaxed text-neutral-500">
             Detection confidence measures how sure the model is that{' '}
-            <span className="font-semibold">{formatSpeciesName(event.species)}</span> was identified correctly. Conflict risk
-            measures how likely this event is to need attention given the surrounding context. They are
-            separate numbers.
+            <span className="font-semibold text-neutral-700">{formatSpeciesName(event.species)}</span> was identified correctly. Conflict risk
+            measures how likely this event is to need attention given the surrounding context.
           </p>
 
           {event.status === 'under_review' ? (
-            <p className="text-[11px] text-neutral-500">
+            <p className="text-[11px] font-semibold text-neutral-600">
               Owner: {event.owner || state.rangerName} — tracking response time
             </p>
           ) : null}
 
           {event.rangerContactedAt ? (
-            <p className="text-[11px] text-neutral-500">
+            <p className="text-[11px] font-semibold text-neutral-600">
               Ranger unit contacted — {event.owner || state.rangerName} dispatched at{' '}
               {fmtTime(event.rangerContactedAt)}.
             </p>
           ) : null}
 
           {settled ? (
-            <div className="rounded-md bg-neutral-100 p-3 text-xs text-neutral-600">
-              <p className="font-semibold text-neutral-700">
+            <div className="rounded-lg border border-neutral-300 bg-neutral-100 p-3 text-xs text-neutral-700 shadow-2xs">
+              <p className="font-bold text-neutral-900">
                 {event.status === 'resolved' ? 'Incident resolved' : 'Incident dismissed'}
               </p>
               {event.outcome ? (
@@ -212,7 +213,7 @@ function AlertPanel({ event }: { event: DetectionEvent }) {
               )}
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-2.5">
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
@@ -259,13 +260,13 @@ function AlertPanel({ event }: { event: DetectionEvent }) {
                 </button>
               </div>
 
-              <div className="rounded-md border border-neutral-200 p-2">
+              <div className="rounded-lg border border-neutral-300 bg-white p-2.5 shadow-2xs">
                 <textarea
                   value={falseNote}
                   onChange={(e) => setFalseNote(e.target.value)}
                   rows={2}
                   placeholder="Note (optional) — why this is low concern"
-                  className="w-full rounded-md border border-neutral-200 px-2 py-1 text-xs text-neutral-800 placeholder:text-neutral-400 focus:border-neutral-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300"
+                  className="w-full rounded-md border border-neutral-300 px-2.5 py-1.5 text-xs text-neutral-800 placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300"
                 />
                 <button
                   type="button"
@@ -273,7 +274,7 @@ function AlertPanel({ event }: { event: DetectionEvent }) {
                     dispatch({ type: 'MARK_FALSE', id: event.event_id, note: falseNote })
                     setFalseNote('')
                   }}
-                  className={`${btnCls} mt-1.5 w-full`}
+                  className={`${btnCls} mt-2 w-full`}
                 >
                   Mark as false / low concern
                 </button>
