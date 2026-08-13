@@ -12,8 +12,8 @@ wins._
 - **React 19 + TypeScript** — UI, strictly typed end to end.
 - **Vite 8** — dev server, build, `tsc -b` type-checking.
 - **Tailwind CSS v4** — styling (single `@import` in `src/index.css`).
-- **GSAP + ScrollTrigger** — scroll-locked pinned animations, card morphing, and section reveals on the Landing Page.
-- **Lenis** — smooth inertial scrolling engine for desktop and mobile.
+- **GSAP + ScrollTrigger** — entrance reveals and card morphing on the Landing Page.
+- **Lenis** — smooth inertial scrolling engine for desktop and mobile; also powers the Landing Page's scroll-locked feature deck (see "Landing page scroll" below).
 - **Leaflet + OpenStreetMap tiles** — the risk map (tiles need internet).
 - **Supabase (optional)** — auth + per-account persistence. Without env keys the
   app runs in offline demo mode.
@@ -44,9 +44,11 @@ src/
 │   ├── storage.ts              Stay-signed-in flag + session storage adapter
 │   ├── demoAccount.ts          Shared demo credentials + hint text
 │   └── api.ts                  DB write-through helpers (events, sms_log)
+├── lib/
+│   └── lenisHolder.ts          Shared handle to the single Lenis instance (scroll-locked deck)
 └── components/
-    ├── LandingView.tsx         Cream-white public landing page with GSAP animations & Lenis
-    ├── FeatureCarousel.tsx     GSAP ScrollTrigger pinned feature deck & slideshow
+    ├── LandingView.tsx         Cream-white public landing page with GSAP reveals + Lenis smooth scroll
+    ├── FeatureCarousel.tsx     Scroll-locked feature deck: Lenis stop/start lock + wheel/touch stepping
     ├── MapView.tsx             Leaflet map (React.lazy)
     ├── NewDetectionForm.tsx    Manual detection entry (React.lazy)
     ├── AuthView.tsx            Sign-in/sign-up + modal support + demo card + forgot password
@@ -121,6 +123,25 @@ bundle. Initial load stays fast; the map appears after a brief fallback.
 - **Responsive**: auth screens compact to full-width cards; the dashboard stacks
   the sidebar under the map on narrow screens instead of overflowing
   horizontally.
+
+## Landing page scroll behavior
+
+The public Landing Page (not the dashboard) is the one screen that scrolls. It
+uses Lenis (`autoRaf: false`) driven by the GSAP ticker for smooth inertial
+scrolling, with GSAP ScrollTrigger entrance reveals for the hero, persona, SDG 15
+and ethics sections.
+
+The feature showcase (`FeatureCarousel.tsx`) is a **scroll-locked deck**. When the
+deck scrolls to `top top+=80` (just below the sticky header, so its "Feature
+Showcase 1 of 4" bar stays visible) it calls `lenis.stop()` to freeze the page,
+and scroll gestures — wheel, touch, or arrow keys — step through the slides
+instead, one slide per gesture with a 650 ms debounce. Scrolling past the last
+slide (or back past the first) calls `lenis.start()` and Lenis animates on to the
+next section. The lock is skipped when the deck is taller than the viewport
+(small screens) or when the user prefers reduced motion. The single Lenis
+instance is shared with the deck through `src/lib/lenisHolder.ts`. There is no
+GSAP pinning involved, which keeps the transition into and out of the deck
+jank-free.
 
 ## Where the risk logic lives
 
