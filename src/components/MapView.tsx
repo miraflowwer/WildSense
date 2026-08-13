@@ -194,6 +194,10 @@ export default function MapView() {
 
   return (
     <div data-tour="map-view" ref={containerRef} className="relative h-full w-full border-r border-neutral-300/70">
+      <div className="pointer-events-none absolute bottom-3 left-3 z-[1000] max-w-[260px] rounded-md border border-emerald-900/20 bg-white/90 px-2.5 py-1.5 text-[11px] leading-snug text-neutral-700 shadow-sm backdrop-blur-xs">
+        <span className="font-semibold text-emerald-900">Real villages</span> · modeled
+        Bandipur–Nagarhole–Mudumalai corridor · events are simulated
+      </div>
       {state.mode === 'demo' && (
         <div className="pointer-events-none absolute right-3 top-3 z-[1000] rounded-md border border-neutral-700 bg-neutral-900/90 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-amber-300 shadow-sm backdrop-blur-xs">
           Demo data

@@ -2,6 +2,36 @@ import { useEffect, useState } from 'react'
 import { useGahm } from '../store/storeContext'
 import { findById } from '../store/selectors'
 import { insertSmsLog } from '../auth/api'
+import { communities } from '../data/demoData'
+
+type Lang = 'en' | 'hi' | 'kn' | 'ta'
+
+function langForCommunity(community: string | undefined): Lang {
+  const comm = communities.find((c) => c.name === community)
+  switch (comm?.preferredLanguage) {
+    case 'Kannada':
+      return 'kn'
+    case 'Tamil':
+      return 'ta'
+    case 'Hindi':
+      return 'hi'
+    default:
+      return 'en'
+  }
+}
+
+function messageFor(lang: Lang, zone: string): string {
+  switch (lang) {
+    case 'hi':
+      return `GAHM चेतावनी: ${zone} के पास वन्यजीव ख़तरा। पशुओं को सुरक्षित करें और खेत की सीमा से दूर रहें। वनरक्षकों को सूचित कर दिया गया है। सुरक्षित होने पर SAFE जवाब दें। रद्द करने के लिए STOP लिखें।`
+    case 'kn':
+      return `GAHM ಎಚ್ಚರಿಕೆ: ${zone} ಬಳಿ ವನ್ಯಜೀವಿ ಅಪಾಯ. ಜಾನುವಾರುಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿಡಿ ಮತ್ತು ಹೊಲದ ಗಡಿಯಿಂದ ದೂರವಿರಿ. ರೇಂಜರ್ಗಳಿಗೆ ಸೂಚಿಸಲಾಗಿದೆ. ಸುರಕ್ಷಿತವಾದಾಗ SAFE ಎಂದು ಉತ್ತರಿಸಿ. ನಿರ್ಗಮನಕ್ಕೆ STOP ಬರೆಯಿರಿ.`
+    case 'ta':
+      return `GAHM எச்சரிக்கை: ${zone} அருகே வனவிலங்கு ஆபத்து. கால்நடைகளை பாதுகாப்பாக வைத்து, வயல் எல்லையைத் தவிர்க்கவும். வனக்காவலர்களுக்கு தெரிவிக்கப்பட்டது. பாதுகாப்பாக இருந்தால் SAFE என்று பதிலளிக்கவும். விலகுவதற்கு STOP அனுப்பவும்.`
+    default:
+      return `GAHM ALERT: High wildlife risk near ${zone}. Secure livestock and avoid the farm boundary. Rangers have been notified. Reply SAFE when secure. Reply STOP to opt out.`
+  }
+}
 
 const RECIPIENTS = [
   '+91 98450 10221 — R. Sharma',
@@ -27,7 +57,7 @@ function fmtAt(iso: string) {
 function SmsSimulator() {
   const { state, dispatch } = useGahm()
   const event = state.sms.openEventId ? findById(state.events, state.sms.openEventId) : undefined
-  const [lang, setLang] = useState<'en' | 'hi'>('en')
+  const [lang, setLang] = useState<Lang>(() => langForCommunity(event?.community))
   const [reply, setReply] = useState('SAFE')
 
   useEffect(() => {
@@ -38,12 +68,14 @@ function SmsSimulator() {
     return () => window.removeEventListener('keydown', onKey)
   }, [dispatch])
 
+  useEffect(() => {
+    if (!event) return
+    setLang(langForCommunity(event.community))
+  }, [event])
+
   if (!event) return null
 
-  const message =
-    lang === 'en'
-      ? `GAHM ALERT: High wildlife risk near ${event.sensor_zone}. Secure livestock and avoid the northern boundary. Rangers have been notified. Reply SAFE when secure. Reply STOP to opt out.`
-      : `GAHM चेतावनी: ${event.sensor_zone} के पास वन्यजीव ख़तरा। पशुओं को सुरक्षित करें और सीमा से दूर रहें। वनरक्षकों को सूचित कर दिया गया है। सुरक्षित होने पर SAFE जवाब दें। रद्द करने के लिए STOP लिखें।`
+  const message = messageFor(lang, event.sensor_zone)
 
   const sendWarning = () => {
     dispatch({ type: 'SEND_SMS' })
@@ -91,14 +123,27 @@ function SmsSimulator() {
           </button>
         </div>
 
-        <div className="mb-3 flex items-center gap-2">
-          <span className="text-xs font-semibold text-neutral-600">Language:</span>
-          <button type="button" onClick={() => setLang('en')} className={langBtn(lang === 'en')}>
-            English
-          </button>
-          <button type="button" onClick={() => setLang('hi')} className={langBtn(lang === 'hi')}>
-            Hindi (हिन्दी)
-          </button>
+        <div className="mb-3">
+          <div className="mb-1.5 flex items-center gap-2">
+            <span className="text-xs font-semibold text-neutral-600">Language:</span>
+            <span className="text-[10px] text-neutral-400">
+              auto-selected for {event.community}
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            <button type="button" onClick={() => setLang('en')} className={langBtn(lang === 'en')}>
+              English
+            </button>
+            <button type="button" onClick={() => setLang('hi')} className={langBtn(lang === 'hi')}>
+              हिन्दी
+            </button>
+            <button type="button" onClick={() => setLang('kn')} className={langBtn(lang === 'kn')}>
+              ಕನ್ನಡ
+            </button>
+            <button type="button" onClick={() => setLang('ta')} className={langBtn(lang === 'ta')}>
+              தமிழ்
+            </button>
+          </div>
         </div>
 
         <div className="mb-3 rounded-lg border border-neutral-200 bg-neutral-50 p-3">

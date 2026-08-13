@@ -24,39 +24,40 @@ export const zones: ZonePolygon[] = [
     id: 'Z1',
     name: 'Aranya Corridor Reserve',
     polygon: [
-      [12.025, 76.27],
-      [11.995, 76.52],
-      [12.025, 76.74],
-      [11.875, 76.82],
-      [11.625, 76.84],
-      [11.375, 76.78],
-      [11.195, 76.6],
-      [11.175, 76.34],
-      [11.325, 76.2],
-      [11.675, 76.16],
+      [12.02, 76.16],
+      [12.1, 76.38],
+      [11.97, 76.55],
+      [11.9, 76.75],
+      [11.8, 76.85],
+      [11.68, 76.78],
+      [11.55, 76.76],
+      [11.42, 76.58],
+      [11.47, 76.36],
+      [11.72, 76.18],
+      [11.96, 76.12],
     ],
   },
 ]
 
 export const farmZones: FarmZone[] = [
-  { id: 'F1', name: 'Rajapura Farm', center: [12.105, 76.52], radiusKm: 1.2 },
-  { id: 'F2', name: 'Hosahalli Farm', center: [11.675, 76.84], radiusKm: 1.0 },
-  { id: 'F3', name: 'Doddapalya Farm', center: [11.055, 76.46], radiusKm: 1.4 },
+  { id: 'F1', name: 'Kabini Farm', center: [11.955, 76.353], radiusKm: 1.2 },
+  { id: 'F2', name: 'Bandipur Farm', center: [11.738, 76.648], radiusKm: 1.0 },
+  { id: 'F3', name: 'Moyar Valley Farm', center: [11.583, 76.635], radiusKm: 1.4 },
 ]
 
 export const communities: Community[] = [
-  { id: 'C1', name: 'Rajapura', center: [12.125, 76.53], preferredLanguage: 'English' },
-  { id: 'C2', name: 'Hosahalli', center: [11.695, 76.85], preferredLanguage: 'Hindi' },
-  { id: 'C3', name: 'Doddapalya', center: [11.045, 76.45], preferredLanguage: 'Hindi' },
+  { id: 'C1', name: 'Beechanahalli', center: [11.9735, 76.3528], preferredLanguage: 'Kannada' },
+  { id: 'C2', name: 'Hangala', center: [11.7471, 76.6504], preferredLanguage: 'Kannada' },
+  { id: 'C3', name: 'Masinagudi', center: [11.5722, 76.6427], preferredLanguage: 'Tamil' },
 ]
 
 export const sensors: Sensor[] = [
-  { id: 'S1', name: 'North Corridor Gate', position: [12.005, 76.34], online: true },
-  { id: 'S2', name: 'Northern Watch Post', position: [12.015, 76.52], online: true },
-  { id: 'S3', name: 'North East Post', position: [11.995, 76.72], online: true },
-  { id: 'S4', name: 'Eastern Ridge Post', position: [11.675, 76.8], online: true },
-  { id: 'S5', name: 'Southern Patrol Post', position: [11.235, 76.52], online: true },
-  { id: 'S6', name: 'Western Post', position: [11.525, 76.22], online: false },
+  { id: 'S1', name: 'North Corridor Gate', position: [11.995, 76.33], online: true },
+  { id: 'S2', name: 'Northern Watch Post', position: [12.075, 76.36], online: true },
+  { id: 'S3', name: 'North East Post', position: [11.95, 76.6], online: true },
+  { id: 'S4', name: 'Eastern Ridge Post', position: [11.8, 76.76], online: true },
+  { id: 'S5', name: 'Southern Patrol Post', position: [11.51, 76.6], online: true },
+  { id: 'S6', name: 'Western Post', position: [11.95, 76.2], online: false },
 ]
 
 export interface RawTrailPoint {
@@ -99,9 +100,9 @@ const rawDets: RawDetection[] = [
     historical_incidents_nearby: 0,
     weather_condition: 'clear',
     trail: [
-      { lat: 11.475, lng: 76.24, ts: '2026-08-11T11:20:00Z' },
-      { lat: 11.515, lng: 76.26, ts: '2026-08-11T12:20:00Z' },
-      { lat: 11.555, lng: 76.28, ts: '2026-08-11T13:10:00Z' },
+      { lat: 11.875, lng: 76.24, ts: '2026-08-11T11:20:00Z' },
+      { lat: 11.905, lng: 76.26, ts: '2026-08-11T12:20:00Z' },
+      { lat: 11.935, lng: 76.28, ts: '2026-08-11T13:10:00Z' },
     ],
     status: 'dismissed',
     outcome: {
@@ -126,9 +127,9 @@ const rawDets: RawDetection[] = [
     historical_incidents_nearby: 2,
     weather_condition: 'dry_season',
     trail: [
-      { lat: 12.03, lng: 76.515, ts: '2026-08-11T17:52:00Z' },
-      { lat: 12.048, lng: 76.518, ts: '2026-08-11T18:08:00Z' },
-      { lat: 12.065, lng: 76.52, ts: '2026-08-11T18:20:00Z' },
+      { lat: 11.905, lng: 76.35, ts: '2026-08-11T17:52:00Z' },
+      { lat: 11.919, lng: 76.351, ts: '2026-08-11T18:08:00Z' },
+      { lat: 11.933, lng: 76.353, ts: '2026-08-11T18:20:00Z' },
     ],
     status: 'resolved',
     acknowledgedAt: '2026-08-11T18:25:00Z',
@@ -155,15 +156,15 @@ const rawDets: RawDetection[] = [
     historical_incidents_nearby: 0,
     weather_condition: 'clear',
     trail: [
-      { lat: 11.525, lng: 76.47, ts: '2026-08-12T08:15:00Z' },
-      { lat: 11.555, lng: 76.49, ts: '2026-08-12T08:45:00Z' },
-      { lat: 11.585, lng: 76.51, ts: '2026-08-12T09:15:00Z' },
+      { lat: 11.985, lng: 76.3, ts: '2026-08-12T08:15:00Z' },
+      { lat: 12.005, lng: 76.29, ts: '2026-08-12T08:45:00Z' },
+      { lat: 12.025, lng: 76.28, ts: '2026-08-12T09:15:00Z' },
     ],
   },
   {
     event_id: 'EVT-1042',
     timestamp: '2026-08-12T18:42:00Z',
-    sensor_zone: 'North Corridor',
+    sensor_zone: 'Bandipur Gate',
     species: 'elephant',
     detection_confidence: 0.91,
     estimated_count: 5,
@@ -173,9 +174,9 @@ const rawDets: RawDetection[] = [
     historical_incidents_nearby: 3,
     weather_condition: 'dry_season',
     trail: [
-      { lat: 12.03, lng: 76.515, ts: '2026-08-12T18:18:00Z' },
-      { lat: 12.048, lng: 76.518, ts: '2026-08-12T18:30:00Z' },
-      { lat: 12.068, lng: 76.52, ts: '2026-08-12T18:42:00Z' },
+      { lat: 11.645, lng: 76.64, ts: '2026-08-12T18:18:00Z' },
+      { lat: 11.665, lng: 76.642, ts: '2026-08-12T18:30:00Z' },
+      { lat: 11.685, lng: 76.644, ts: '2026-08-12T18:42:00Z' },
     ],
   },
   {
@@ -191,9 +192,9 @@ const rawDets: RawDetection[] = [
     historical_incidents_nearby: 2,
     weather_condition: 'dry_season',
     trail: [
-      { lat: 11.675, lng: 76.92, ts: '2026-08-12T18:37:00Z' },
-      { lat: 11.675, lng: 76.904, ts: '2026-08-12T18:46:00Z' },
-      { lat: 11.675, lng: 76.887, ts: '2026-08-12T18:55:00Z' },
+      { lat: 11.735, lng: 76.686, ts: '2026-08-12T18:37:00Z' },
+      { lat: 11.745, lng: 76.684, ts: '2026-08-12T18:46:00Z' },
+      { lat: 11.755, lng: 76.682, ts: '2026-08-12T18:55:00Z' },
     ],
   },
   {
@@ -209,15 +210,15 @@ const rawDets: RawDetection[] = [
     historical_incidents_nearby: 0,
     weather_condition: 'clear',
     trail: [
-      { lat: 11.625, lng: 76.62, ts: '2026-08-12T11:50:00Z' },
-      { lat: 11.61, lng: 76.62, ts: '2026-08-12T12:13:00Z' },
-      { lat: 11.595, lng: 76.62, ts: '2026-08-12T12:30:00Z' },
+      { lat: 11.835, lng: 76.645, ts: '2026-08-12T11:50:00Z' },
+      { lat: 11.829, lng: 76.646, ts: '2026-08-12T12:13:00Z' },
+      { lat: 11.824, lng: 76.648, ts: '2026-08-12T12:30:00Z' },
     ],
   },
   {
     event_id: 'EVT-1045',
     timestamp: '2026-08-12T23:05:00Z',
-    sensor_zone: 'North East Corridor',
+    sensor_zone: 'Moyar Valley Corridor',
     species: 'leopard',
     detection_confidence: 0.52,
     estimated_count: 3,
@@ -226,7 +227,7 @@ const rawDets: RawDetection[] = [
     movementKnown: false,
     historical_incidents_nearby: 3,
     weather_condition: 'dry_season',
-    trail: [{ lat: 12.125, lng: 76.558, ts: '2026-08-12T23:05:00Z' }],
+    trail: [{ lat: 11.547, lng: 76.635, ts: '2026-08-12T23:05:00Z' }],
   },
   {
     event_id: 'EVT-1046',
@@ -241,9 +242,9 @@ const rawDets: RawDetection[] = [
     historical_incidents_nearby: 2,
     weather_condition: 'dry_season',
     trail: [
-      { lat: 11.705, lng: 76.87, ts: '2026-08-12T05:30:00Z' },
-      { lat: 11.7, lng: 76.867, ts: '2026-08-12T05:35:00Z' },
-      { lat: 11.693, lng: 76.864, ts: '2026-08-12T05:40:00Z' },
+      { lat: 11.705, lng: 76.7, ts: '2026-08-12T05:30:00Z' },
+      { lat: 11.717, lng: 76.697, ts: '2026-08-12T05:35:00Z' },
+      { lat: 11.73, lng: 76.694, ts: '2026-08-12T05:40:00Z' },
     ],
   },
 ]

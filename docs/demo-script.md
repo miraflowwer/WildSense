@@ -19,7 +19,7 @@ The scenario is the scripted 8-event demo built into the app (see
 
 1. **Sign in with the demo card** — "Try the demo". (≈ 5 s)
 2. **The list is already prioritized**: EVT-1042 is at the top — **87/100 High**,
-   an elephant group moving toward Rajapura Farm at dusk. Point at the red marker
+   an elephant group moving toward Bandipur Farm (Hangala) at dusk. Point at the red marker
    on the map and the movement trail. (≈ 10 s)
 3. **Open EVT-1042 and walk the breakdown** — every contributing signal is
    listed with its points: proximity to farms, movement toward the boundary,
@@ -64,11 +64,11 @@ Total ≈ 1 minute. Slow sections at will — the flow is the story.
 
 | Question | Answer |
 | --- | --- |
-| Is this real wildlife data? | No — all data is synthetic, badged "Demo data" in the app. |
+| Is this real wildlife data? | No — the events are synthetic, badged "Demo data" in the app. The **villages are real** (Beechanahalli, Hangala, Masinagudi) and the map models the Bandipur–Nagarhole–Mudumalai elephant corridor; the reserve boundary is a simplified stand-in. |
 | Does GAHM detect animals itself? | No — it ingests detections from cameras/sensors and prioritizes them. Detection is out of scope for the hackathon. |
 | Are real SMS sent? | No — the community warning is simulated on screen (cost/privacy-safe for the hackathon). |
 | Why these weights (25/20/15/…)? | Interpretable, transparent weights chosen to reflect each signal's contribution to conflict likelihood; thresholds are configurable per reserve (the code is the source of truth: `src/engine/config.ts`). |
 | How do you handle bad data? | The uncertainty penalty lowers the score and the panel explains why — EVT-1045 demonstrates exactly that. |
-| Privacy? | Warnings never include exact wildlife coordinates, are short, local-language (English + Hindi), low-literacy friendly, with opt-out; alerts are never prioritized by farm size. The design is aligned with India's DPDP Act 2023 (consent, data minimization) and the Wildlife (Protection) Act 1972 (non-lethal, Schedule I protection). |
+| Privacy? | Warnings never include exact wildlife coordinates, are short, local-language (English, Kannada, Tamil, Hindi — auto-selected per community), low-literacy friendly, with opt-out; alerts are never prioritized by farm size. The design is aligned with India's DPDP Act 2023 (consent, data minimization) and the Wildlife (Protection) Act 1972 (non-lethal, Schedule I protection). |
 | What would a pilot look like? | The natural next phase after the demo: one partner reserve, a real detection feed, locally calibrated thresholds, and community prior consent. |
 

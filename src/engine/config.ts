@@ -31,7 +31,8 @@ const SENSOR_ZONE_TO_RESERVE: Record<string, string> = {
   'North Corridor': 'Aranya Corridor Reserve',
   'Reserve Interior': 'Aranya Corridor Reserve',
   'Eastern Buffer': 'Aranya Corridor Reserve',
-  'North East Corridor': 'Aranya Corridor Reserve',
+  'Bandipur Gate': 'Aranya Corridor Reserve',
+  'Moyar Valley Corridor': 'Aranya Corridor Reserve',
 }
 
 export function thresholdsForZone(sensorZone: string): RiskThresholds {

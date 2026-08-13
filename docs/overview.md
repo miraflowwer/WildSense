@@ -52,9 +52,13 @@ confidence** (how sure the sensor is that it saw a species) and **conflict risk*
 
 ## What is real and what is a demo
 
-- **All data is synthetic**, created for the demo and badged "Demo data" in the
-  app. There are no real sensors, no real wildlife detections, and no real phone
-  numbers.
+- **The geography is real**: the villages (Beechanahalli, Hangala, Masinagudi)
+  are actual settlements in the Bandipur–Nagarhole–Mudumalai elephant corridor
+  in southern India; the reserve boundary is a simplified stand-in for that
+  corridor.
+- **All events are synthetic**, created for the demo and badged "Demo data" in
+  the app. There are no real sensors, no real wildlife detections, and no real
+  phone numbers.
 - **The SMS warning is simulated** on screen — no messages are actually sent.
 - **Accounts are real when configured**: with Supabase keys set, sign-up and
   sign-in work against a live backend and each account's data is kept private.

@@ -5,6 +5,49 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v1.0.0] — 2026-08-13 — Official Release
+
+GAHM reaches **v1.0.0 — the official release**, the first stable, feature-complete cut of the AI-Powered Wildlife Conflict Risk Engine ("Weak Signal Detector") for Demo Day on 2 Sep 2026. It consolidates the v0.1.0–v0.9.2 journey into a single demo-ready product.
+
+### Release highlights
+
+- **Risk engine** — transparent 0–100 scoring from 7 weighted signals (25/20/15/15/10/10/5), low/high thresholds (40/70), honest uncertainty penalties, and suggested next actions (`src/engine/` is the executable source of truth).
+- **Operational dashboard** — one-screen map + alert workflow (detection → acknowledge → contact ranger → community warning → record outcome), Leaflet corridor map on **real Bandipur–Nagarhole–Mudumalai geography** (villages, farms, modeled reserve boundary; events stay simulated), demo mode and live Supabase workspaces with RLS.
+- **Guided tour** — interactive Joyride walkthrough that auto-plays for new users and demos the full EVT-1042 workflow with temporary tutorial data.
+- **SMS early-warning simulator** — four-language warnings (English/Hindi/Kannada/Tamil) with community-language auto-selection, DPDP Act 2023 opt-out ("Reply STOP"), and Wildlife (Protection) Act 1972 coordinate scrubbing.
+- **Auth** — instant sign-up/sign-in, "stay signed in", forgot-password recovery, hardened password UX, and boot-time session validation.
+- **Story-driven landing page** — cream-white narrative arc (Where → Problem → Insight → Solution → How It Works → Built For → Proof → Ethics), GSAP + Lenis smooth scroll with a scroll-locked feature deck.
+- **Documentation** — user docs (`overview.md`, `user-guide.md`, `demo-script.md`) and developer docs (`architecture.md`, `data-model.md`, `risk-algorithm.md`, `auth-and-workspaces.md`, `dev-workflow.md`) synced with the code.
+
+### Fixed
+
+- **Release review cleanup**: landing "Proof" score breakdown now matches the engine exactly (+14 proximity at 5.9 km, not +25); map geography caption moved off Leaflet's zoom control; feature-carousel movement vector corrected to the computed 11.1 km/h.
+
+### Changed
+
+- Package version bumped from `0.0.0` to `1.0.0` (`package.json`, `package-lock.json`).
+- Release record added to the team docs: `docs/implementations/official-release.md`.
+
+## [v0.9.2] — 2026-08-13 — Real Corridor Geography, Localized SMS & Story-Driven Landing Page
+
+### Added
+
+- **Real Corridor Geography**: The demo's fictional villages (Rajapura, Hosahalli, Doddapalya) were replaced with **real settlements** in the Bandipur–Nagarhole–Mudumalai elephant corridor (Karnataka/Tamil Nadu, India): Beechanahalli (Kabini dam gap), Hangala (Bandipur forest edge), and Masinagudi (Mudumalai buffer). Farms now sit at those villages (Kabini Farm, Bandipur Farm, Moyar Valley Farm), the reserve polygon was redrawn to hug the actual corridor shape, sensor posts were re-anchored, and all 8 demo event trails were re-plotted so each detection's distance-to-farm matches its risk-engine inputs. The "Aranya Corridor Reserve" boundary remains a modeled stand-in; all events stay synthetic and badged "Demo data".
+- **Community-Language SMS Auto-Selection**: `SmsSimulator.tsx` now auto-selects the warning language from the affected community's `preferredLanguage` (previously a dead field) — Kannada for Beechanahalli/Hangala, Tamil for Masinagudi — with English/Hindi/Kannada/Tamil toggle. Warnings are composed in four languages, and the guided tour + landing copy teach the behavior.
+- **Landing Page Story Arc**: Restructured `LandingView.tsx` into a narrative that converts: **Where Is This Set?** (honest geography card after the hero) → **The Problem** (sourced conflict statistics with citations) → **The Insight** (detection vs. prioritization + the 7-signal weight card) → **The Solution** (SDG 15 mission) → **How It Works** (scroll-locked feature deck) → **Built For** (personas) → **Proof** (EVT-1042 end-to-end story + Phase 2 pilot honesty beat) → **Ethics** → CTA. Sections use hook lines with plain headings (no chapter numbering), the vertical rhythm was tightened (`space-y-28` → `space-y-20`), a scroll-progress bar tracks reading position, and the hero gains a "Scroll to follow the story" cue.
+- **Map Geography Caption**: `MapView.tsx` now shows an always-on caption ("Real villages · modeled Bandipur–Nagarhole–Mudumalai corridor · events are simulated") in both demo and live modes; the "Demo data" badge remains demo-mode-only.
+
+### Fixed
+
+- **Stale/Fabricated Marketing Copy**: Removed "North Farm" references and a fake coordinate pair (`26.8467° N, 80.9462° E` — actually Uttar Pradesh, ~1,700 km from the corridor) from `FeatureCarousel.tsx` and `LandingView.tsx` persona captions; the ranger map now shows real Hangala coordinates and the flagship story reads "5.9 km to Bandipur Farm, moving north".
+- **Geographically Wrong Sensor Zones**: Renamed `North Corridor` → `Bandipur Gate` (EVT-1042) and `North East Corridor` → `Moyar Valley Corridor` (EVT-1045) so detection zones match their on-map positions; `config.ts` zone-to-reserve mapping updated.
+- **Docs Truth Sync**: `overview.md`, `ethics.md`, `demo-script.md`, `initializations.md`, `india-rebrand.md` and `AGENTS.md` now state the geography is real while events are simulated, and the demo-script Q&A answers the "is this real?" question with the exact village/corridor framing.
+- **Review Cleanup (2026-08-13)**: Landing "Proof" breakdown now reads "+14 proximity" (matching the engine's actual 14/25 points at 5.9 km instead of the overstated +25); the map geography caption moved from top-left to bottom-left so it no longer overlaps Leaflet's zoom control; the feature-carousel movement vector now reads "11.1 km/h" (the speed `demoData.ts` computes for EVT-1042's last trail segment) instead of the stale "1.2 km/h".
+
+### Changed
+
+- **SMS templates**: English/Hindi warnings now read "farm boundary" (location-neutral) instead of "northern boundary"; Kannada and Tamil templates added.
+
 ## [v0.9.1] — 2026-08-13 — Landing Page Demo Button, Scroll-Lock & Readability Fixes
 
 ### Fixed

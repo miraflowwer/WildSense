@@ -41,12 +41,12 @@ const SLIDES: FeatureSlide[] = [
       badge: 'Score 87/100 · High Risk',
       badgeColor: 'bg-red-100 text-red-800 border-red-200',
       stats: [
-        { label: 'Proximity', value: '420m to North Farm', highlight: true },
-        { label: 'Movement Vector', value: '1.2 km/h Northbound' },
+        { label: 'Proximity', value: '5.9 km to Bandipur Farm', highlight: true },
+        { label: 'Movement Vector', value: '11.1 km/h Northbound' },
         { label: 'Target Boundary', value: 'Fringe Agriculture Zone' },
       ],
       caption:
-        'Visual Feature Preview: Spatial map view indicating elephant movement trajectory towards North Farm with high-contrast alert callout.',
+        'Visual Feature Preview: Spatial map view indicating elephant movement trajectory towards Bandipur Farm with high-contrast alert callout.',
     },
   },
   {
@@ -67,8 +67,8 @@ const SLIDES: FeatureSlide[] = [
       badge: 'Anti-Poaching Lock Active',
       badgeColor: 'bg-amber-100 text-amber-900 border-amber-200',
       stats: [
-        { label: 'Public SMS', value: 'North Farm Sector (Scrubbed)' },
-        { label: 'Ranger Map', value: '26.8467° N, 80.9462° E' },
+        { label: 'Public SMS', value: 'Hangala Sector (Scrubbed)' },
+        { label: 'Ranger Map', value: '11.747° N, 76.650° E' },
         { label: 'DPDP Status', value: 'Informed Consent Active' },
       ],
       caption:
@@ -93,7 +93,7 @@ const SLIDES: FeatureSlide[] = [
       badge: 'SMS Dispatched · 34 Recipients',
       badgeColor: 'bg-emerald-100 text-emerald-900 border-emerald-200',
       stats: [
-        { label: 'Message', value: 'GAHM ALERT: High elephant risk near North Farm.' },
+        { label: 'Message', value: 'GAHM ALERT: High elephant risk near Hangala.' },
         { label: 'Action Advice', value: 'Avoid field boundary until 21:00 UTC.' },
         { label: 'Opt-out', value: 'Reply STOP to unsubscribe' },
       ],

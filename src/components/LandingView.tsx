@@ -23,14 +23,31 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
   })
   const [showEthics, setShowEthics] = useState(false)
   const [demoBusy, setDemoBusy] = useState(false)
+  const [scrollProgress, setScrollProgress] = useState(0)
 
   // Refs for GSAP scroll animations
   const heroRef = useRef<HTMLDivElement>(null)
+  const whereRef = useRef<HTMLDivElement>(null)
+  const problemRef = useRef<HTMLDivElement>(null)
+  const insightRef = useRef<HTMLDivElement>(null)
+  const proofRef = useRef<HTMLDivElement>(null)
   const sdgRef = useRef<HTMLDivElement>(null)
   const rangerRef = useRef<HTMLDivElement>(null)
   const officerRef = useRef<HTMLDivElement>(null)
   const farmerRef = useRef<HTMLDivElement>(null)
   const ethicsRef = useRef<HTMLDivElement>(null)
+
+  // Scroll progress indicator for the story's reading position
+  useEffect(() => {
+    const onScroll = () => {
+      const doc = document.documentElement
+      const max = doc.scrollHeight - window.innerHeight
+      setScrollProgress(max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0)
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   // Initialize Lenis smooth scroll & GSAP ScrollTrigger animations
   useEffect(() => {
@@ -109,8 +126,15 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
       }
     })
 
-    // SDG 15 & Ethics Section Reveals
-    const cardSections = [sdgRef.current, ethicsRef.current]
+    // SDG 15, Ethics, and Story Sections Reveals
+    const cardSections = [
+      whereRef.current,
+      problemRef.current,
+      insightRef.current,
+      proofRef.current,
+      sdgRef.current,
+      ethicsRef.current,
+    ]
     cardSections.forEach((el) => {
       if (!el) return
       gsap.fromTo(
@@ -153,6 +177,14 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
 
   return (
     <div className="relative min-h-dvh bg-[#FDFBF7] font-sans text-[#1A202C] selection:bg-[#123524] selection:text-white">
+      {/* Scroll progress bar */}
+      <div className="fixed inset-x-0 top-0 z-[70] h-1 bg-transparent" aria-hidden="true">
+        <div
+          className="h-full origin-left bg-gradient-to-r from-[#123524] to-[#C05621] transition-[width] duration-150 ease-out"
+          style={{ width: `${scrollProgress * 100}%` }}
+        />
+      </div>
+
       {/* Background Decorative Pattern & Ambient Glows */}
       <div
         className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(#123524_0.8px,transparent_0.8px)] [background-size:28px_28px] opacity-[0.07]"
@@ -245,7 +277,7 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
       </header>
 
       {/* Main Content Container */}
-      <main className="relative z-10 mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 space-y-28">
+      <main className="relative z-10 mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 space-y-20">
         {/* Section 1: Hero Section */}
         <section ref={heroRef} className="relative pt-6 text-center lg:pt-14 space-y-6">
           <div className="inline-flex items-center gap-2 rounded-full border border-[#123524]/20 bg-white/80 backdrop-blur-xs px-4 py-1.5 text-sm font-bold text-[#123524] shadow-xs">
@@ -316,16 +348,189 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
               <div className="text-xs text-neutral-600">Transparent 0–100 Scoring</div>
             </div>
           </div>
+
+          {/* Scroll Cue */}
+          <div className="pt-6 text-center text-sm font-semibold text-neutral-400">
+            <span className="inline-flex items-center gap-2">
+              Scroll to follow the story
+              <span className="animate-bounce" aria-hidden="true">↓</span>
+            </span>
+          </div>
         </section>
 
-        {/* Section 2: GSAP Pinned Scroll-Locked Feature Showcase */}
+        {/* Section 2: Where Is This Set? */}
+        <section
+          ref={whereRef}
+          className="rounded-3xl border border-[#123524]/25 bg-gradient-to-br from-[#123524] to-[#1B4D3E] p-8 sm:p-10 shadow-xl space-y-6"
+        >
+          <div className="space-y-2">
+            <span className="inline-block rounded-full border border-[#C05621]/40 bg-[#C05621]/15 px-3.5 py-1 text-sm font-bold text-amber-200">
+              Where Is This Set?
+            </span>
+            <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+              A real landscape, modeled honestly
+            </h2>
+            <p className="max-w-3xl text-base leading-relaxed text-white/75">
+              The demo is modeled on the Bandipur–Nagarhole–Mudumalai elephant corridor in southern
+              India. The villages are real; the events are simulated.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {[
+              {
+                name: 'Beechanahalli',
+                detail: 'Kabini dam gap · Karnataka',
+                lang: 'Kannada',
+              },
+              {
+                name: 'Hangala',
+                detail: 'Bandipur forest edge · Karnataka',
+                lang: 'Kannada',
+              },
+              {
+                name: 'Masinagudi',
+                detail: 'Mudumalai buffer · Tamil Nadu',
+                lang: 'Tamil',
+              },
+            ].map((v) => (
+              <div
+                key={v.name}
+                className="rounded-2xl border border-white/15 bg-white/10 p-5 backdrop-blur-sm"
+              >
+                <div className="text-lg font-bold text-white">{v.name}</div>
+                <div className="mt-1 text-sm text-white/70">{v.detail}</div>
+                <div className="mt-3 inline-block rounded-full bg-white/15 px-2.5 py-0.5 text-xs font-semibold text-amber-200">
+                  Warnings in {v.lang}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-xs leading-relaxed text-white/60">
+            The "Aranya Corridor Reserve" boundary is a simplified stand-in for the land between the
+            three real reserves. All detections, timestamps, and outcomes are synthetic demo data —
+            only the geography is real.
+          </p>
+        </section>
+
+        {/* Section 3: The Problem */}
+        <section ref={problemRef} className="space-y-6">
+          <div className="text-center space-y-2">
+            <span className="text-sm font-bold uppercase tracking-widest text-[#C05621]">
+              The Problem
+            </span>
+            <h2 className="mx-auto max-w-3xl text-3xl font-extrabold tracking-tight text-[#123524] sm:text-4xl">
+              At the forest edge, the stakes are life and livelihood
+            </h2>
+            <p className="mx-auto max-w-2xl text-base leading-relaxed text-neutral-600">
+              India holds roughly 60% of the world's wild Asian elephants — and the numbers on
+              conflict are sobering.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              {
+                value: '~7,868',
+                label: 'human deaths from elephant encounters',
+                note: 'India, 2009–2024 (≈492 per year)',
+              },
+              {
+                value: '2,829',
+                label: 'human casualties in five years',
+                note: '2019–20 to 2023-24, government data',
+              },
+              {
+                value: '528',
+                label: 'elephants lost — 392 by electrocution',
+                note: 'in the same five-year period',
+              },
+              {
+                value: '>5,00,000',
+                label: 'marginal farming families affected',
+                note: 'Rangarajan et al., Elephant Task Force 2010',
+              },
+            ].map((s) => (
+              <div
+                key={s.label}
+                className="rounded-2xl border border-[#E8E2D5] bg-white/95 p-6 shadow-md"
+              >
+                <div className="text-3xl font-black text-[#C05621]">{s.value}</div>
+                <div className="mt-2 text-sm font-bold text-[#123524]">{s.label}</div>
+                <div className="mt-1 text-xs text-neutral-500">{s.note}</div>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-center text-[11px] text-neutral-400">
+            Sources: Frontiers in Conservation Science (2026); MoEFCC parliament replies via Times
+            of India (Jul 2024); Rangarajan et al., Elephant Task Force (2010).
+          </p>
+        </section>
+
+        {/* Section 4: The Insight */}
+        <section
+          ref={insightRef}
+          className="grid grid-cols-1 gap-10 rounded-3xl border border-[#E8E2D5] bg-white/90 p-8 sm:p-12 shadow-xl lg:grid-cols-12"
+        >
+          <div className="space-y-6 lg:col-span-7">
+            <span className="inline-block rounded-full bg-[#C05621]/10 px-3.5 py-1 text-sm font-bold text-[#C05621] border border-[#C05621]/20">
+              The Insight
+            </span>
+            <h2 className="text-3xl font-extrabold tracking-tight text-[#123524] sm:text-4xl">
+              Detection isn't the bottleneck. Prioritization is.
+            </h2>
+            <p className="text-base leading-relaxed text-neutral-700">
+              Corridor monitoring already produces detections around the clock. But ranger teams are
+              outnumbered, most signals are routine or deep inside the reserve, and the few that
+              matter — a herd drifting toward a village at dusk — hide inside the noise.
+            </p>
+            <p className="text-base leading-relaxed text-neutral-700">
+              GAHM's job is to turn those weak signals into one transparent, explainable risk score,
+              so the human ranger's attention goes where the conflict is about to happen.
+            </p>
+          </div>
+
+          <div className="lg:col-span-5">
+            <div className="rounded-2xl border border-[#E8E2D5] bg-[#FDFBF7] p-6 shadow-sm">
+              <div className="mb-4 flex items-center justify-between border-b border-[#E8E2D5] pb-3">
+                <span className="text-base font-bold text-[#123524]">The 7 Signals</span>
+                <span className="rounded-full border bg-[#123524]/10 px-2.5 py-0.5 text-xs font-bold text-[#123524]">
+                  Weights
+                </span>
+              </div>
+              <div className="space-y-2.5">
+                {[
+                  ['Proximity to farmland / settlement', 25],
+                  ['Movement toward the boundary', 20],
+                  ['Species risk (Schedule I)', 15],
+                  ['Historical conflict hotspot', 15],
+                  ['Time of day (dusk/night)', 10],
+                  ['Group size', 10],
+                  ['Weather conditions', 5],
+                ].map(([label, w]) => (
+                  <div
+                    key={label as string}
+                    className="flex items-center justify-between rounded-lg border border-[#E8E2D5] bg-white p-3"
+                  >
+                    <span className="text-sm font-medium text-neutral-700">{label}</span>
+                    <span className="text-sm font-bold text-[#123524]">+{w}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section 5: GSAP Pinned Scroll-Locked Feature Showcase */}
         <section className="space-y-6">
           <div className="text-center space-y-2">
             <span className="text-sm font-bold uppercase tracking-widest text-[#C05621]">
-              Scroll-Locked Feature Deck
+              How It Works
             </span>
             <h2 className="text-3xl font-extrabold tracking-tight text-[#123524] sm:text-4xl">
-              Core Platform Capabilities
+              Seven signals. One transparent score.
             </h2>
             <p className="text-base text-neutral-600 max-w-lg mx-auto">
               Scroll down — the page locks while the deck steps through GAHM’s end-to-end conflict prediction and non-lethal dispatch modules.
@@ -335,19 +540,20 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
           <FeatureCarousel />
         </section>
 
-        {/* Section 3: Target SDG 15 Focus & Mission */}
+        {/* Section 3: The Solution — SDG 15 Focus & Mission */}
         <section ref={sdgRef} className="rounded-3xl border border-[#E8E2D5] bg-white/90 p-8 sm:p-12 shadow-xl backdrop-blur-md space-y-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-[#E8E2D5] pb-6">
             <div>
               <span className="inline-block rounded-full bg-[#123524]/10 px-3.5 py-1 text-sm font-bold text-[#123524] mb-2 border border-[#123524]/20">
-                UN Sustainable Development Goal
+                The Solution · UN SDG 15
               </span>
               <h2 className="text-3xl font-extrabold text-[#123524]">
-                SDG 15: Life on Land Focus &amp; Purpose
+                Early warning before encounters escalate
               </h2>
             </div>
             <div className="text-base text-neutral-600 md:text-right max-w-sm leading-relaxed">
-              Protecting terrestrial biodiversity, mitigating fringe agriculture encounters, and preventing retaliatory wildlife harm.
+              A transparent risk engine, a human ranger in the loop, and an SMS warning that reaches
+              the village in its own language.
             </div>
           </div>
 
@@ -376,16 +582,16 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
         </section>
 
         {/* Section 4: Who Is GAHM Built For (Scroll-Break Persona Showcase) */}
-        <section className="space-y-24">
+        <section className="space-y-16">
           <div className="text-center space-y-2">
             <span className="text-sm font-bold uppercase tracking-widest text-[#C05621]">
-              Stakeholder Storytelling
+              Built For
             </span>
             <h2 className="text-3xl font-extrabold tracking-tight text-[#123524] sm:text-4xl">
-              Who is GAHM Built For?
+              The people on the ground
             </h2>
             <p className="text-base text-neutral-600 max-w-lg mx-auto">
-              Custom-built workflows for every key stakeholder in habitat conflict management.
+              Custom workflows for the rangers, analysts, and farmers who live at the forest edge.
             </p>
           </div>
 
@@ -440,7 +646,7 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
                 />
                 <div className="absolute bottom-4 left-4 right-4 rounded-xl bg-white/90 p-4 backdrop-blur-md border border-[#E8E2D5] shadow-md">
                   <div className="text-sm font-bold text-[#123524]">Ranger Field Dashboard Preview</div>
-                  <div className="text-xs text-neutral-600">EVT-1042 · Asian Elephant Herd (420m to North Farm)</div>
+                  <div className="text-xs text-neutral-600">EVT-1042 · Asian Elephant Herd (5.9 km to Bandipur Farm, moving north)</div>
                 </div>
               </div>
             </div>
@@ -554,8 +760,77 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
                 />
                 <div className="absolute bottom-4 left-4 right-4 rounded-xl bg-white/90 p-4 backdrop-blur-md border border-[#E8E2D5] shadow-md">
                   <div className="text-sm font-bold text-[#123524]">Simulated SMS Alert Message</div>
-                  <div className="text-xs text-neutral-600">GAHM ALERT: High elephant risk near North Farm. Avoid field boundary until 21:00 UTC. Reply STOP to opt out.</div>
+                  <div className="text-xs text-neutral-600">GAHM ALERT: High elephant risk near Hangala. Avoid field boundary until 21:00 UTC. Reply STOP to opt out.</div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section 6: Proof — The Demo Story */}
+        <section ref={proofRef} className="space-y-6">
+          <div className="text-center space-y-2">
+            <span className="text-sm font-bold uppercase tracking-widest text-[#C05621]">
+              Proof
+            </span>
+            <h2 className="mx-auto max-w-3xl text-3xl font-extrabold tracking-tight text-[#123524] sm:text-4xl">
+              One evening, one herd — the whole loop
+            </h2>
+            <p className="mx-auto max-w-2xl text-base leading-relaxed text-neutral-600">
+              The flagship scenario in the live demo runs the complete workflow end-to-end.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div className="rounded-3xl border border-[#E8E2D5] bg-white/95 p-8 shadow-xl">
+              <div className="mb-5 flex items-center justify-between border-b border-[#E8E2D5] pb-4">
+                <span className="text-base font-bold text-[#123524]">EVT-1042 — Asian Elephant Herd</span>
+                <span className="rounded-full border border-red-200 bg-red-100 px-2.5 py-0.5 text-xs font-bold text-red-800">
+                  Score 87/100 · High Risk
+                </span>
+              </div>
+              <ol className="space-y-3">
+                {[
+                  ['18:42', 'Detection logged at Bandipur Gate — 5.9 km from Bandipur Farm, moving north at dusk.'],
+                  ['Risk engine', '+14 proximity, +20 movement, +15 hotspot — one transparent score, no black box.'],
+                  ['Ranger loop', 'Acknowledge, contact the ranger unit, and prepare the community warning in the demo.'],
+                  ['SMS in Kannada', 'Warning reaches Hangala residents without revealing exact animal coordinates.'],
+                  ['Outcome logged', 'EVT-1040 shows the completed loop: "De-escalated before crop damage."'],
+                ].map(([time, step]) => (
+                  <li key={time} className="flex items-start gap-3">
+                    <span className="mt-0.5 min-w-20 rounded-md bg-[#123524]/10 px-2 py-1 text-center text-xs font-bold text-[#123524]">
+                      {time}
+                    </span>
+                    <span className="text-sm leading-relaxed text-neutral-700">{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            <div className="flex flex-col justify-between gap-6 rounded-3xl border border-[#123524]/25 bg-gradient-to-br from-[#123524] to-[#1B4D3E] p-8 shadow-xl">
+              <div className="space-y-4">
+                <h3 className="text-2xl font-extrabold text-white">Run the demo. Watch it live.</h3>
+                <p className="text-sm leading-relaxed text-white/75">
+                  Follow EVT-1042 from detection to dispatch, inspect the signal breakdown, and send
+                  the warning yourself — all in the interactive demo.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => void handleEnterDemo()}
+                  disabled={demoBusy}
+                  className="w-full rounded-xl bg-[#C05621] px-6 py-3.5 text-base font-bold text-white shadow-md transition-colors hover:bg-[#A04518] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 disabled:opacity-50 sm:w-auto"
+                >
+                  {demoBusy ? 'Launching…' : 'Launch Interactive Demo'}
+                </button>
+              </div>
+              <div className="rounded-2xl border border-white/15 bg-white/10 p-5">
+                <div className="text-xs font-bold uppercase tracking-widest text-amber-200">
+                  Phase 2 — a real pilot
+                </div>
+                <p className="mt-1.5 text-sm leading-relaxed text-white/75">
+                  One partner reserve, a real detection feed, locally calibrated thresholds, and
+                  community consent — the natural next step after the demo.
+                </p>
               </div>
             </div>
           </div>

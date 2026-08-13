@@ -3,8 +3,11 @@
 _Audience: judges, mentors, users, and anyone evaluating the project's
 ethical design. This document is structured around ten ethical considerations
 raised in project review; for each one it states GAHM's design response and how
-it is implemented. The demo scenario is the **Aranya Corridor Reserve**
-(Nilgiri-Karnataka elephant corridor, India)._
+it is implemented. The demo scenario is set in a modeled corridor between the
+real **Bandipur, Nagarhole, and Mudumalai tiger reserves** (Nilgiri-Karnataka
+elephant corridor, India); the villages in the demo — Beechanahalli, Hangala,
+Masinagudi — are real settlements, while the "Aranya Corridor Reserve" boundary
+and every event are simulated._
 
 GAHM's founding position: the engine **recommends, the ranger decides**. Every
 ethical control below follows from that — the system is a decision-support
@@ -28,8 +31,9 @@ tool with humans accountable at every step.
 - **Encryption & retention** — data is encrypted in transit and at rest; alert
   data is retained only as long as needed for the decision record and is
   deletable.
-- **Demo** — all demo data is synthetic and badged "Demo data" in-app; demo
-  phone numbers are fictional.
+- **Demo** — all demo events are synthetic and badged "Demo data" in-app; demo
+  phone numbers are fictional. The villages shown are real places; the reserve
+  boundary is a modeled stand-in for the corridor.
 
 **Indian law**: designed with the **Digital Personal Data Protection (DPDP)
 Act, 2023** in mind — personal data is minimized, used only for the purpose
@@ -106,8 +110,9 @@ locations stay out of public-facing warnings.
   deployment, not an afterthought).
 - **SMS opt-out** — recipients can reply **STOP** at any time; the warning
   footer states this.
-- **Demo honesty** — all synthetic data is badged "Demo data"; nothing real is
-  implied.
+- **Demo honesty** — all synthetic events are badged "Demo data"; the real
+  villages and modeled corridor are labeled as such, so nothing real is implied
+  about the detections.
 
 ## 7. Accessibility & inclusion
 

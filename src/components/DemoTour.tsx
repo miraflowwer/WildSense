@@ -23,7 +23,8 @@ const STEPS: Step[] = [
       <span>
         Interactive reserve map displaying farm zones (<span className="font-semibold text-amber-600">amber</span>),{' '}
         <span className="font-semibold text-emerald-600">protected boundaries (green)</span>,{' '}
-        communities (<span className="font-semibold text-purple-600">purple</span>), sensors, and detection movement trails.
+        communities (<span className="font-semibold text-purple-600">purple</span> — real villages in the
+        Bandipur–Nagarhole–Mudumalai corridor), sensors, and detection movement trails. Events are simulated.
       </span>
     ),
     skipBeacon: true,
@@ -66,7 +67,7 @@ const STEPS: Step[] = [
   {
     target: '[data-tour="sms-modal"]',
     content:
-      'The SMS Simulator allows you to preview composed warnings, toggle language (English/Hindi), and send alerts to local residents without revealing exact animal coordinates. Toggle language or click Send warning to proceed.',
+      'The SMS Simulator lets you preview warnings composed in the community\u2019s preferred language (Kannada, Tamil, Hindi, or English) and send alerts to local residents without revealing exact animal coordinates. Toggle language or click Send warning to proceed.',
     skipScroll: true,
     placement: 'left',
   },
