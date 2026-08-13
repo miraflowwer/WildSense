@@ -5,6 +5,12 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v1.0.1] — 2026-08-13 — Build Performance
+
+### Changed
+
+- **Vendor chunk splitting** (`vite.config.ts`): `build.rolldownOptions.output.codeSplitting` now splits `react`/`react-dom`, `@supabase`, `gsap`+`lenis`, and `react-joyride` (+ its deps) into dedicated chunks. The main `index` bundle shrank from 758 kB to 152 kB (minified), every chunk is now under the 500 kB warning threshold (the Vercel "Some chunks are larger than 500 kB" build warning is gone), and vendor chunks cache independently. Chunks are `modulepreload`-ed in parallel, so initial load is unaffected.
+
 ## [v1.0.0] — 2026-08-13 — Official Release
 
 GAHM reaches **v1.0.0 — the official release**, the first stable, feature-complete cut of the AI-Powered Wildlife Conflict Risk Engine ("Weak Signal Detector") for Demo Day on 2 Sep 2026. It consolidates the v0.1.0–v0.9.2 journey into a single demo-ready product.
