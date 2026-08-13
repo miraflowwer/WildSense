@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { lenisHolder } from '../lib/lenisHolder'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -130,8 +131,19 @@ const SLIDES: FeatureSlide[] = [
 
 export default function FeatureCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [locked, setLocked] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
+  const indexRef = useRef(0)
+  const lockedRef = useRef(false)
+  const lastStepAtRef = useRef(0)
+  const touchStartYRef = useRef(0)
+
+  const goTo = (index: number) => {
+    const clamped = Math.min(SLIDES.length - 1, Math.max(0, index))
+    indexRef.current = clamped
+    setCurrentIndex(clamped)
+  }
 
   useEffect(() => {
     const container = containerRef.current
@@ -140,26 +152,142 @@ export default function FeatureCarousel() {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (prefersReducedMotion) return
 
-    // Pin the feature section with GSAP ScrollTrigger
-    const trigger = ScrollTrigger.create({
+    const STEP_DEBOUNCE_MS = 650
+    const WHEEL_MIN_DELTA = 8
+    const TOUCH_MIN_DELTA = 40
+
+    // Freeze the page and lock scrolling while the deck is active.
+    const engage = () => {
+      // Only lock when the whole deck fits in the viewport (small screens
+      // keep free scrolling so the controls stay reachable).
+      if (container.offsetHeight > window.innerHeight) return
+      lockedRef.current = true
+      setLocked(true)
+      lenisHolder.instance?.stop()
+    }
+
+    // Release the lock and continue scrolling past the deck.
+    const release = (direction: 'up' | 'down') => {
+      if (!lockedRef.current) return
+      lockedRef.current = false
+      setLocked(false)
+      const lenis = lenisHolder.instance
+      lenis?.start()
+      const vh = window.innerHeight
+      if (direction === 'down') {
+        const deckTop = container.getBoundingClientRect().top + window.scrollY
+        lenis?.scrollTo(deckTop + container.offsetHeight + vh * 0.1, { duration: 1.1 })
+      } else {
+        lenis?.scrollTo(Math.max(0, window.scrollY - vh * 0.9), { duration: 1.1 })
+      }
+    }
+
+    const onWheel = (e: WheelEvent) => {
+      if (!lockedRef.current) return
+      const delta = e.deltaY
+      const now = Date.now()
+      const withinCooldown = now - lastStepAtRef.current < STEP_DEBOUNCE_MS
+      if (withinCooldown || Math.abs(delta) < WHEEL_MIN_DELTA) {
+        e.preventDefault()
+        return
+      }
+      const atEnd = indexRef.current >= SLIDES.length - 1
+      const atStart = indexRef.current <= 0
+      if ((delta > 0 && atEnd) || (delta < 0 && atStart)) {
+        release(delta > 0 ? 'down' : 'up')
+        return
+      }
+      e.preventDefault()
+      lastStepAtRef.current = now
+      goTo(indexRef.current + (delta > 0 ? 1 : -1))
+    }
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (lockedRef.current) touchStartYRef.current = e.touches[0].clientY
+    }
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!lockedRef.current) return
+      e.preventDefault()
+      const deltaY = touchStartYRef.current - e.touches[0].clientY
+      const now = Date.now()
+      if (Math.abs(deltaY) < TOUCH_MIN_DELTA || now - lastStepAtRef.current < STEP_DEBOUNCE_MS) {
+        return
+      }
+      touchStartYRef.current = e.touches[0].clientY
+      lastStepAtRef.current = now
+      const atEnd = indexRef.current >= SLIDES.length - 1
+      const atStart = indexRef.current <= 0
+      if ((deltaY > 0 && atEnd) || (deltaY < 0 && atStart)) {
+        release(deltaY > 0 ? 'down' : 'up')
+        return
+      }
+      goTo(indexRef.current + (deltaY > 0 ? 1 : -1))
+    }
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (!lockedRef.current) return
+      const forward = e.key === 'ArrowDown' || e.key === ' ' || e.key === 'PageDown'
+      const back = e.key === 'ArrowUp' || e.key === 'PageUp'
+      if (!forward && !back) return
+      e.preventDefault()
+      const now = Date.now()
+      if (now - lastStepAtRef.current < STEP_DEBOUNCE_MS) return
+      lastStepAtRef.current = now
+      if (forward) {
+        if (indexRef.current >= SLIDES.length - 1) release('down')
+        else goTo(indexRef.current + 1)
+      } else if (indexRef.current <= 0) {
+        release('up')
+      } else {
+        goTo(indexRef.current - 1)
+      }
+    }
+
+    // Engage the scroll-lock as soon as the deck reaches just below the
+    // sticky header (top += 80px) so its top bar stays fully visible, and
+    // release it if the user scrolls back above it.
+    const lockTrigger = ScrollTrigger.create({
       trigger: container,
-      start: 'top top+=90',
-      end: `+=${SLIDES.length * 450}`,
-      pin: true,
-      pinSpacing: true,
-      anticipatePin: 1,
-      scrub: 0.5,
-      onUpdate: (self) => {
-        const index = Math.min(
-          SLIDES.length - 1,
-          Math.floor(self.progress * SLIDES.length)
-        )
-        setCurrentIndex(index)
+      start: 'top top+=80',
+      onEnter: engage,
+      onLeaveBack: () => {
+        if (lockedRef.current) release('up')
       },
     })
 
+    // Gentle reveal the first time the deck scrolls into view.
+    const reveal = ScrollTrigger.create({
+      trigger: container,
+      start: 'top 82%',
+      once: true,
+      onEnter: () => {
+        if (!cardRef.current) return
+        gsap.fromTo(
+          cardRef.current,
+          { opacity: 0, y: 24 },
+          { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' }
+        )
+      },
+    })
+
+    window.addEventListener('wheel', onWheel, { passive: false })
+    window.addEventListener('touchstart', onTouchStart, { passive: true })
+    window.addEventListener('touchmove', onTouchMove, { passive: false })
+    window.addEventListener('keydown', onKeyDown)
+
     return () => {
-      trigger.kill()
+      lockTrigger.kill()
+      reveal.kill()
+      window.removeEventListener('wheel', onWheel)
+      window.removeEventListener('touchstart', onTouchStart)
+      window.removeEventListener('touchmove', onTouchMove)
+      window.removeEventListener('keydown', onKeyDown)
+      if (lockedRef.current) {
+        lockedRef.current = false
+        setLocked(false)
+        lenisHolder.instance?.start()
+      }
     }
   }, [])
 
@@ -174,6 +302,7 @@ export default function FeatureCarousel() {
   }, [currentIndex])
 
   const current = SLIDES[currentIndex]
+  const isLastSlide = currentIndex === SLIDES.length - 1
 
   return (
     <div
@@ -183,11 +312,11 @@ export default function FeatureCarousel() {
       {/* Top Carousel Bar: Slide Indicators & Control Badges */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-[#E8E2D5] pb-4">
         <div className="flex items-center gap-3">
-          <span className="text-xs font-bold uppercase tracking-wider text-neutral-500">
+          <span className="text-sm font-bold uppercase tracking-wider text-neutral-500">
             Feature Showcase ({currentIndex + 1} of {SLIDES.length})
           </span>
           <span
-            className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold ${current.tagColor}`}
+            className={`rounded-full border px-2.5 py-0.5 text-xs font-bold ${current.tagColor}`}
           >
             {current.tag}
           </span>
@@ -195,16 +324,18 @@ export default function FeatureCarousel() {
 
         <div className="flex items-center gap-2">
           {/* Scroll Lock Pill */}
-          <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-[#123524]/10 px-3 py-1 text-[11px] font-semibold text-[#123524]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#123524] animate-pulse" />
-            Scroll Locked Deck
+          <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-[#123524]/10 px-3 py-1 text-sm font-semibold text-[#123524]">
+            <span
+              className={`h-1.5 w-1.5 rounded-full bg-[#123524] ${locked ? 'animate-pulse' : ''}`}
+            />
+            {locked ? 'Scroll Locked Deck' : 'Interactive Deck'}
           </span>
 
           {/* Manual Controls */}
           <div className="flex items-center gap-1">
             <button
               type="button"
-              onClick={() => setCurrentIndex((prev) => (prev - 1 + SLIDES.length) % SLIDES.length)}
+              onClick={() => goTo((indexRef.current - 1 + SLIDES.length) % SLIDES.length)}
               className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#E8E2D5] bg-[#FDFBF7] text-neutral-700 hover:bg-[#123524] hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#123524]"
               aria-label="Previous feature"
             >
@@ -212,7 +343,7 @@ export default function FeatureCarousel() {
             </button>
             <button
               type="button"
-              onClick={() => setCurrentIndex((prev) => (prev + 1) % SLIDES.length)}
+              onClick={() => goTo((indexRef.current + 1) % SLIDES.length)}
               className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#E8E2D5] bg-[#FDFBF7] text-neutral-700 hover:bg-[#123524] hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#123524]"
               aria-label="Next feature"
             >
@@ -229,12 +360,12 @@ export default function FeatureCarousel() {
           <h3 className="text-2xl font-bold tracking-tight text-[#123524] sm:text-3xl">
             {current.title}
           </h3>
-          <p className="text-sm font-semibold text-[#C05621]">{current.subtitle}</p>
-          <p className="text-sm leading-relaxed text-neutral-700">{current.description}</p>
+          <p className="text-base font-semibold text-[#C05621]">{current.subtitle}</p>
+          <p className="text-base leading-relaxed text-neutral-700">{current.description}</p>
 
           <ul className="space-y-2.5 pt-2">
             {current.bullets.map((bullet, i) => (
-              <li key={i} className="flex items-start gap-2 text-xs font-medium text-neutral-800">
+              <li key={i} className="flex items-start gap-2 text-base font-medium text-neutral-800">
                 <span className="mt-0.5 font-bold text-[#123524]">✓</span>
                 <span>{bullet}</span>
               </li>
@@ -246,9 +377,9 @@ export default function FeatureCarousel() {
         <div className="lg:col-span-6">
           <div className="rounded-2xl border border-[#E8E2D5] bg-[#FDFBF7] p-6 shadow-sm">
             <div className="mb-4 flex items-center justify-between border-b border-[#E8E2D5] pb-3">
-              <span className="text-xs font-bold text-[#123524]">{current.visualContent.heading}</span>
+              <span className="text-base font-bold text-[#123524]">{current.visualContent.heading}</span>
               <span
-                className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold ${current.visualContent.badgeColor}`}
+                className={`rounded-full border px-2.5 py-0.5 text-xs font-bold ${current.visualContent.badgeColor}`}
               >
                 {current.visualContent.badge}
               </span>
@@ -259,7 +390,7 @@ export default function FeatureCarousel() {
               {current.visualContent.stats.map((stat, idx) => (
                 <div
                   key={idx}
-                  className={`flex items-center justify-between rounded-lg p-3 text-xs ${
+                  className={`flex items-center justify-between rounded-lg p-3 text-base ${
                     stat.highlight
                       ? 'border border-[#123524]/30 bg-[#123524]/10 text-[#123524] font-semibold'
                       : 'border border-[#E8E2D5] bg-white text-neutral-700'
@@ -273,7 +404,7 @@ export default function FeatureCarousel() {
 
             {/* Accessibility Visual Description */}
             <div className="mt-4 border-t border-[#E8E2D5] pt-3">
-              <p className="text-[11px] leading-snug italic text-neutral-600">
+              <p className="text-sm leading-snug italic text-neutral-600">
                 <span className="font-semibold text-[#123524] not-italic">
                   Visual Accessibility Note:
                 </span>{' '}
@@ -290,7 +421,7 @@ export default function FeatureCarousel() {
           <button
             key={slide.id}
             type="button"
-            onClick={() => setCurrentIndex(index)}
+            onClick={() => goTo(index)}
             className={`h-2.5 transition-all ${
               index === currentIndex
                 ? 'w-8 rounded-full bg-[#123524]'
@@ -299,6 +430,23 @@ export default function FeatureCarousel() {
             aria-label={`Go to slide ${index + 1}: ${slide.title}`}
           />
         ))}
+      </div>
+
+      {/* Scroll-Lock Hint */}
+      <div className="mt-4 flex min-h-6 items-center justify-center text-sm">
+        {locked ? (
+          isLastSlide ? (
+            <span className="inline-flex items-center gap-1.5 font-semibold text-[#C05621]">
+              <span aria-hidden="true" className="animate-bounce">↓</span>
+              Keep scrolling to continue to the personas
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 font-medium text-neutral-600">
+              <span aria-hidden="true" className="animate-bounce">↓</span>
+              Scroll to step through the deck · Scroll up to go back
+            </span>
+          )
+        ) : null}
       </div>
     </div>
   )

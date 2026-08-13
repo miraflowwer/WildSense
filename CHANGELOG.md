@@ -5,6 +5,18 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v0.9.1] — 2026-08-13 — Landing Page Demo Button, Scroll-Lock & Readability Fixes
+
+### Fixed
+
+- **Demo Button No Longer Fails with Supabase Connected**: The landing page's demo entry points ("Explore Interactive Demo", "Try Live Demo", persona workflow buttons) called `signIn` with a hardcoded wrong password (`demo1234`) instead of the real demo credentials (`GAHM-demo-2026`). With Supabase configured, the login returned "Invalid login credentials" and demo mode never launched. `LandingView.tsx` now imports `DEMO_EMAIL` / `DEMO_PASSWORD` from `src/auth/demoAccount.ts` (the single source of truth) so every demo CTA works both offline and with the server reachable.
+- **Janky Scroll-Locked Feature Showcase Reimplemented**: The previous GSAP `ScrollTrigger.create({ pin: true, scrub: 0.5 })` deck froze the page in place via a fixed-position pin + scrub, which combined with Lenis caused stuttery, rubber-banding scroll while the deck was active. The scroll-lock in `FeatureCarousel.tsx` is now implemented as a true lock: when the deck scrolls to the top of the viewport, `lenis.stop()` freezes the page and scrolling becomes slide stepping (wheel / touch / arrow keys) with a 650ms debounce so each gesture advances exactly one slide. Scrolling past the last slide (or back past the first) cleanly releases the lock and Lenis animates on to the next section. The lock engages just below the sticky header (`start: 'top top+=80'`) so the deck's top bar ("Feature Showcase 1 of 4", tag, arrows) stays fully visible. The deck still supports its manual arrows and progress dots, gains a live "Scroll Locked Deck" pill and a scroll-hint footer ("Scroll to step through the deck"), and the lock is skipped on small screens where the deck does not fit the viewport. Lenis is shared with the deck via a small `src/lib/lenisHolder.ts` module.
+- **Lenis Smooth Scroll Double-RAF Stutter**: Lenis v1 starts its own `requestAnimationFrame` loop by default while the code also drove it through `gsap.ticker`, animating the same scroll twice per frame. `LandingView.tsx` now constructs Lenis with `autoRaf: false` (driven solely by the GSAP ticker) and removes the ticker callback on cleanup, keeping the clean smooth-scroll feel without the jank.
+
+### Changed
+
+- **Larger, More Readable Landing Page Typography**: Increased font sizes across `LandingView.tsx` and `FeatureCarousel.tsx` — body paragraphs `text-sm` → `text-base`, hero paragraph `text-base` → `text-lg`, small labels/captions `text-[10px]`/`text-[11px]`/`text-xs` → `text-sm`/`text-base`, section eyebrows → `text-sm`, stat/label captions and checkmark badges enlarged, persona and CTA button text bumped to `text-base`, and accessibility section headings scaled up — without breaking the one-screen-fit dashboard layout.
+
 ## [v0.9.0] — 2026-08-13 — First-Time User Landing Page, Cream White Overhaul, GSAP Animations & Lenis Smooth Scroll
 
 ### Added
