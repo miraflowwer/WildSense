@@ -38,9 +38,16 @@ const STEPS: Step[] = [
     placement: 'left',
   },
   {
+    target: '[data-tour="contributing-signals"]',
+    content:
+      'Review contributing signal points (+25 proximity to farms, +20 movement toward boundary, +15 historical hotspot) that calculate the conflict risk score.',
+    skipScroll: true,
+    placement: 'left',
+  },
+  {
     target: '[data-tour="btn-acknowledge"]',
     content:
-      'Review signal points (+25 proximity, +20 movement, +15 hotspot). Click Acknowledge to claim ownership and track response time.',
+      'Click Acknowledge to claim ownership of EVT-1042 and track response time.',
     skipScroll: true,
     placement: 'left',
   },
@@ -57,11 +64,11 @@ const STEPS: Step[] = [
     placement: 'left',
   },
   {
-    target: '[data-tour="btn-send-sms"]',
+    target: '[data-tour="sms-modal"]',
     content:
-      'Toggle language (English/Hindi) and click Send warning to simulate a community alert without broadcasting exact animal coordinates.',
+      'The SMS Simulator allows you to preview composed warnings, toggle language (English/Hindi), and send alerts to local residents without revealing exact animal coordinates. Toggle language or click Send warning to proceed.',
     skipScroll: true,
-    placement: 'top',
+    placement: 'center',
   },
   {
     target: '[data-tour="btn-close-record"]',
@@ -79,9 +86,22 @@ const STEPS: Step[] = [
   {
     target: '[data-tour="uncertainty-warning"]',
     content:
-      'Notice the amber uncertainty warning: GAHM penalizes missing data instead of guessing, keeping human operators informed and in full control. Tour complete!',
+      'Notice the amber uncertainty warning: GAHM penalizes missing data instead of guessing, keeping human operators informed and in full control.',
     skipScroll: true,
     placement: 'left',
+  },
+  {
+    target: '[data-tour="ops-bar"]',
+    content: (
+      <div className="space-y-1.5">
+        <div className="text-sm font-bold text-neutral-900">Guided Tour Complete!</div>
+        <p className="text-xs leading-relaxed text-neutral-600">
+          You've explored GAHM's risk engine, ranger dispatch, community SMS warning simulator, and uncertainty penalty system.
+        </p>
+      </div>
+    ),
+    skipScroll: true,
+    placement: 'bottom',
   },
 ]
 
@@ -110,13 +130,14 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
         break
 
       case 2:
-        // Step 3 of 10: target alert-EVT-1042 in AlertList
+        // Step 3 of 12: target alert-EVT-1042 in AlertList
         if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
         if (state.selectedId !== null) dispatch({ type: 'SELECT_ALERT', id: '' })
         break
 
       case 3:
-        // Step 4 of 10: target btn-acknowledge in AlertPanel (ensure button is enabled!)
+      case 4:
+        // Step 4 & 5 of 12: target contributing-signals & btn-acknowledge in AlertPanel
         if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
         if (state.selectedId !== 'EVT-1042') dispatch({ type: 'SELECT_ALERT', id: 'EVT-1042' })
         if (evt1042.status !== 'awaiting_review') {
@@ -124,43 +145,48 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
         }
         break
 
-      case 4:
-        // Step 5 of 10: target btn-contact-ranger in AlertPanel
+      case 5:
+        // Step 6 of 12: target btn-contact-ranger in AlertPanel
         if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
         if (state.selectedId !== 'EVT-1042') dispatch({ type: 'SELECT_ALERT', id: 'EVT-1042' })
         if (evt1042.status === 'awaiting_review') dispatch({ type: 'ACKNOWLEDGE', id: 'EVT-1042' })
         break
 
-      case 5:
-        // Step 6 of 10: target btn-prepare-sms in AlertPanel
+      case 6:
+        // Step 7 of 12: target btn-prepare-sms in AlertPanel
         if (state.selectedId !== 'EVT-1042') dispatch({ type: 'SELECT_ALERT', id: 'EVT-1042' })
         if (evt1042.status === 'awaiting_review') dispatch({ type: 'ACKNOWLEDGE', id: 'EVT-1042' })
         if (!evt1042.rangerContactedAt) dispatch({ type: 'CONTACT_RANGER', id: 'EVT-1042' })
         if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
         break
 
-      case 6:
-        // Step 7 of 10: target btn-send-sms in SmsSimulator modal
+      case 7:
+        // Step 8 of 12: target sms-modal in SmsSimulator modal
         if (state.selectedId !== 'EVT-1042') dispatch({ type: 'SELECT_ALERT', id: 'EVT-1042' })
         if (state.sms.openEventId !== 'EVT-1042') dispatch({ type: 'OPEN_SMS', id: 'EVT-1042' })
         break
 
-      case 7:
-        // Step 8 of 10: target btn-close-record in AlertPanel
+      case 8:
+        // Step 9 of 12: target btn-close-record in AlertPanel
         if (state.selectedId !== 'EVT-1042') dispatch({ type: 'SELECT_ALERT', id: 'EVT-1042' })
         if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
         break
 
-      case 8:
-        // Step 9 of 10: target alert-EVT-1045 in AlertList
+      case 9:
+        // Step 10 of 12: target alert-EVT-1045 in AlertList
         if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
         if (state.selectedId !== null) dispatch({ type: 'SELECT_ALERT', id: '' })
         break
 
-      case 9:
-        // Step 10 of 10: target uncertainty-warning in AlertPanel
+      case 10:
+        // Step 11 of 12: target uncertainty-warning in AlertPanel
         if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
         if (state.selectedId !== 'EVT-1045') dispatch({ type: 'SELECT_ALERT', id: 'EVT-1045' })
+        break
+
+      case 11:
+        // Step 12 of 12: final completion prompt
+        if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
         break
     }
   }, [
@@ -181,24 +207,24 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
 
     if (stepIndex === 2 && state.selectedId === 'EVT-1042') {
       setStepIndex(3)
-    } else if (stepIndex === 3 && evt1042.status === 'under_review') {
-      setStepIndex(4)
-    } else if (stepIndex === 4 && evt1042.rangerContactedAt != null) {
+    } else if (stepIndex === 4 && evt1042.status === 'under_review') {
       setStepIndex(5)
-    } else if (stepIndex === 5 && state.sms.openEventId === 'EVT-1042') {
+    } else if (stepIndex === 5 && evt1042.rangerContactedAt != null) {
       setStepIndex(6)
-    } else if (stepIndex === 6 && !state.sms.openEventId && state.sms.sentAt != null) {
+    } else if (stepIndex === 6 && state.sms.openEventId === 'EVT-1042') {
       setStepIndex(7)
+    } else if (stepIndex === 7 && !state.sms.openEventId && state.sms.sentAt != null) {
+      setStepIndex(8)
     } else if (
-      stepIndex === 7 &&
+      stepIndex === 8 &&
       (evt1042.status === 'resolved' || evt1042.status === 'dismissed')
     ) {
       if (state.selectedId) {
         dispatch({ type: 'SELECT_ALERT', id: '' })
       }
-      setStepIndex(8)
-    } else if (stepIndex === 8 && state.selectedId === 'EVT-1045') {
       setStepIndex(9)
+    } else if (stepIndex === 9 && state.selectedId === 'EVT-1045') {
+      setStepIndex(10)
     }
   }, [
     state.selectedId,
@@ -211,7 +237,7 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
     dispatch,
   ])
 
-  // Synchronize lockdown CSS class and active target attribute for current stepIndex
+  // Synchronize lockdown CSS class, active target attribute, and auto-scroll for current stepIndex
   useEffect(() => {
     if (!runTour) {
       document.body.classList.remove('tour-active')
@@ -233,13 +259,7 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
         const activeEl = document.querySelector(targetSel)
         if (activeEl) {
           activeEl.setAttribute('data-tour-active', 'true')
-        }
-      }
-
-      if (stepIndex === 6) {
-        const smsModal = document.querySelector('[data-tour="sms-modal"]')
-        if (smsModal) {
-          smsModal.setAttribute('data-tour-active', 'true')
+          activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
         }
       }
     }
@@ -321,6 +341,9 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
       onEvent={handleJoyrideEvent}
       continuous
       loaderComponent={null}
+      locale={{
+        last: 'Finish',
+      }}
       options={{
         primaryColor: '#059669',
         textColor: '#171717',
@@ -331,11 +354,11 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
         overlayClickAction: false,
         closeButtonAction: 'skip',
         dismissKeyAction: 'close',
-        width: 310,
+        width: 330,
       }}
       styles={{
         tooltip: {
-          width: '310px',
+          width: '330px',
         },
         buttonPrimary: {
           backgroundColor: '#059669',

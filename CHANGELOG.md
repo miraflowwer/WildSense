@@ -5,12 +5,16 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
-## [v0.7.4] — 2026-08-13 — Guided Tour Background Interaction Lockdown
+## [v0.7.4] — 2026-08-13 — Guided Tour Background Interaction Lockdown & Tour Step Refinements
 
 ### Added
 
 - **Guided Tour Interaction Lockdown**: Prohibited user interactions with all greyed-out UI elements outside the active tour step target while the guided tour is running (`runTour === true`).
-- **Target Element Attribute Synchronization**: Dynamically synchronized `data-tour-active="true"` on active step targets (and SMS modal container for step 6) to permit pointer events strictly for the active target and Joyride portal tooltip (`#react-joyride-portal`).
+- **Target Element Attribute Synchronization**: Dynamically synchronized `data-tour-active="true"` on active step targets to permit pointer events strictly for the active target and Joyride portal tooltip (`#react-joyride-portal`).
+- **Contributing Signals Target & Auto-Scroll**: Added dedicated step 4 highlighting `[data-tour="contributing-signals"]` with automatic smooth scrolling inside `AlertPanel`.
+- **Full SMS Simulator Modal Highlight**: Updated SMS simulator tour step to highlight `[data-tour="sms-modal"]` (the entire modal card), providing full visibility of composed warning text and language toggle options with working Back/Next navigation.
+- **Amber Uncertainty Warning Auto-Scroll**: Configured automatic scrolling down to `[data-tour="uncertainty-warning"]` so the amber warning card is clearly visible and highlighted, removing premature completion text.
+- **Standalone Tour Completion Step**: Created a standalone final step (step 12) with custom completion prompt separated from the amber warning.
 - **Pointer-Events & Cursor Styling**: Applied `pointer-events: none !important; cursor: not-allowed !important;` to background buttons, inputs, links, and Leaflet map controls/panes under `.tour-active`, restoring full interactivity immediately when the tour is finished, skipped, or closed via X button.
 - **Keyboard Focus Trap**: Added a keydown listener to trap `Tab` focus within the active tour elements while the tour is running.
 
