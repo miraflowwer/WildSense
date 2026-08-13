@@ -29,6 +29,7 @@ const STEPS: Step[] = [
     skipBeacon: true,
     skipScroll: true,
     placement: 'bottom-start',
+    offset: 40,
   },
   {
     target: '[data-tour="alert-EVT-1042"]',
@@ -343,6 +344,9 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
       loaderComponent={null}
       locale={{
         last: 'Finish',
+      }}
+      floatingOptions={{
+        shiftOptions: { padding: 24 },
       }}
       options={{
         primaryColor: '#059669',
