@@ -5,6 +5,13 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v0.7.3] — 2026-08-13 — Protected Area Boundary Color & Tour Text Styling
+
+### Changed
+
+- **Protected Area Boundary Color**: Updated reserve protected boundary polygon line to emerald green (`#16a34a`) with styled transparent green fill (`rgba(22,163,74,0.18)`), establishing a natural reserve boundary color distinct from all map circle markers (red high-risk / offline sensors, amber medium-risk / farm zones, blue low-risk / online sensors, purple communities).
+- **Demo Tour Text Styling**: Styled tour step description text in `DemoTour.tsx` with color-coded text badges (`protected boundaries (green)` in emerald text), matching map polygon styling.
+
 ## [v0.7.2] — 2026-08-13 — Map Territory Overlay & Contrast Color Refactor
 
 ### Changed

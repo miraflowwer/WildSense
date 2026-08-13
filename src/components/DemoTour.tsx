@@ -167,8 +167,13 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
     },
     {
       target: '[data-tour="map-view"]',
-      content:
-        'Interactive reserve map displaying farm zones (amber), protected boundaries (green), communities (purple), sensors, and detection movement trails.',
+      content: (
+        <span>
+          Interactive reserve map displaying farm zones (<span className="font-semibold text-amber-600">amber</span>),{' '}
+          <span className="font-semibold text-emerald-600">protected boundaries (green)</span>,{' '}
+          communities (<span className="font-semibold text-purple-600">purple</span>), sensors, and detection movement trails.
+        </span>
+      ),
       skipBeacon: true,
       skipScroll: true,
       placement: 'center',

@@ -120,9 +120,9 @@ export default function MapView() {
     zones.forEach((z: ZonePolygon) => {
       const pts: L.LatLngTuple[] = z.polygon.map((p): L.LatLngTuple => [p[0], p[1]])
       L.polygon(pts, {
-        fillColor: 'rgba(51,65,85,0.12)',
+        fillColor: 'rgba(22,163,74,0.18)',
         fillOpacity: 1,
-        color: '#475569',
+        color: '#16a34a',
         weight: 2,
         dashArray: '6 6',
       }).addTo(staticGroup)
