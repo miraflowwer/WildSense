@@ -41,9 +41,9 @@ function LocationPickerMap({ initial = null, onConfirm, onClose }: LocationPicke
     zones.forEach((z: ZonePolygon) => {
       const pts: L.LatLngTuple[] = z.polygon.map((p): L.LatLngTuple => [p[0], p[1]])
       L.polygon(pts, {
-        fillColor: 'rgba(22,163,74,0.18)',
+        fillColor: 'rgba(234,179,8,0.18)',
         fillOpacity: 1,
-        color: '#16a34a',
+        color: '#ca8a04',
         weight: 2,
         dashArray: '6 6',
       }).addTo(staticGroup)

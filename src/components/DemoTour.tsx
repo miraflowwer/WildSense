@@ -8,6 +8,83 @@ interface DemoTourProps {
   onFinishTour: () => void
 }
 
+const STEPS: Step[] = [
+  {
+    target: '[data-tour="ops-bar"]',
+    content:
+      'Monitor operational metrics at a glance: active high-risk incidents, unreviewed alerts, average response time, online sensors, and affected communities.',
+    skipBeacon: true,
+    skipScroll: true,
+    placement: 'bottom',
+  },
+  {
+    target: '[data-tour="map-view"]',
+    content: (
+      <span>
+        Interactive reserve map displaying farm zones (<span className="font-semibold text-amber-600">amber</span>),{' '}
+        <span className="font-semibold text-emerald-600">protected boundaries (green)</span>,{' '}
+        communities (<span className="font-semibold text-purple-600">purple</span>), sensors, and detection movement trails.
+      </span>
+    ),
+    skipBeacon: true,
+    skipScroll: true,
+    placement: 'center',
+  },
+  {
+    target: '[data-tour="alert-EVT-1042"]',
+    content:
+      'EVT-1042 is the flagship high-risk incident (87/100 Elephant group moving toward farm at dusk). Click EVT-1042 to inspect.',
+    skipScroll: true,
+    placement: 'left',
+  },
+  {
+    target: '[data-tour="btn-acknowledge"]',
+    content:
+      'Review signal points (+25 proximity, +20 movement, +15 hotspot). Click Acknowledge to claim ownership and track response time.',
+    skipScroll: true,
+    placement: 'left',
+  },
+  {
+    target: '[data-tour="btn-contact-ranger"]',
+    content: 'Click Contact ranger unit to log dispatch of field patrols.',
+    skipScroll: true,
+    placement: 'left',
+  },
+  {
+    target: '[data-tour="btn-prepare-sms"]',
+    content: 'Click Prepare community warning to launch the localized SMS simulator.',
+    skipScroll: true,
+    placement: 'left',
+  },
+  {
+    target: '[data-tour="btn-send-sms"]',
+    content:
+      'Toggle language (English/Hindi) and click Send warning to simulate a community alert without broadcasting exact animal coordinates.',
+    skipScroll: true,
+    placement: 'top',
+  },
+  {
+    target: '[data-tour="btn-close-record"]',
+    content:
+      'Close the SMS simulator modal when done, then click Close & record outcome to save field results and response duration.',
+    skipScroll: true,
+    placement: 'left',
+  },
+  {
+    target: '[data-tour="alert-EVT-1045"]',
+    content: 'Now click EVT-1045 to explore how GAHM handles uncertain or missing sensor data.',
+    skipScroll: true,
+    placement: 'left',
+  },
+  {
+    target: '[data-tour="uncertainty-warning"]',
+    content:
+      'Notice the amber uncertainty warning: GAHM penalizes missing data instead of guessing, keeping human operators informed and in full control. Tour complete!',
+    skipScroll: true,
+    placement: 'left',
+  },
+]
+
 export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
   const { state, dispatch } = useGahm()
   const [stepIndex, setStepIndex] = useState(0)
@@ -134,6 +211,84 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
     dispatch,
   ])
 
+  // Synchronize lockdown CSS class and active target attribute for current stepIndex
+  useEffect(() => {
+    if (!runTour) {
+      document.body.classList.remove('tour-active')
+      document.querySelectorAll('[data-tour-active]').forEach((el) => {
+        el.removeAttribute('data-tour-active')
+      })
+      return
+    }
+
+    document.body.classList.add('tour-active')
+
+    const updateActiveTarget = () => {
+      document.querySelectorAll('[data-tour-active]').forEach((el) => {
+        el.removeAttribute('data-tour-active')
+      })
+
+      const targetSel = STEPS[stepIndex]?.target
+      if (typeof targetSel === 'string') {
+        const activeEl = document.querySelector(targetSel)
+        if (activeEl) {
+          activeEl.setAttribute('data-tour-active', 'true')
+        }
+      }
+
+      if (stepIndex === 6) {
+        const smsModal = document.querySelector('[data-tour="sms-modal"]')
+        if (smsModal) {
+          smsModal.setAttribute('data-tour-active', 'true')
+        }
+      }
+    }
+
+    updateActiveTarget()
+    const t1 = setTimeout(updateActiveTarget, 50)
+    const t2 = setTimeout(updateActiveTarget, 150)
+
+    return () => {
+      clearTimeout(t1)
+      clearTimeout(t2)
+      document.body.classList.remove('tour-active')
+      document.querySelectorAll('[data-tour-active]').forEach((el) => {
+        el.removeAttribute('data-tour-active')
+      })
+    }
+  }, [runTour, stepIndex])
+
+  // Prevent tabbing out of active tour elements while tour is running
+  useEffect(() => {
+    if (!runTour) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return
+
+      const activeEl = document.activeElement
+      const portal = document.querySelector('#react-joyride-portal')
+      const tourTarget = document.querySelector('[data-tour-active]')
+
+      const isInsidePortal = portal?.contains(activeEl)
+      const isInsideTarget = tourTarget?.contains(activeEl)
+
+      if (!isInsidePortal && !isInsideTarget) {
+        e.preventDefault()
+        const joyrideBtn = portal?.querySelector<HTMLElement>(
+          'button[data-action="primary"], button[data-action="next"], button'
+        )
+        if (joyrideBtn) {
+          joyrideBtn.focus()
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown, true)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown, true)
+    }
+  }, [runTour])
+
   const handleJoyrideEvent = (data: EventData) => {
     const { action, index, status, type } = data
     if (
@@ -156,88 +311,11 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
     }
   }
 
-  const steps: Step[] = [
-    {
-      target: '[data-tour="ops-bar"]',
-      content:
-        'Monitor operational metrics at a glance: active high-risk incidents, unreviewed alerts, average response time, online sensors, and affected communities.',
-      skipBeacon: true,
-      skipScroll: true,
-      placement: 'bottom',
-    },
-    {
-      target: '[data-tour="map-view"]',
-      content: (
-        <span>
-          Interactive reserve map displaying farm zones (<span className="font-semibold text-amber-600">amber</span>),{' '}
-          <span className="font-semibold text-emerald-600">protected boundaries (green)</span>,{' '}
-          communities (<span className="font-semibold text-purple-600">purple</span>), sensors, and detection movement trails.
-        </span>
-      ),
-      skipBeacon: true,
-      skipScroll: true,
-      placement: 'center',
-    },
-    {
-      target: '[data-tour="alert-EVT-1042"]',
-      content:
-        'EVT-1042 is the flagship high-risk incident (87/100 Elephant group moving toward farm at dusk). Click EVT-1042 to inspect.',
-      skipScroll: true,
-      placement: 'left',
-    },
-    {
-      target: '[data-tour="btn-acknowledge"]',
-      content:
-        'Review signal points (+25 proximity, +20 movement, +15 hotspot). Click Acknowledge to claim ownership and track response time.',
-      skipScroll: true,
-      placement: 'left',
-    },
-    {
-      target: '[data-tour="btn-contact-ranger"]',
-      content: 'Click Contact ranger unit to log dispatch of field patrols.',
-      skipScroll: true,
-      placement: 'left',
-    },
-    {
-      target: '[data-tour="btn-prepare-sms"]',
-      content: 'Click Prepare community warning to launch the localized SMS simulator.',
-      skipScroll: true,
-      placement: 'left',
-    },
-    {
-      target: '[data-tour="btn-send-sms"]',
-      content:
-        'Toggle language (English/Hindi) and click Send warning to simulate a community alert without broadcasting exact animal coordinates.',
-      skipScroll: true,
-      placement: 'top',
-    },
-    {
-      target: '[data-tour="btn-close-record"]',
-      content:
-        'Close the SMS simulator modal when done, then click Close & record outcome to save field results and response duration.',
-      skipScroll: true,
-      placement: 'left',
-    },
-    {
-      target: '[data-tour="alert-EVT-1045"]',
-      content: 'Now click EVT-1045 to explore how GAHM handles uncertain or missing sensor data.',
-      skipScroll: true,
-      placement: 'left',
-    },
-    {
-      target: '[data-tour="uncertainty-warning"]',
-      content:
-        'Notice the amber uncertainty warning: GAHM penalizes missing data instead of guessing, keeping human operators informed and in full control. Tour complete!',
-      skipScroll: true,
-      placement: 'left',
-    },
-  ]
-
   if (!runTour) return null
 
   return (
     <Joyride
-      steps={steps}
+      steps={STEPS}
       run={runTour}
       stepIndex={stepIndex}
       onEvent={handleJoyrideEvent}
@@ -283,4 +361,3 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
     />
   )
 }
-

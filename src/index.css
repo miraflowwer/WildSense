@@ -1,1 +1,38 @@
 @import "tailwindcss";
+
+/* Guided Tour Lockdown: prohibit interaction with anything greyed out */
+body.tour-active {
+  user-select: none;
+}
+
+body.tour-active input,
+body.tour-active button,
+body.tour-active a,
+body.tour-active select,
+body.tour-active textarea,
+body.tour-active [role="button"],
+body.tour-active [tabindex],
+body.tour-active .leaflet-container,
+body.tour-active .leaflet-interactive,
+body.tour-active .leaflet-control {
+  pointer-events: none !important;
+  cursor: not-allowed !important;
+}
+
+/* Allow interaction strictly for Joyride portal (tooltip, buttons, X) and active step target */
+#react-joyride-portal,
+#react-joyride-portal *,
+[data-tour-active],
+[data-tour-active] * {
+  pointer-events: auto !important;
+}
+
+body.tour-active [data-tour-active] button,
+body.tour-active [data-tour-active] input,
+body.tour-active [data-tour-active] a,
+body.tour-active [data-tour-active] [role="button"],
+#react-joyride-portal button,
+#react-joyride-portal a,
+#react-joyride-portal [role="button"] {
+  cursor: pointer !important;
+}
