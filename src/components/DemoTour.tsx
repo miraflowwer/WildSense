@@ -444,7 +444,7 @@ export default function DemoTour({
       return
     }
 
-    if (type === 'step:after' || action === 'next' || action === 'prev') {
+    if (type === 'step:after') {
       if (action === 'next') {
         setStepIndex(index + 1)
       } else if (action === 'prev') {
