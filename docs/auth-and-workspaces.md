@@ -1,6 +1,7 @@
 # Auth & User Workspaces
 
-_Audience: developers. The agreed security plan lives in
+_Audience: developers. The agreed
+security plan lives in
 [`docs/implementations/improved-auth-security.md`](../../docs/implementations/improved-auth-security.md)
 (read it before touching `src/auth/`); the historical backend plan is in
 [`docs/implementations/auth-and-user-workspaces.md`](../../docs/implementations/auth-and-user-workspaces.md)
@@ -72,3 +73,4 @@ screen exposes them through the "Try the demo" card.
 The store dispatches actions first (instant UI) and writes through in the
 background; failures flip `notPersisted` so the UI can indicate offline-ish
 state. See [`data-model.md`](data-model.md) for the action → API mapping.
+

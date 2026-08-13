@@ -1,7 +1,7 @@
 # GAHM in Plain Language
 
-_Audience: judges, mentors, and anyone new to the project — no code required.
-For the full product spec, see
+_Audience: users, judges, mentors, and anyone new to the project — no code
+required. For the full product spec, see
 [`docs/implementations/initializations.md`](../../docs/implementations/initializations.md)._
 
 ## The problem
@@ -79,3 +79,4 @@ dusk, moving toward farmland, in an area with a history of conflict — the engi
 turns it red (**87/100, High**) and explains every contributing factor. Same
 species, same day. **Context changes everything** — that contrast is the whole
 product in one minute.
+

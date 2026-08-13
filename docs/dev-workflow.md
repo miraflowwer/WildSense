@@ -1,6 +1,7 @@
 # Developer Workflow
 
-_Audience: developers. This is the app-side companion to
+_Audience: developers. This is
+the app-side companion to
 [`docs/implementations/developer-menu.md`](../../docs/implementations/developer-menu.md)
 (the team's detailed `gahm.bat` reference). It is also the run/host/update
 quickstart for the repo; the full documentation index lives in
@@ -102,3 +103,4 @@ dashboard **last** (it stays live until then).
 - Map not rendering — OpenStreetMap tiles need internet; the rest of the app
   works offline.
 - Lint warnings (e.g. fast-refresh advice) don't fail `verify`; errors do.
+

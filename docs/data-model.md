@@ -1,6 +1,7 @@
 # Data Model & State
 
-_Audience: developers. Companion: [`architecture.md`](architecture.md) and
+_Audience: developers. Companion:
+[`architecture.md`](architecture.md) and
 [`auth-and-workspaces.md`](auth-and-workspaces.md) (persistence + RLS)._
 
 ## Shared types (`src/types.ts`)
@@ -102,3 +103,4 @@ Table columns are snake_case (e.g. `happened_at`, `movement_known`,
 scripted scenario: 8 events (EVT-1038…EVT-1046) — the flagship
 EVT-1042 (87/100 High) and the uncertainty-path EVT-1045. All of it stays
 badged "Demo data".
+

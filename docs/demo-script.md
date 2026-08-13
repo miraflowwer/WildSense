@@ -69,3 +69,4 @@ Total ≈ 1 minute. Slow sections at will — the flow is the story.
 | How do you handle bad data? | The uncertainty penalty lowers the score and the panel explains why — EVT-1045 demonstrates exactly that. |
 | Privacy? | Warnings never include exact wildlife coordinates, are short, local-language, low-literacy friendly, with opt-out; alerts are never prioritized by farm size. |
 | What would a pilot look like? | Phase 2 in the plan: one partner site, real detection feed, locally calibrated thresholds, community consent (see `initializations.md` §6). |
+

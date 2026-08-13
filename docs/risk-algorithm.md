@@ -1,6 +1,7 @@
 # Risk Algorithm
 
-_Audience: developers. The executable source of truth is
+_Audience: developers. The executable
+source of truth is
 [`src/engine/config.ts`](../src/engine/config.ts) — if this document ever
 disagrees with it, **the code wins**. The scoring implementation lives in
 [`src/engine/riskEngine.ts`](../src/engine/riskEngine.ts)._
@@ -103,3 +104,4 @@ EVT-1041 and EVT-1044 are elephants deep inside the reserve (≥ 9.6 km from
 farms, no conflict history, clear daytime weather): both land **Low** and stay
 green. Same species, same day as EVT-1042 — only the context differs. That
 contrast is the product's core message.
+

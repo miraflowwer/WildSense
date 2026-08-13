@@ -111,3 +111,4 @@ bundle. Initial load stays fast; the map appears after a brief fallback.
 weather/group tables. `engine/riskEngine.ts` implements scoring and the
 uncertainty penalty. See [`risk-algorithm.md`](risk-algorithm.md) for the full
 model and worked examples.
+
