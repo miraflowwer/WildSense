@@ -5,6 +5,20 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v0.9.0] — 2026-08-13 — First-Time User Landing Page, Cream White Overhaul, GSAP Animations & Lenis Smooth Scroll
+
+### Added
+
+- **Cream White Visual System (`#FDFBF7`)**: Rebuilt the landing page from scratch with a warm ivory cream background (`#FDFBF7`), deep forest emerald accents (`#123524`), warm clay/copper highlights (`#C05621`), crisp white card containers (`#FFFFFF`) with soft warm borders (`#E8E2D5`), and dark charcoal typography (`#1A202C`). Dark mode has been eliminated on the landing page in favor of an elegant botanical aesthetic.
+- **Lenis Smooth Scroll Engine**: Integrated Lenis smooth scrolling for buttery smooth inertial scrolling across desktop and mobile browsers, with automatic fallback for `prefers-reduced-motion: reduce`.
+- **GSAP ScrollTrigger Animation Engine**: Added GSAP entrance reveals and scroll-triggered animations across the Hero, SDG 15 Purpose section, Persona Scroll-Break sections, and Ethics Charter.
+- **Pinned GSAP Scroll-Locked Feature Deck (`FeatureCarousel.tsx`)**: Re-engineered the feature showcase into a viewport-pinned slide deck (`ScrollTrigger.create({ pin: true, scrub: 0.5 })`). As the user scrolls vertically, the active feature card, stats, and visual diagram morph smoothly in place before releasing scroll to the next section.
+- **Stakeholder Persona Scroll-Break Sections**: Divided "Who is GAHM Built For" into 3 distinct full-viewport storytelling sections with scroll breaks for **Forest Rangers & Field Patrols**, **Wildlife Conservation Officers**, and **Fringe Agricultural Communities**. Features large high-impact visual artwork on the right and narrative storytelling on the left, animating into view with GSAP fade-in and scale-up scroll triggers.
+- **Refined Cream White Auth Modal (`AuthView.tsx`)**: Updated the overlay login/register modal styling to match the warm ivory cream and deep emerald palette.
+- **Ethical AI & Legal Charter**: Highlighted 5 core principles grounded in Indian law (*Wildlife (Protection) Act 1972*, *DPDP Act 2023*), including 0% GPS coordinate leakage in public SMS alerts, anti-economic bias, and honest uncertainty penalties.
+- **Universal Accessibility Guarantee**: High-contrast visual alert indicators for deaf/hearing-impaired users, visual pulse animations, responsive mobile touch targets (≥44px), and zero horizontal scroll leaks.
+- **Header Navigation Toggle**: Added an **About GAHM** button in the operational header for logged-in or demo users to navigate to the Landing Page at any time, with a sticky **Return to Dashboard** CTA.
+
 ## [v0.8.0] — 2026-08-13 — Logged-In User Tutorial, Uncapped Count Input, Clean Weather Labels & Environmental Risk Engine Spec
 
 ### Added

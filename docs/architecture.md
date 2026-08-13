@@ -12,6 +12,8 @@ wins._
 - **React 19 + TypeScript** — UI, strictly typed end to end.
 - **Vite 8** — dev server, build, `tsc -b` type-checking.
 - **Tailwind CSS v4** — styling (single `@import` in `src/index.css`).
+- **GSAP + ScrollTrigger** — scroll-locked pinned animations, card morphing, and section reveals on the Landing Page.
+- **Lenis** — smooth inertial scrolling engine for desktop and mobile.
 - **Leaflet + OpenStreetMap tiles** — the risk map (tiles need internet).
 - **Supabase (optional)** — auth + per-account persistence. Without env keys the
   app runs in offline demo mode.
@@ -22,7 +24,7 @@ wins._
 ```
 src/
 ├── main.tsx                    Entry: <AuthProvider><GahmProvider><App/>
-├── App.tsx                     Root layout: auth views vs. dashboard, lazy-loading
+├── App.tsx                     Root layout: landing view vs. auth vs. dashboard, lazy-loading
 ├── index.css                   Tailwind import (single line)
 ├── types.ts                    Shared types (events, store, SMS, geo objects)
 ├── engine/                     Product core
@@ -43,9 +45,11 @@ src/
 │   ├── demoAccount.ts          Shared demo credentials + hint text
 │   └── api.ts                  DB write-through helpers (events, sms_log)
 └── components/
+    ├── LandingView.tsx         Cream-white public landing page with GSAP animations & Lenis
+    ├── FeatureCarousel.tsx     GSAP ScrollTrigger pinned feature deck & slideshow
     ├── MapView.tsx             Leaflet map (React.lazy)
     ├── NewDetectionForm.tsx    Manual detection entry (React.lazy)
-    ├── AuthView.tsx            Sign-in/sign-up + demo card + forgot password
+    ├── AuthView.tsx            Sign-in/sign-up + modal support + demo card + forgot password
     ├── SetPassword.tsx         Reset-password screen
     ├── AlertList.tsx           Scrollable sorted/filtered alert list
     ├── AlertPanel.tsx          Event detail: signals breakdown, actions, status
@@ -53,6 +57,8 @@ src/
     ├── OperationsBar.tsx       Header KPIs + Reset demo
     ├── SmsSimulator.tsx        Simulated community warning composer
     ├── OutcomeForm.tsx         Close-event feedback form
+    ├── EthicsModal.tsx         Ethical AI & legal compliance modal
+    ├── RiskExplanationModal.tsx Environmental risk calculation spec
     └── LocationPickerMap.tsx   Leaflet picker for new-detection coordinates
 ```
 

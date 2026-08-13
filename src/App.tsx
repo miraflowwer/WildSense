@@ -3,7 +3,7 @@ import { useAuth } from './auth/authContext'
 import { useGahm } from './store/storeContext'
 import { findById } from './store/selectors'
 import { formatUtcClock } from './engine/geo'
-import AuthView from './components/AuthView'
+import LandingView from './components/LandingView'
 import SetPassword from './components/SetPassword'
 import OperationsBar from './components/OperationsBar'
 import FiltersBar from './components/FiltersBar'
@@ -35,6 +35,7 @@ function App() {
   const [adding, setAdding] = useState(false)
   const [showEthics, setShowEthics] = useState(false)
   const [showRiskModal, setShowRiskModal] = useState(false)
+  const [showLanding, setShowLanding] = useState(false)
   const [runTour, setRunTour] = useState(false)
   const [now, setNow] = useState(() => new Date())
   const [mobileTab, setMobileTab] = useState<'map' | 'alerts'>('map')
@@ -98,7 +99,11 @@ function App() {
   }
 
   if (!mode) {
-    return <AuthView />
+    return <LandingView />
+  }
+
+  if (showLanding) {
+    return <LandingView onReturnToDashboard={() => setShowLanding(false)} />
   }
 
   const selected = state.selectedId ? findById(state.events, state.selectedId) : undefined
@@ -139,6 +144,16 @@ function App() {
 
         {/* Right Nav / Actions */}
         <nav aria-label="Main Navigation" className="flex items-center gap-2 sm:gap-3">
+          {/* Landing Page Link */}
+          <button
+            type="button"
+            onClick={() => setShowLanding(true)}
+            aria-label="View GAHM landing page and ethics charter"
+            className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs font-medium text-neutral-200 transition-colors hover:bg-neutral-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900"
+          >
+            About GAHM
+          </button>
+
           {/* Primary Action: Log detection */}
           <button
             type="button"

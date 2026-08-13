@@ -14,7 +14,7 @@ put at risk, or animals face retaliation.
 
 ## What GAHM is
 
-GAHM is an **intelligence layer** that sits above existing detection feeds
+**GAHM** (**Global Actions on Habitats and Marines**) is an **intelligence layer** that sits above existing detection feeds
 (cameras, acoustic sensors, ranger reports). It is not another animal-detection
 model. Its differentiating question:
 

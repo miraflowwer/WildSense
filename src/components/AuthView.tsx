@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { FormEvent, KeyboardEvent } from 'react'
 import { useAuth } from '../auth/authContext'
 import { DEMO_EMAIL, DEMO_PASSWORD, DEMO_MODE_HINT } from '../auth/demoAccount'
@@ -26,7 +26,13 @@ function isEmailAddress(val: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)
 }
 
-function AuthView() {
+export interface AuthViewProps {
+  initialView?: 'signin' | 'signup'
+  isModal?: boolean
+  onClose?: () => void
+}
+
+function AuthView({ initialView = 'signin', isModal = false, onClose }: AuthViewProps = {}) {
   const {
     signIn,
     signUp,
@@ -37,8 +43,22 @@ function AuthView() {
     clearError,
   } = useAuth()
 
-  const [view, setView] = useState<'signin' | 'signup'>('signin')
+  const [view, setView] = useState<'signin' | 'signup'>(initialView)
   const [step, setStep] = useState<'form' | 'forgot' | 'forgot-sent'>('form')
+
+  useEffect(() => {
+    setView(initialView)
+  }, [initialView])
+
+  useEffect(() => {
+    if (!isModal || !onClose) return
+    const onKey = (ev: globalThis.KeyboardEvent) => {
+      if (ev.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [isModal, onClose])
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
@@ -138,10 +158,19 @@ function AuthView() {
     </div>
   ) : null
 
-  return (
-    <div className="flex h-dvh items-center justify-center overflow-hidden bg-neutral-900 p-4">
-      <div className="max-h-full w-full max-w-md overflow-y-auto overscroll-contain rounded-2xl bg-white p-4 shadow-2xl sm:p-6">
-        <BrandLockup />
+  const content = (
+    <div className="relative max-h-[90vh] w-full max-w-md overflow-y-auto overscroll-contain rounded-2xl border border-[#E8E2D5] bg-[#FDFBF7] p-5 shadow-2xl sm:p-7">
+      {isModal && onClose ? (
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close authentication modal"
+          className="absolute right-4 top-4 rounded-md p-1.5 text-neutral-400 hover:bg-[#F6F2EA] hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#123524]"
+        >
+          ✕
+        </button>
+      ) : null}
+      <BrandLockup />
 
         {signedOutNotice ? (
           <div
@@ -417,6 +446,24 @@ function AuthView() {
             : 'Your data is stored securely and used only for this application. By creating an account, you agree to the GAHM ethics and data policy.'}
         </p>
       </div>
+  )
+
+  if (isModal) {
+    return (
+      <div
+        className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
+        onClick={(e) => {
+          if (e.target === e.currentTarget && onClose) onClose()
+        }}
+      >
+        {content}
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex h-dvh items-center justify-center overflow-hidden bg-neutral-900 p-4">
+      {content}
     </div>
   )
 }
