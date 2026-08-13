@@ -179,7 +179,7 @@ function AlertPanel({ event }: { event: DetectionEvent }) {
 
           <p className="text-[11px] leading-relaxed text-neutral-500">
             Detection confidence measures how sure the model is that{' '}
-            <span className="capitalize">{event.species}</span> was identified correctly. Conflict risk
+            <span className="font-semibold">{formatSpeciesName(event.species)}</span> was identified correctly. Conflict risk
             measures how likely this event is to need attention given the surrounding context. They are
             separate numbers.
           </p>
