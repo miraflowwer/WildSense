@@ -21,7 +21,7 @@ function App() {
 
   if (isBooting) {
     return (
-      <div className="flex h-screen items-center justify-center bg-neutral-900 text-white">
+      <div className="flex h-dvh items-center justify-center bg-neutral-900 text-white">
         GAHM…
       </div>
     )
@@ -39,11 +39,11 @@ function App() {
   const selected = state.selectedId ? findById(state.events, state.selectedId) : undefined
 
   return (
-    <div className="flex h-screen flex-col bg-neutral-100 text-neutral-900">
-      <header className="flex items-center gap-4 bg-neutral-900 px-4 py-2.5 text-white">
+    <div className="flex h-dvh flex-col overflow-hidden bg-neutral-100 text-neutral-900">
+      <header className="flex flex-wrap items-center gap-x-3 gap-y-1.5 bg-neutral-900 px-4 py-2.5 text-white">
         <div className="flex items-baseline gap-2">
           <span className="text-lg font-bold tracking-tight">GAHM</span>
-          <span className="text-[11px] text-neutral-400">Wildlife Conflict Risk Engine</span>
+          <span className="hidden text-[11px] text-neutral-400 sm:inline">Wildlife Conflict Risk Engine</span>
         </div>
         {demoMode ? (
           <span className="rounded-full bg-neutral-700 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-neutral-200">
@@ -59,7 +59,7 @@ function App() {
         </span>
         <div className="ml-auto flex items-center gap-3 text-xs">
           {demoMode ? (
-            <span className="font-medium text-neutral-100">{state.rangerName}</span>
+            <span className="hidden font-medium text-neutral-100 sm:inline">{state.rangerName}</span>
           ) : null}
           {demoMode ? (
             <button
@@ -105,13 +105,13 @@ function App() {
 
       <OperationsBar />
 
-      <main className="flex min-h-0 flex-1">
-        <div className="min-w-0 flex-1">
+      <main className="flex min-h-0 flex-1 flex-col md:flex-row">
+        <div className="min-h-0 min-w-0 flex-1">
           <div className="h-full w-full">
             <MapView />
           </div>
         </div>
-        <div className="flex min-h-0 w-[360px] shrink-0 flex-col border-l border-neutral-200 bg-white">
+        <div className="flex h-[40%] min-h-0 w-full shrink-0 flex-col border-t border-neutral-200 bg-white md:h-auto md:w-[360px] md:border-l md:border-t-0">
           <FiltersBar />
           {selected ? <AlertPanel event={selected} /> : <AlertList />}
         </div>

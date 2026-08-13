@@ -34,8 +34,8 @@ function SetPassword() {
   }
 
   return (
-    <div className="flex h-screen items-center justify-center overflow-y-auto bg-neutral-900 p-4">
-      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
+    <div className="flex h-dvh items-center justify-center overflow-hidden bg-neutral-900 p-4">
+      <div className="max-h-full w-full max-w-md overflow-y-auto overscroll-contain rounded-2xl bg-white p-4 shadow-2xl sm:p-6">
         <div className="mb-6">
           <div className="mb-1 text-3xl font-bold tracking-tight text-neutral-900">GAHM</div>
           <div className="text-[11px] font-semibold uppercase tracking-widest text-neutral-400">

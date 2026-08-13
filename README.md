@@ -152,5 +152,9 @@ thresholds) is in [`../docs/implementations/initializations.md`](../docs/impleme
 
 ## Note
 
-OpenStreetMap tiles require an internet connection to render the map. Everything else
-runs standalone.
+- OpenStreetMap tiles require an internet connection to render the map. Everything else
+  runs standalone.
+- **Repo location**: the git repo lives inside `app/` — the workspace root one level up
+  carries only a `.git` pointer file (`gitdir: app/.git`) with `core.worktree` pinned to
+  `app/`, so git-aware tools launched from the root resolve this repo. Run git commands
+  from inside `app/` (or via `npm run update` / `gahm.bat`); never `git init` at the root.
