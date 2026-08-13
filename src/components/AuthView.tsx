@@ -44,6 +44,7 @@ function AuthView() {
     requestPasswordReset,
     signedOutNotice,
     dismissSignedOutNotice,
+    clearError,
   } = useAuth()
 
   const [view, setView] = useState<'signin' | 'signup'>('signin')
@@ -104,6 +105,8 @@ function AuthView() {
   const openForgot = () => {
     setForgotEmail(email)
     setStep('forgot')
+    clearError()
+    dismissSignedOutNotice()
   }
 
   const submitForgot = async (ev: FormEvent<HTMLFormElement>) => {
@@ -175,6 +178,7 @@ function AuthView() {
   const backFromCode = async () => {
     setCode('')
     setFailCount(0)
+    clearError()
     await signOut()
   }
 
@@ -325,7 +329,10 @@ function AuthView() {
 
             <button
               type="button"
-              onClick={() => setStep('form')}
+              onClick={() => {
+                setStep('form')
+                clearError()
+              }}
               className="mt-4 w-full rounded-md border border-neutral-300 px-4 py-2 text-sm font-semibold text-neutral-600 transition-colors hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
             >
               Back to sign in
@@ -349,6 +356,7 @@ function AuthView() {
                 onClick={() => {
                   setView('signin')
                   dismissSignedOutNotice()
+                  clearError()
                 }}
                 disabled={busy}
                 className={`flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 ${
@@ -364,6 +372,7 @@ function AuthView() {
                 onClick={() => {
                   setView('signup')
                   dismissSignedOutNotice()
+                  clearError()
                 }}
                 disabled={busy}
                 className={`flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 ${

@@ -108,6 +108,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     void boot()
     const { data: listener } = db.auth.onAuthStateChange((event, session) => {
       if (event === 'PASSWORD_RECOVERY') {
+        setErrorText(null)
         setPasswordRecovery(true)
         pendingRef.current = null
         setPendingVerification(null)
@@ -143,24 +144,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return
     }
     suppressAutoSendRef.current = true
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-    suppressAutoSendRef.current = false
-    if (error) {
-      if (isDemoCredentials(email, password)) {
-        setMode('demo')
-        setUser(DEMO_USER)
-        setServerReachable(false)
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) {
+        if (isDemoCredentials(email, password)) {
+          setMode('demo')
+          setUser(DEMO_USER)
+          setServerReachable(false)
+          return
+        }
+        setErrorText(error.message)
         return
       }
-      setErrorText(error.message)
-      return
-    }
-    setServerReachable(true)
-    if (data.user?.email_confirmed_at == null) {
-      await supabase.auth.signOut()
-      await sendVerificationCode(email)
-      pendingRef.current = email
-      setPendingVerification({ email })
+      setServerReachable(true)
+      if (data.user?.email_confirmed_at == null) {
+        await supabase.auth.signOut()
+        await sendVerificationCode(email)
+        pendingRef.current = email
+        setPendingVerification({ email })
+      }
+    } finally {
+      suppressAutoSendRef.current = false
     }
   }, [sendVerificationCode])
 
@@ -171,13 +175,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setErrorText(UNREACHABLE_MESSAGE)
         return
       }
-      suppressAutoSendRef.current = true
+suppressAutoSendRef.current = true
+    try {
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: { data: { full_name: name } },
       })
-      suppressAutoSendRef.current = false
       if (error) {
         setErrorText(error.message)
         return
@@ -186,7 +190,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       pendingRef.current = email
       setPendingVerification({ email })
       await sendVerificationCode(email)
-    },
+    } finally {
+      suppressAutoSendRef.current = false
+    }
+  },
     [sendVerificationCode],
   )
 
@@ -264,6 +271,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const dismissSignedOutNotice = useCallback(() => setSignedOutNotice(false), [])
+  const clearError = useCallback(() => setErrorText(null), [])
 
   const value = useMemo<AuthContextValue>(
     () => ({
@@ -285,6 +293,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       requestPasswordReset,
       setNewPassword,
       dismissSignedOutNotice,
+      clearError,
     }),
     [
       mode,
@@ -305,6 +314,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       requestPasswordReset,
       setNewPassword,
       dismissSignedOutNotice,
+      clearError,
     ],
   )
 

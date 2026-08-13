@@ -26,6 +26,7 @@ export interface AuthContextValue {
   requestPasswordReset: (email: string) => Promise<boolean>
   setNewPassword: (password: string) => Promise<boolean>
   dismissSignedOutNotice: () => void
+  clearError: () => void
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null)
