@@ -250,12 +250,14 @@ export default function DemoTour({
       case 11:
         // Step 12 of 14: target team-tab
         if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
+        if (state.railTab !== 'alerts') dispatch({ type: 'SET_RAIL_TAB', tab: 'alerts' })
         if (setShowNotifications && showNotifications) setShowNotifications(false)
         break
 
       case 12:
         // Step 13 of 14: target notif-item-k-rao
         if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
+        if (state.railTab !== 'team') dispatch({ type: 'SET_RAIL_TAB', tab: 'team' })
         if (!state.notifications.some((n) => n.actor === 'K. Rao' || n.id === 'seed-notif-1')) {
           dispatch({
             type: 'ADD_NOTIFICATION',
