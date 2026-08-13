@@ -104,8 +104,14 @@ const STEPS: Step[] = [
   },
   {
     target: '[data-tour="team-tab"]',
-    content:
-      'Click the Team tab to see the active on-duty sector roster across the corridor, tracking ranger patrol coverage and real-time status.',
+    content: (
+      <div className="space-y-1.5">
+        <div className="text-sm font-bold text-neutral-900">On-Duty Sector Roster</div>
+        <p className="text-xs leading-relaxed text-neutral-600">
+          The Team tab displays the live roster of rangers on duty across reserve sectors, tracking patrol coverage and real-time status.
+        </p>
+      </div>
+    ),
     skipBeacon: true,
     skipScroll: true,
     placement: 'left',
@@ -248,9 +254,9 @@ export default function DemoTour({
         break
 
       case 11:
-        // Step 12 of 14: target team-tab
+        // Step 12 of 14: target team-tab (shows TeamBoard)
         if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
-        if (state.railTab !== 'alerts') dispatch({ type: 'SET_RAIL_TAB', tab: 'alerts' })
+        if (state.railTab !== 'team') dispatch({ type: 'SET_RAIL_TAB', tab: 'team' })
         if (setShowNotifications && showNotifications) setShowNotifications(false)
         break
 
@@ -324,8 +330,6 @@ export default function DemoTour({
       setStepIndex(9)
     } else if (stepIndex === 9 && state.selectedId === 'EVT-1045') {
       setStepIndex(10)
-    } else if (stepIndex === 11 && state.railTab === 'team') {
-      setStepIndex(12)
     }
   }, [
     state.selectedId,
@@ -357,6 +361,7 @@ export default function DemoTour({
     // lockdown exemption too, or the user cannot save the outcome and the tour stalls.
     const EXTRA_ACTIVE_TARGETS: Record<number, string[]> = {
       8: ['[data-tour="outcome-form"]'],
+      11: ['[data-tour="team-tab"]', '[data-tour="team-board"]'],
       12: ['[data-tour="bell-btn"]', '[data-tour="notif-popover"]', '[data-tour="notif-item-k-rao"]'],
     }
 

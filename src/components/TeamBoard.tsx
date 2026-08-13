@@ -33,7 +33,7 @@ export default function TeamBoard() {
   }, [state.profiles, state.rangerName, state.rangerSector])
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-4 space-y-3">
+    <div data-tour="team-board" className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-4 space-y-3">
       <div className="flex items-center justify-between border-b border-neutral-200 pb-2.5">
         <div>
           <h2 className="text-sm font-bold text-neutral-900">{t('team.title')}</h2>
