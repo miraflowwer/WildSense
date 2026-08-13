@@ -28,7 +28,7 @@ const STEPS: Step[] = [
     ),
     skipBeacon: true,
     skipScroll: true,
-    placement: 'center',
+    placement: 'bottom-start',
   },
   {
     target: '[data-tour="alert-EVT-1042"]',
@@ -68,7 +68,7 @@ const STEPS: Step[] = [
     content:
       'The SMS Simulator allows you to preview composed warnings, toggle language (English/Hindi), and send alerts to local residents without revealing exact animal coordinates. Toggle language or click Send warning to proceed.',
     skipScroll: true,
-    placement: 'center',
+    placement: 'left',
   },
   {
     target: '[data-tour="btn-close-record"]',
