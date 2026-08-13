@@ -72,8 +72,30 @@ The build is fully static (`dist/`). Deployed on **Vercel** with auto-deploy on 
 
 - **Vercel** — repo `miraflowwer/WildSense` (branch `main`; the
   repo was renamed 2026-08-14 from `Wildlife-Conflict-Risk-Engine`, which was
-  itself renamed from `GAHM-Prototype`, the old URLs redirect); import at
+  itself renamed from `GAHM-Prototype`, the old URLs redirect); Vercel project
+  **`wildsense`** (renamed from `gahm-prototype` the same day), live at
+  **https://wild-sense.vercel.app**. Import at
   vercel.com/new. Vite is auto-detected, and SPA route rewrites are configured in `vercel.json`.
+
+### Removing old-name URLs after a Vercel project rename
+
+Vercel deployment URLs and aliases are **immutable** — renaming the project does
+not rewrite old ones. If old `gahm-prototype-*.vercel.app` links still resolve:
+
+- **Old aliases** (project-name domains, e.g. `gahm-prototype.vercel.app`,
+  `gahm-prototype-gahm.vercel.app`, `gahm-prototype-git-main-gahm.vercel.app`)
+  point at the current production deployment; detach them with
+  `npx vercel alias rm <url> -y` (run `npx vercel login` once first).
+- **Old deployment URLs** (e.g. `gahm-prototype-<hash>-gahm.vercel.app`) belong
+  to the deployment itself — deleting the deployment is the only way to kill
+  the URL. If it is the current production build, first redeploy:
+  `npx vercel redeploy <deployment-url>` (new deployments use the new project
+  name, e.g. `wildsense-<hash>-gahm.vercel.app`, and the alias
+  `wild-sense.vercel.app` follows automatically), then
+  `npx vercel remove <old-deployment-url> -y`.
+- **Caveat:** the legacy project-name domain (`gahm-prototype.vercel.app`) is
+  re-attached automatically by Vercel after every deploy; remove it from the
+  project's **Settings → Domains** in the dashboard to stop it coming back.
 
 Updating the hosted app is one command:
 

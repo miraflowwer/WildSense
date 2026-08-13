@@ -13,6 +13,7 @@ project adheres to [Semantic Versioning](https://semver.org).
 - **Dashboard header simplified** — the "About WICRE" button was removed; clicking the WildSense brand in the header now leads back to the landing page.
 - **Footer credits** — the landing footer now reads "Built by Team GAHM — Harima K. (Project Lead) · Mathew M. (Prototype Lead) · Gabriel L. (Technical Lead)". GAHM stays the org name throughout.
 - **Repo renamed to `WildSense`** — the GitHub remote was renamed 2026-08-14 from `Wildlife-Conflict-Risk-Engine` (old URL redirects); the local `origin` was updated via `git remote set-url origin`, and the versioned docs (`dev-workflow.md`, `build-optimization.md`) now reference the new URL.
+- **Vercel rebrand & old-URL cleanup** — the Vercel project was renamed `gahm-prototype` → `wildsense` (live at `wild-sense.vercel.app`). Old `gahm-prototype-*.vercel.app` aliases were detached (`vercel alias rm`), the old production deployment was redeployed under the new name and then deleted (`vercel redeploy` + `vercel remove`), and the procedure is documented in `dev-workflow.md`. Note: `gahm-prototype.vercel.app` is re-attached by Vercel after each deploy — remove it in Settings → Domains to keep it gone.
 - Version bump 1.2.0 → **1.3.0** (`package.json`, landing footer).
 
 ## [v1.2.0] — 2026-08-14 — Guided Tour Fix & WICRE Naming
