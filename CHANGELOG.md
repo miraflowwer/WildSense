@@ -5,6 +5,25 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v1.5.0] — 2026-08-14 — Dedicated Scientific Methodology, LaTeX Math & Uniform Research Interface
+
+### Added
+
+- **Dedicated Methodology Page & Deep Linking (`MethodologyView.tsx`)** — full-page, deep-linkable (`#methodology`) scientific methodology view accessible from the landing page header, footer, and research section. Includes a sticky navigation bar with section anchors, executive summary, figure breakdowns, 4 telemetry layers, mathematical algorithm formula, statutory compliance, and a comprehensive peer-reviewed bibliography with direct verified publication links.
+- **KaTeX-Powered LaTeX Mathematical Equations (`Latex.tsx`)** — integrated lightweight client-side LaTeX rendering for the core 7-signal multi-criteria risk formula, individual signal sub-formulations, and the uncertainty regularization penalty. Added Rolldown vendor chunk splitting for `katex` in `vite.config.ts`.
+- **Uniform Parchment & Card Visual Architecture** — Section 4.5 styled to seamlessly match the landing page design language (`rounded-3xl border border-[#E8E2D5] bg-white/95 shadow-2xl backdrop-blur-md`), framing empirical evidence with balanced typographic rhythm and soft contrast.
+- **Embedded & Clickable Research Figures** — visual research cards embedding `app/src/img/bandipur_survey.png` (Figure 1: Bandipur fringe survey metrics — 70.8% worsening conflict, 56.6% severe crop loss, 60%+ positive conservation receptivity) and `app/src/img/frontline_staffing.png` (Figure 2: Protected area ranger density — 1 ranger per 72 km² in South Asia vs 1 per 26 km² global 30-by-30 target), both with direct clickable links redirecting users to the original peer-reviewed publication and investigation records.
+- **4 Real Ingested Telemetry & Spatial Layers** — replaced generic datasets with the 4 actual data sources utilized in the Indian corridor context: WII & MoEFCC Elephant Corridors of India (2023), Copernicus Sentinel-2 Multispectral NDVI/NDRE, IMD Precipitation & NASA FIRMS Climatic Telemetry, and OpenStreetMap Settlement Buffers. All external link indicators upgraded to clean SVG vectors (no emoji arrows).
+- **Direct Interactive & Verified Source Citations** — all data points in Section 3 ("The Problem") and Section 4.5 ("Research & Methodology") feature verified, active links redirecting to official Parliament of India records (`sansad.in`), WII Digital Repository (`digitalrepository.wii.gov.in`), IndiaCode portal (`indiacode.nic.in`), Frontiers in Conservation Science, Nature Sustainability, and Mongabay India.
+- **Strictly India-Focused Research Synthesis** — pruned non-India literature from documentation (`docs/research/research.md` and `docs/research/sdg-datasets.md`); expanded peer-reviewed Indian citations including MoEFCC 2019–2024 parliamentary data, Rangarajan et al. 2010 Gajah report, Wildlife Institute of India 2023 Corridor Atlas, and Nature Sustainability 2022 South Asia workforce benchmarks.
+- **Versioned Methodology Documentation** — created `app/docs/methodology.md` in the versioned repository docs and linked it in `app/README.md`.
+
+## [v1.4.2] — 2026-08-14 — Guided Tour Navigation Fix
+
+### Fixed
+
+- **Guided tour step navigation** — fixed the notification-bell tour step where pressing **Next** or **Back** sometimes did nothing. A click inside the tour overlay used to be treated as an "outside click" that auto-closed the notification popover mid-press; closing the popover unmounted the tour's spotlighted notification item, so the tooltip button vanished before the click completed. Outside-click popover closing now ignores clicks within the tour overlay, keeping the popover (and its tour target) stable for the whole step. Verified end-to-end: the full 14-step tour now advances, goes back, and finishes reliably with real mouse clicks.
+
 ## [v1.4.1] — 2026-08-14 — Collaboration Attribution & Refinements
 
 ### Fixed

@@ -30,6 +30,11 @@ export default defineConfig({
               test: /node_modules[\\/](react-joyride|@floating-ui|@gilbarbara|is-lite|react-innertext|scrollparent|scroll|@fastify)[\\/]/,
               priority: 70,
             },
+            {
+              name: 'katex',
+              test: /node_modules[\\/]katex[\\/]/,
+              priority: 65,
+            },
           ],
         },
       },

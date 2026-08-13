@@ -88,6 +88,12 @@ function App() {
   // Close popovers on outside click
   useEffect(() => {
     const handleOutside = (e: MouseEvent) => {
+      // Ignore clicks inside the guided-tour portal: a mousedown there must not
+      // close the notification popover, or the tour's active target unmounts
+      // mid-click and the tooltip button never receives its click event.
+      if (e.target instanceof Node && document.querySelector('#react-joyride-portal')?.contains(e.target)) {
+        return
+      }
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
         setShowNotifications(false)
       }

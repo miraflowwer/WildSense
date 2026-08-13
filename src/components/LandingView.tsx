@@ -12,6 +12,10 @@ import { lenisHolder } from '../lib/lenisHolder'
 import FeatureCarousel from './FeatureCarousel'
 import AuthView from './AuthView'
 import EthicsModal from './EthicsModal'
+import MethodologyView from './MethodologyView'
+import frontlineStaffingImg from '../img/frontline_staffing.png'
+import bandipurSurveyImg from '../img/bandipur_survey.png'
+import { Latex } from './Latex'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -21,6 +25,12 @@ interface LandingViewProps {
 
 export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
   const { mode, signIn } = useAuth()
+  const [currentView, setCurrentView] = useState<'overview' | 'methodology'>(() => {
+    if (typeof window !== 'undefined' && window.location.hash === '#methodology') {
+      return 'methodology'
+    }
+    return 'overview'
+  })
   const [authModal, setAuthModal] = useState<{ open: boolean; view: 'signin' | 'signup' }>({
     open: false,
     view: 'signin',
@@ -75,6 +85,29 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
     const timer = setInterval(fetchActivity, 30000)
     return () => clearInterval(timer)
   }, [])
+
+  // Hash sync for deep linking (#methodology)
+  useEffect(() => {
+    const handleHash = () => {
+      if (window.location.hash === '#methodology') {
+        setCurrentView('methodology')
+      } else {
+        setCurrentView('overview')
+      }
+    }
+    window.addEventListener('hashchange', handleHash)
+    return () => window.removeEventListener('hashchange', handleHash)
+  }, [])
+
+  const handleOpenMethodology = () => {
+    window.location.hash = 'methodology'
+    setCurrentView('methodology')
+  }
+
+  const handleBackFromMethodology = () => {
+    window.location.hash = ''
+    setCurrentView('overview')
+  }
 
   // Scroll progress indicator for the story's reading position
   useEffect(() => {
@@ -247,6 +280,10 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
     }
   }
 
+  if (currentView === 'methodology') {
+    return <MethodologyView onBack={handleBackFromMethodology} />
+  }
+
   return (
     <div className="relative min-h-dvh bg-[#FDFBF7] font-sans text-[#1A202C] selection:bg-[#123524] selection:text-white">
       {/* Scroll progress bar */}
@@ -304,6 +341,17 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
 
           {/* Header Action Buttons */}
           <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              type="button"
+              onClick={handleOpenMethodology}
+              className="hidden md:inline-flex items-center gap-1.5 rounded-xl border border-[#E8E2D5] bg-white px-3.5 py-2 text-sm font-bold text-[#123524] shadow-2xs transition-all hover:bg-[#F6F2EA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#123524]"
+            >
+              <svg className="h-4 w-4 text-[#C05621]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+              </svg>
+              <span>Methodology</span>
+            </button>
+
             {mode ? (
               <button
                 type="button"
@@ -725,9 +773,35 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
             ))}
           </div>
 
-          <p className="text-center text-[11px] text-neutral-400">
-            Sources: Frontiers in Conservation Science (2026); MoEFCC parliament replies via Times
-            of India (Jul 2024); Rangarajan et al., Elephant Task Force (2010).
+          <p className="text-center text-xs text-neutral-500">
+            Sources:{' '}
+            <a
+              href="https://www.frontiersin.org/journals/conservation-science"
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold underline decoration-neutral-400 hover:text-[#C05621] hover:decoration-[#C05621] transition-colors"
+            >
+              Frontiers in Conservation Science (2026) ↗
+            </a>
+            ;{' '}
+            <a
+              href="https://sansad.in/"
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold underline decoration-neutral-400 hover:text-[#C05621] hover:decoration-[#C05621] transition-colors"
+            >
+              MoEFCC Parliament Reports (Jul 2024) ↗
+            </a>
+            ;{' '}
+            <a
+              href="https://digitalrepository.wii.gov.in/handle/123456789/1120"
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold underline decoration-neutral-400 hover:text-[#C05621] hover:decoration-[#C05621] transition-colors"
+            >
+              Rangarajan et al., Elephant Task Force (2010) ↗
+            </a>
+            .
           </p>
         </section>
 
@@ -781,6 +855,15 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
                   </div>
                 ))}
               </div>
+
+              <div className="mt-3 rounded-xl border border-[#E8E2D5] bg-white p-3 text-center shadow-2xs">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-neutral-500 mb-1">
+                  Core Mathematical Formula (LaTeX)
+                </div>
+                <div className="overflow-x-auto text-xs py-0.5 text-[#123524]">
+                  <Latex math="\text{Risk}(e) = \min\left(100, \, \max\left(0, \, \sum_{i=1}^{7} (W_i \cdot S_i) - \Delta_{\text{uncertainty}}\right)\right)" />
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -799,108 +882,301 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
                 Research Foundation &amp; Open Datasets
               </h2>
               <p className="mt-1 text-sm text-neutral-600 max-w-2xl leading-relaxed">
-                WildSense’s predictive engine is grounded in empirical research across southern Indian elephant corridors and open satellite environmental layers.
+                WildSense’s predictive engine is grounded in empirical research across southern Indian elephant corridors and verified open satellite environmental layers.
               </p>
             </div>
+
+            <button
+              type="button"
+              onClick={handleOpenMethodology}
+              className="self-start md:self-auto rounded-xl border border-[#E8E2D5] bg-[#FDFBF7] px-4 py-2.5 text-sm font-bold text-[#123524] hover:bg-[#F6F2EA] shadow-2xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#123524] shrink-0"
+            >
+              Read Full Whitepaper →
+            </button>
           </div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div className="rounded-2xl border border-[#E8E2D5] bg-[#FDFBF7] p-6 space-y-3 shadow-xs">
-              <div className="text-xs font-bold uppercase tracking-wider text-[#C05621]">
-                Bandipur Corridor Farmer Survey
+            {/* Figure 1: Bandipur Corridor Farmer Survey */}
+            <div className="rounded-2xl border border-[#E8E2D5] bg-[#FDFBF7] p-6 space-y-4 shadow-xs flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#C05621]">
+                    Bandipur Corridor Farmer Survey
+                  </span>
+                  <a
+                    href="https://india.mongabay.com/2025/09/expanding-elephant-range-fuels-human-wildlife-conflict/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-0.5 text-[11px] font-semibold text-neutral-600 border border-[#E8E2D5] hover:border-amber-500 hover:text-amber-800 transition-colors"
+                  >
+                    <span>Mongabay India (2025)</span>
+                    <svg className="h-3 w-3 text-neutral-400 group-hover:text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+                    </svg>
+                  </a>
+                </div>
+
+                <a
+                  href="https://india.mongabay.com/2025/09/expanding-elephant-range-fuels-human-wildlife-conflict/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block overflow-hidden rounded-xl border border-[#E8E2D5] bg-white p-2 shadow-2xs group hover:border-amber-400 transition-all"
+                  title="Click to read the full Mongabay India investigation"
+                >
+                  <img
+                    src={bandipurSurveyImg}
+                    alt="Bandipur Corridor Community Survey Chart showing 70.8% worsening conflict, 56.6% severe crop loss, and 60% positive conservation sentiment"
+                    className="w-full h-44 sm:h-52 object-contain rounded-lg group-hover:scale-[1.01] transition-transform"
+                  />
+                </a>
+
+                <div className="grid grid-cols-3 gap-2 text-center pt-1">
+                  <div className="rounded-xl border border-[#E8E2D5] bg-white p-2.5 shadow-2xs">
+                    <div className="text-xl font-black text-[#123524]">70.8%</div>
+                    <div className="text-[10px] font-semibold text-neutral-600 mt-0.5">Worsening Encounters</div>
+                  </div>
+                  <div className="rounded-xl border border-[#E8E2D5] bg-white p-2.5 shadow-2xs">
+                    <div className="text-xl font-black text-[#C05621]">56.6%</div>
+                    <div className="text-[10px] font-semibold text-neutral-600 mt-0.5">&gt;50% Crop Loss</div>
+                  </div>
+                  <div className="rounded-xl border border-[#E8E2D5] bg-white p-2.5 shadow-2xs">
+                    <div className="text-xl font-black text-[#123524]">60.0%+</div>
+                    <div className="text-[10px] font-semibold text-neutral-600 mt-0.5">Conservation Support</div>
+                  </div>
+                </div>
+
+                <p className="text-sm leading-relaxed text-neutral-700">
+                  A 2025 field investigation in the Bandipur corridor found that <strong>70.8%</strong> of fringe farming families report worsening human-wildlife encounters, with <strong>56.6%</strong> suffering over 50% crop loss annually. Crucially, over <strong>60%</strong> maintain positive sentiment toward wildlife conservation when provided timely early warning.
+                </p>
               </div>
-              <div className="text-2xl font-black text-[#123524]">70.8% Worsening Conflict</div>
-              <p className="text-sm leading-relaxed text-neutral-700">
-                A 2025 field investigation in the Bandipur corridor found that <strong>70.8%</strong> of fringe farming families report worsening human-wildlife encounters, with <strong>56.6%</strong> suffering over 50% crop loss annually. Crucially, over <strong>60%</strong> maintain positive sentiment toward wildlife conservation when provided timely early warning.
-              </p>
-              <div className="text-[11px] font-semibold text-neutral-400">
-                Source: Mongabay India Field Survey Report (2025)
+
+              <div className="pt-2 border-t border-[#E8E2D5] flex items-center justify-between text-xs">
+                <a
+                  href="https://india.mongabay.com/2025/09/expanding-elephant-range-fuels-human-wildlife-conflict/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group inline-flex items-center gap-1 font-bold text-[#C05621] hover:underline"
+                >
+                  <span>Read Mongabay Investigation</span>
+                  <svg className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+                  </svg>
+                </a>
+                <button
+                  type="button"
+                  onClick={handleOpenMethodology}
+                  className="font-bold text-[#123524] hover:underline"
+                >
+                  Methodology spec →
+                </button>
               </div>
             </div>
 
-            <div className="rounded-2xl border border-[#E8E2D5] bg-[#FDFBF7] p-6 space-y-3 shadow-xs">
-              <div className="text-xs font-bold uppercase tracking-wider text-[#123524]">
-                Frontline Staffing Constraints
+            {/* Figure 2: Frontline Staffing Constraints */}
+            <div className="rounded-2xl border border-[#E8E2D5] bg-[#FDFBF7] p-6 space-y-4 shadow-xs flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#123524]">
+                    Frontline Staffing Constraints
+                  </span>
+                  <a
+                    href="https://www.nature.com/articles/s41893-022-00970-0"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-0.5 text-[11px] font-semibold text-neutral-600 border border-[#E8E2D5] hover:border-emerald-500 hover:text-emerald-800 transition-colors"
+                  >
+                    <span>Nature Sustainability (2022)</span>
+                    <svg className="h-3 w-3 text-neutral-400 group-hover:text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+                    </svg>
+                  </a>
+                </div>
+
+                <a
+                  href="https://www.nature.com/articles/s41893-022-00970-0"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block overflow-hidden rounded-xl border border-[#E8E2D5] bg-white p-2 shadow-2xs group hover:border-emerald-500 transition-all"
+                  title="Click to view the Nature Sustainability research paper"
+                >
+                  <img
+                    src={frontlineStaffingImg}
+                    alt="Protected Area Staff Density Benchmark showing 1 ranger per 72 square kilometers in South Asia compared to global 30x30 target of 1 per 26 square kilometers"
+                    className="w-full h-44 sm:h-52 object-contain rounded-lg group-hover:scale-[1.01] transition-transform"
+                  />
+                </a>
+
+                <div className="grid grid-cols-2 gap-3 text-center pt-1">
+                  <div className="rounded-xl border border-[#E8E2D5] bg-white p-2.5 shadow-2xs">
+                    <div className="text-xl font-black text-[#C05621]">~1 / 72 km²</div>
+                    <div className="text-[10px] font-semibold text-neutral-600 mt-0.5">South Asian Ranger Density</div>
+                  </div>
+                  <div className="rounded-xl border border-[#E8E2D5] bg-white p-2.5 shadow-2xs">
+                    <div className="text-xl font-black text-[#123524]">1 / 26 km²</div>
+                    <div className="text-[10px] font-semibold text-neutral-600 mt-0.5">Global 30-by-30 Target</div>
+                  </div>
+                </div>
+
+                <p className="text-sm leading-relaxed text-neutral-700">
+                  Protected area rangers in South Asia manage vast rugged terrain under severe staffing deficits—averaging nearly <strong>5× below</strong> the global 30-by-30 conservation staffing targets. Transparent predictive prioritization acts as a force multiplier for stretched patrol teams.
+                </p>
               </div>
-              <div className="text-2xl font-black text-[#C05621]">~1 Ranger per 72 km²</div>
-              <p className="text-sm leading-relaxed text-neutral-700">
-                Protected area rangers in South Asia manage vast rugged terrain under severe staffing deficits—averaging nearly <strong>5× below</strong> the global 30-by-30 conservation staffing targets. Transparent predictive prioritization acts as a force multiplier for stretched patrol teams.
-              </p>
-              <div className="text-[11px] font-semibold text-neutral-400">
-                Source: Nature Sustainability (2022) &amp; IUCN World Commission on Protected Areas
+
+              <div className="pt-2 border-t border-[#E8E2D5] flex items-center justify-between text-xs">
+                <a
+                  href="https://www.nature.com/articles/s41893-022-00970-0"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group inline-flex items-center gap-1 font-bold text-[#123524] hover:underline"
+                >
+                  <span>Read Nature Study</span>
+                  <svg className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+                  </svg>
+                </a>
+                <button
+                  type="button"
+                  onClick={handleOpenMethodology}
+                  className="font-bold text-[#123524] hover:underline"
+                >
+                  Staffing model →
+                </button>
               </div>
             </div>
           </div>
 
           {/* Named Open Datasets */}
           <div className="rounded-2xl border border-neutral-200 bg-neutral-50/60 p-6 space-y-4">
-            <h3 className="text-base font-bold text-[#123524]">
-              Scientific Datasets &amp; Satellite Telemetry Integration
-            </h3>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-200/80 pb-3">
+              <div>
+                <h3 className="text-base font-bold text-[#123524]">
+                  Scientific Datasets &amp; Satellite Telemetry Integration
+                </h3>
+                <p className="text-xs text-neutral-600">
+                  The 4 authoritative data layers powering WildSense's 7-signal risk engine.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleOpenMethodology}
+                className="text-xs font-bold text-[#C05621] hover:underline self-start sm:self-auto"
+              >
+                View math spec &rarr;
+              </button>
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* 1: WII */}
               <a
-                href="https://www.gbif.org"
+                href="https://wii.gov.in/"
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-xl border border-neutral-200 bg-white p-4 transition-all hover:border-emerald-500 hover:shadow-sm"
+                className="group rounded-xl border border-neutral-200 bg-white p-4 transition-all hover:border-emerald-500 hover:shadow-xs flex flex-col justify-between"
               >
-                <div className="font-bold text-sm text-[#123524] flex items-center justify-between">
-                  <span>GBIF</span>
-                  <span className="text-xs text-neutral-400">↗</span>
+                <div>
+                  <div className="font-bold text-sm text-[#123524] flex items-center justify-between">
+                    <span>WII Elephant Atlas</span>
+                    <svg className="h-3.5 w-3.5 text-neutral-400 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+                    </svg>
+                  </div>
+                  <div className="mt-1 text-xs text-neutral-600">
+                    Official corridor boundaries and bottleneck polygons mapped across Indian reserves.
+                  </div>
                 </div>
-                <div className="mt-1 text-xs text-neutral-600">
-                  Global Biodiversity Information Facility observation baseline.
+                <div className="mt-3 text-[10px] font-semibold text-neutral-400 uppercase tracking-wider">
+                  Government GIS
                 </div>
               </a>
 
+              {/* 2: Sentinel-2 */}
               <a
-                href="https://eos.com/landviewer"
+                href="https://dataspace.copernicus.eu/"
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-xl border border-neutral-200 bg-white p-4 transition-all hover:border-emerald-500 hover:shadow-sm"
+                className="group rounded-xl border border-neutral-200 bg-white p-4 transition-all hover:border-emerald-500 hover:shadow-xs flex flex-col justify-between"
               >
-                <div className="font-bold text-sm text-[#123524] flex items-center justify-between">
-                  <span>EOS LandViewer</span>
-                  <span className="text-xs text-neutral-400">↗</span>
+                <div>
+                  <div className="font-bold text-sm text-[#123524] flex items-center justify-between">
+                    <span>Copernicus Sentinel-2</span>
+                    <svg className="h-3.5 w-3.5 text-neutral-400 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+                    </svg>
+                  </div>
+                  <div className="mt-1 text-xs text-neutral-600">
+                    10m multispectral NDVI &amp; NDRE canopy vegetation and moisture density indices.
+                  </div>
                 </div>
-                <div className="mt-1 text-xs text-neutral-600">
-                  Multispectral satellite imagery and forest boundary verification.
+                <div className="mt-3 text-[10px] font-semibold text-neutral-400 uppercase tracking-wider">
+                  Satellite Telemetry
                 </div>
               </a>
 
+              {/* 3: IMD */}
               <a
-                href="https://dataspace.copernicus.eu"
+                href="https://mausam.imd.gov.in/"
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-xl border border-neutral-200 bg-white p-4 transition-all hover:border-emerald-500 hover:shadow-sm"
+                className="group rounded-xl border border-neutral-200 bg-white p-4 transition-all hover:border-emerald-500 hover:shadow-xs flex flex-col justify-between"
               >
-                <div className="font-bold text-sm text-[#123524] flex items-center justify-between">
-                  <span>Copernicus Hub</span>
-                  <span className="text-xs text-neutral-400">↗</span>
+                <div>
+                  <div className="font-bold text-sm text-[#123524] flex items-center justify-between">
+                    <span>IMD &amp; NASA FIRMS</span>
+                    <svg className="h-3.5 w-3.5 text-neutral-400 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+                    </svg>
+                  </div>
+                  <div className="mt-1 text-xs text-neutral-600">
+                    Precipitation, monsoon timeline shifts, and seasonal drought stress multipliers.
+                  </div>
                 </div>
-                <div className="mt-1 text-xs text-neutral-600">
-                  Sentinel-2 land cover, moisture index, and vegetation density.
+                <div className="mt-3 text-[10px] font-semibold text-neutral-400 uppercase tracking-wider">
+                  Climatic Telemetry
                 </div>
               </a>
 
+              {/* 4: OpenStreetMap */}
               <a
-                href="https://earthdata.nasa.gov"
+                href="https://www.openstreetmap.org/"
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-xl border border-neutral-200 bg-white p-4 transition-all hover:border-emerald-500 hover:shadow-sm"
+                className="group rounded-xl border border-neutral-200 bg-white p-4 transition-all hover:border-emerald-500 hover:shadow-xs flex flex-col justify-between"
               >
-                <div className="font-bold text-sm text-[#123524] flex items-center justify-between">
-                  <span>NASA Earthdata</span>
-                  <span className="text-xs text-neutral-400">↗</span>
+                <div>
+                  <div className="font-bold text-sm text-[#123524] flex items-center justify-between">
+                    <span>OpenStreetMap Buffers</span>
+                    <svg className="h-3.5 w-3.5 text-neutral-400 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+                    </svg>
+                  </div>
+                  <div className="mt-1 text-xs text-neutral-600">
+                    Fringe settlement coordinates (Hangala, Masinagudi) and agricultural perimeters.
+                  </div>
                 </div>
-                <div className="mt-1 text-xs text-neutral-600">
-                  MODIS and Landsat environmental and climatic telemetry.
+                <div className="mt-3 text-[10px] font-semibold text-neutral-400 uppercase tracking-wider">
+                  Settlement GIS
                 </div>
               </a>
             </div>
-            <p className="text-[11px] text-neutral-500 italic">
-              Note: The 7-signal weights (25/20/15/15/10/10/5) reflect our core baseline; Phase 2 deployments calibrate parameters against each reserve's historical telemetry.
-            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 text-xs text-neutral-600 border-t border-neutral-200/80">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-[#123524]">Risk Formulation:</span>
+                <span className="bg-white px-2 py-0.5 rounded-md border border-[#E8E2D5] shadow-2xs">
+                  <Latex math="\text{Risk} = \min\left(100, \max\left(0, \sum W_i S_i - \Delta_{\text{unc}}\right)\right)" />
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={handleOpenMethodology}
+                className="shrink-0 font-bold text-[#C05621] hover:underline inline-flex items-center gap-1"
+              >
+                <span>Inspect full LaTeX mathematical derivation</span>
+                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </button>
+            </div>
           </div>
         </section>
 
@@ -1334,7 +1610,24 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
             </div>
           </div>
 
-          <div className="border-t border-[#E8E2D5] pt-8 text-sm text-neutral-500 space-y-1.5">
+          <div className="border-t border-[#E8E2D5] pt-8 text-sm text-neutral-500 space-y-2">
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs font-semibold text-[#123524]">
+              <button
+                type="button"
+                onClick={handleOpenMethodology}
+                className="underline hover:text-[#C05621] transition-colors"
+              >
+                Scientific Methodology &amp; Citations
+              </button>
+              <span>·</span>
+              <button
+                type="button"
+                onClick={() => setShowEthics(true)}
+                className="underline hover:text-[#C05621] transition-colors"
+              >
+                Ethics &amp; Legal Charter
+              </button>
+            </div>
             <div>
               WildSense — Wildlife Conflict Risk Engine · by GAHM (Global Actions on Habitats and Marines) · Teens in AI Incubator 2026
             </div>
@@ -1342,7 +1635,7 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
               Built by Team GAHM — Harima K. (Project Lead) · Mathew M. (Prototype Lead) · Gabriel L. (Technical Lead)
             </div>
             <div>
-              Version 1.4.0
+              Version 1.5.0
             </div>
           </div>
         </footer>

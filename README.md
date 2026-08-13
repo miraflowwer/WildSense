@@ -18,6 +18,7 @@ code in `src/`; if a prose document ever disagrees with the code, the code wins
 | Document | What it covers |
 | --- | --- |
 | [`docs/overview.md`](docs/overview.md) | The product in plain language: what GAHM does, why it matters, the workflow, what is real vs. demo |
+| [`docs/methodology.md`](docs/methodology.md) | Scientific methodology: 4 ingested telemetry layers, 7-signal mathematical formulation, empirical Indian surveys, and academic bibliography |
 | [`docs/user-guide.md`](docs/user-guide.md) | Operating the dashboard: sign-in, reading alerts, taking action, SMS warnings, recording outcomes |
 | [`docs/demo-script.md`](docs/demo-script.md) | The under-one-minute demo walkthrough + talking points (for presenters) |
 | [`docs/ethics.md`](docs/ethics.md) | Ethics & responsible AI — privacy, bias, transparency, human oversight, Indian legal compliance |
