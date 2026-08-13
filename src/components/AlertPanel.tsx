@@ -119,7 +119,7 @@ function AlertPanel({ event }: { event: DetectionEvent }) {
             </div>
           </div>
 
-          <section className="rounded-lg border border-neutral-300 bg-neutral-50/60 p-3 shadow-2xs">
+          <section data-tour="contributing-signals" className="rounded-lg border border-neutral-300 bg-neutral-50/60 p-3 shadow-2xs">
             <h3 className="mb-2 text-xs font-extrabold uppercase tracking-wider text-neutral-600">
               Contributing signals
             </h3>

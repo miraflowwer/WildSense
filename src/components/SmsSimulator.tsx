@@ -73,7 +73,7 @@ function SmsSimulator() {
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 p-4">
-      <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-xl bg-white p-5 shadow-2xl">
+      <div data-tour="sms-modal" className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-xl bg-white p-5 shadow-2xl">
         <div className="mb-3 flex items-start justify-between">
           <div>
             <h3 className="text-base font-bold text-neutral-900">Simulated SMS warning — Demo</h3>
