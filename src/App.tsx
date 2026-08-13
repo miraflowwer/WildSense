@@ -450,7 +450,7 @@ function App() {
         </div>
       ) : null}
 
-      <div data-tour="ops-bar" className="relative z-10 isolate">
+      <div className="relative z-10 isolate">
         <OperationsBar />
       </div>
 

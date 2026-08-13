@@ -37,6 +37,7 @@ const STEPS: Step[] = [
     target: '[data-tour="alert-EVT-1042"]',
     content:
       'EVT-1042 is the flagship high-risk incident (87/100 Elephant group moving toward farm at dusk). Click EVT-1042 to inspect.',
+    skipBeacon: true,
     skipScroll: true,
     placement: 'left',
   },
@@ -44,6 +45,7 @@ const STEPS: Step[] = [
     target: '[data-tour="contributing-signals"]',
     content:
       'Review contributing signal points (+25 proximity to farms, +20 movement toward boundary, +15 historical hotspot) that calculate the conflict risk score.',
+    skipBeacon: true,
     skipScroll: true,
     placement: 'left',
   },
@@ -51,18 +53,21 @@ const STEPS: Step[] = [
     target: '[data-tour="btn-acknowledge"]',
     content:
       'Click Acknowledge to claim ownership of EVT-1042 and track response time.',
+    skipBeacon: true,
     skipScroll: true,
     placement: 'left',
   },
   {
     target: '[data-tour="btn-contact-ranger"]',
     content: 'Click Contact ranger unit to log dispatch of field patrols.',
+    skipBeacon: true,
     skipScroll: true,
     placement: 'left',
   },
   {
     target: '[data-tour="btn-prepare-sms"]',
     content: 'Click Prepare community warning to launch the localized SMS simulator.',
+    skipBeacon: true,
     skipScroll: true,
     placement: 'left',
   },
@@ -70,6 +75,7 @@ const STEPS: Step[] = [
     target: '[data-tour="sms-modal"]',
     content:
       'The SMS Simulator lets you preview warnings composed in the community\u2019s preferred language (Kannada, Tamil, Hindi, or English) and send alerts to local residents without revealing exact animal coordinates. Toggle language or click Send warning to proceed.',
+    skipBeacon: true,
     skipScroll: true,
     placement: 'left',
   },
@@ -77,12 +83,14 @@ const STEPS: Step[] = [
     target: '[data-tour="btn-close-record"]',
     content:
       'The SMS simulator closes automatically. Click Close & record outcome to save field results and response duration.',
+    skipBeacon: true,
     skipScroll: true,
     placement: 'left',
   },
   {
     target: '[data-tour="alert-EVT-1045"]',
     content: 'Now click EVT-1045 to explore how WildSense handles uncertain or missing sensor data.',
+    skipBeacon: true,
     skipScroll: true,
     placement: 'left',
   },
@@ -90,6 +98,7 @@ const STEPS: Step[] = [
     target: '[data-tour="uncertainty-warning"]',
     content:
       'Notice the amber uncertainty warning: WildSense penalizes missing data instead of guessing, keeping human operators informed and in full control.',
+    skipBeacon: true,
     skipScroll: true,
     placement: 'left',
   },
@@ -97,6 +106,7 @@ const STEPS: Step[] = [
     target: '[data-tour="team-tab"]',
     content:
       'Click the Team tab to see the active on-duty sector roster across the corridor, tracking ranger patrol coverage and real-time status.',
+    skipBeacon: true,
     skipScroll: true,
     placement: 'left',
   },
@@ -110,6 +120,7 @@ const STEPS: Step[] = [
         </p>
       </div>
     ),
+    skipBeacon: true,
     skipScroll: true,
     placement: 'left',
   },
@@ -123,6 +134,7 @@ const STEPS: Step[] = [
         </p>
       </div>
     ),
+    skipBeacon: true,
     skipScroll: true,
     placement: 'bottom',
   },
@@ -430,7 +442,7 @@ export default function DemoTour({
       return
     }
 
-    if (type === 'step:after') {
+    if (type === 'step:after' || action === 'next' || action === 'prev') {
       if (action === 'next') {
         setStepIndex(index + 1)
       } else if (action === 'prev') {
@@ -462,6 +474,7 @@ export default function DemoTour({
         backgroundColor: '#ffffff',
         overlayColor: 'rgba(0, 0, 0, 0.45)',
         showProgress: true,
+        skipBeacon: true,
         zIndex: 10000,
         overlayClickAction: false,
         closeButtonAction: 'skip',
