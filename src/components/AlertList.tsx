@@ -1,16 +1,8 @@
 import { useMemo } from 'react'
 import { useGahm } from '../store/storeContext'
-import { formatSpeciesName } from '../engine/config'
+import { useI18n } from '../i18n/I18nContext'
+import { riskLevelLabel, speciesName, statusLabel } from '../i18n/helpers'
 import { filterEvents, sortedEvents } from '../store/selectors'
-
-const STATUS_LABELS: Record<string, string> = {
-  awaiting_review: 'Awaiting review',
-  under_review: 'Under review',
-  monitoring: 'Monitoring',
-  escalated: 'Escalated',
-  dismissed: 'Dismissed',
-  resolved: 'Resolved',
-}
 
 const STATUS_COLORS: Record<string, string> = {
   awaiting_review: 'bg-amber-100 text-amber-800',
@@ -21,9 +13,9 @@ const STATUS_COLORS: Record<string, string> = {
   resolved: 'bg-emerald-100 text-emerald-800',
 }
 
-function fmtTime(iso: string) {
+function fmtTime(iso: string, locale: string) {
   const d = new Date(iso)
-  return d.toLocaleString([], {
+  return d.toLocaleString(locale, {
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
@@ -33,6 +25,7 @@ function fmtTime(iso: string) {
 
 function AlertList() {
   const { state, dispatch } = useGahm()
+  const { t, catalog, lang } = useI18n()
 
   const events = useMemo(
     () => filterEvents(sortedEvents(state.events), state.filter),
@@ -43,8 +36,8 @@ function AlertList() {
     return (
       <div className="flex flex-1 items-center justify-center p-4 text-sm text-neutral-500">
         {state.events.length === 0
-          ? 'No detections yet. Log a detection from the map to start your workspace.'
-          : 'No events match your filters.'}
+          ? t('alertList.emptyNoDetections')
+          : t('alertList.emptyFiltered')}
       </div>
     )
   }
@@ -77,7 +70,7 @@ function AlertList() {
                   <span
                     className={`rounded-md px-2 py-0.5 text-[11px] font-bold tracking-tight shadow-2xs ${riskBg}`}
                   >
-                    {e.risk_level.toUpperCase()} {e.risk_score}
+                    {riskLevelLabel(catalog, e.risk_level).toUpperCase()} {e.risk_score}
                   </span>
                   <span className="font-mono text-xs font-semibold text-neutral-600">
                     {e.event_id}
@@ -88,12 +81,12 @@ function AlertList() {
                     STATUS_COLORS[e.status] ?? 'bg-neutral-100 text-neutral-600'
                   }`}
                 >
-                  {STATUS_LABELS[e.status] ?? e.status}
+                  {statusLabel(catalog, e.status)}
                 </span>
               </div>
               <div className="mt-1.5 flex items-baseline justify-between text-sm font-bold text-neutral-900">
                 <span>
-                  {formatSpeciesName(e.species)}{' '}
+                  {speciesName(catalog, e.species)}{' '}
                   <span className="font-normal text-neutral-500">×{e.estimated_count}</span>
                 </span>
               </div>
@@ -102,7 +95,7 @@ function AlertList() {
                 <span>·</span>
                 <span>{e.distance_to_farm_km.toFixed(1)} km</span>
                 <span>·</span>
-                <span>{fmtTime(e.timestamp)}</span>
+                <span>{fmtTime(e.timestamp, lang)}</span>
               </div>
             </button>
           )

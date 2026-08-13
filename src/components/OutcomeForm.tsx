@@ -1,14 +1,34 @@
 import { useEffect, useState } from 'react'
 import { useGahm } from '../store/storeContext'
+import { useI18n } from '../i18n/I18nContext'
+import type { TKey } from '../i18n/catalog-en'
 import type { DetectionEvent } from '../types'
 
-const ACTIONS = ['None', 'Ranger patrol', 'SMS warning', 'Both', 'Escalated']
+const ACTIONS = ['None', 'Ranger patrol', 'SMS warning', 'Both', 'Escalated'] as const
+
+function actionLabel(t: (k: TKey, p?: Record<string, string | number>) => string, a: string): string {
+  switch (a) {
+    case 'None':
+      return t('outcome.actionNone')
+    case 'Ranger patrol':
+      return t('outcome.actionPatrol')
+    case 'SMS warning':
+      return t('outcome.actionSms')
+    case 'Both':
+      return t('outcome.actionBoth')
+    case 'Escalated':
+      return t('outcome.actionEscalated')
+    default:
+      return a
+  }
+}
 
 const inputCls =
   'w-full rounded-md border border-neutral-300 px-2.5 py-1.5 text-sm text-neutral-900 focus:border-emerald-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40'
 
 function OutcomeForm({ event, onClose }: { event: DetectionEvent; onClose: () => void }) {
   const { dispatch } = useGahm()
+  const { t } = useI18n()
   const [confirmed, setConfirmed] = useState(event.outcome?.confirmed ?? false)
   const [conflict, setConflict] = useState<'prevented' | 'occurred'>(
     event.outcome ? (event.outcome.conflictPrevented ? 'prevented' : 'occurred') : 'prevented',
@@ -52,13 +72,13 @@ function OutcomeForm({ event, onClose }: { event: DetectionEvent; onClose: () =>
       <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-xl bg-white p-5 shadow-2xl">
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-bold text-neutral-900">Record outcome</h3>
+            <h3 className="text-sm font-bold text-neutral-900">{t('outcome.title')}</h3>
             <p className="font-mono text-xs text-neutral-500">{event.event_id}</p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close"
+            aria-label={t('common.close')}
             className="rounded-md px-2 py-1 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
           >
             ×
@@ -73,11 +93,11 @@ function OutcomeForm({ event, onClose }: { event: DetectionEvent; onClose: () =>
               onChange={(e) => setConfirmed(e.target.checked)}
               className="h-4 w-4 accent-emerald-600"
             />
-            Confirmed wildlife presence
+            {t('outcome.confirmed')}
           </label>
 
           <div>
-            <span className="mb-1.5 block text-xs font-semibold text-neutral-600">Conflict</span>
+            <span className="mb-1.5 block text-xs font-semibold text-neutral-600">{t('outcome.conflict')}</span>
             <div className="flex gap-4">
               <label className="flex items-center gap-1.5 text-sm text-neutral-800">
                 <input
@@ -87,7 +107,7 @@ function OutcomeForm({ event, onClose }: { event: DetectionEvent; onClose: () =>
                   onChange={() => setConflict('prevented')}
                   className="accent-emerald-600"
                 />
-                Prevented
+                {t('outcome.prevented')}
               </label>
               <label className="flex items-center gap-1.5 text-sm text-neutral-800">
                 <input
@@ -97,14 +117,14 @@ function OutcomeForm({ event, onClose }: { event: DetectionEvent; onClose: () =>
                   onChange={() => setConflict('occurred')}
                   className="accent-emerald-600"
                 />
-                Occurred
+                {t('outcome.occurred')}
               </label>
             </div>
           </div>
 
           <div>
             <label htmlFor="outcome-action" className="mb-1 block text-xs font-semibold text-neutral-600">
-              Action taken
+              {t('outcome.actionTaken')}
             </label>
             <select
               id="outcome-action"
@@ -114,14 +134,14 @@ function OutcomeForm({ event, onClose }: { event: DetectionEvent; onClose: () =>
             >
               {ACTIONS.map((a) => (
                 <option key={a} value={a}>
-                  {a}
+                  {actionLabel(t, a)}
                 </option>
               ))}
             </select>
           </div>
 
           <div>
-            <span className="mb-1.5 block text-xs font-semibold text-neutral-600">Alert feedback</span>
+            <span className="mb-1.5 block text-xs font-semibold text-neutral-600">{t('outcome.feedback')}</span>
             <div className="flex gap-4">
               <label className="flex items-center gap-1.5 text-sm text-neutral-800">
                 <input
@@ -131,7 +151,7 @@ function OutcomeForm({ event, onClose }: { event: DetectionEvent; onClose: () =>
                   onChange={() => setFeedback('valid')}
                   className="accent-emerald-600"
                 />
-                Valid alert
+                {t('outcome.validAlert')}
               </label>
               <label className="flex items-center gap-1.5 text-sm text-neutral-800">
                 <input
@@ -141,14 +161,14 @@ function OutcomeForm({ event, onClose }: { event: DetectionEvent; onClose: () =>
                   onChange={() => setFeedback('false')}
                   className="accent-emerald-600"
                 />
-                False alert
+                {t('outcome.falseAlert')}
               </label>
             </div>
           </div>
 
           <div>
             <label htmlFor="outcome-minutes" className="mb-1 block text-xs font-semibold text-neutral-600">
-              Response minutes <span className="text-red-500">*</span>
+              {t('outcome.responseMinutes')} <span className="text-red-500">*</span>
             </label>
             <input
               id="outcome-minutes"
@@ -164,14 +184,14 @@ function OutcomeForm({ event, onClose }: { event: DetectionEvent; onClose: () =>
 
           <div>
             <label htmlFor="outcome-notes" className="mb-1 block text-xs font-semibold text-neutral-600">
-              Notes
+              {t('outcome.notes')}
             </label>
             <textarea
               id="outcome-notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
-              placeholder="Optional notes for the team"
+              placeholder={t('outcome.notesPlaceholder')}
               className={inputCls}
             />
           </div>
@@ -183,7 +203,7 @@ function OutcomeForm({ event, onClose }: { event: DetectionEvent; onClose: () =>
             onClick={onClose}
             className="rounded-md border border-neutral-300 px-3 py-1.5 text-xs font-medium text-neutral-700 transition-colors hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
           >
-            Cancel
+            {t('common.cancel')}
           </button>
           <button
             type="button"
@@ -191,7 +211,7 @@ function OutcomeForm({ event, onClose }: { event: DetectionEvent; onClose: () =>
             disabled={!valid}
             className="rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            Save outcome
+            {t('outcome.saveOutcome')}
           </button>
         </div>
       </div>

@@ -9,6 +9,8 @@ export type EventStatus =
   | 'resolved'
 
 export interface ContributionReason {
+  /** Stable id used for localized labels; absent on rows loaded from the DB */
+  key?: string
   label: string
   points: number
   description: string

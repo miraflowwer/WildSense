@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { zones, farmZones, communities } from '../data/demoData'
+import { useI18n } from '../i18n/I18nContext'
 import type { ZonePolygon, FarmZone, Community } from '../types'
 
 interface LocationPickerProps {
@@ -11,6 +12,7 @@ interface LocationPickerProps {
 }
 
 function LocationPickerMap({ initial = null, onConfirm, onClose }: LocationPickerProps) {
+  const { t } = useI18n()
   const containerRef = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<L.Map | null>(null)
   const markerRef = useRef<L.CircleMarker | null>(null)
@@ -147,10 +149,7 @@ function LocationPickerMap({ initial = null, onConfirm, onClose }: LocationPicke
           15,
           position.coords.accuracy,
         ),
-      () =>
-        setLocateError(
-          'Location unavailable — check permissions, or click the map to place the marker.',
-        ),
+      () => setLocateError(t('locationPicker.locUnavailable')),
       { enableHighAccuracy: true, timeout: 10_000, maximumAge: 30_000 },
     )
   }
@@ -167,15 +166,15 @@ function LocationPickerMap({ initial = null, onConfirm, onClose }: LocationPicke
     <div className="fixed inset-0 z-[1100] flex flex-col bg-neutral-900">
       <div className="flex items-center justify-between border-b border-neutral-700 px-4 py-2.5 text-white">
         <div>
-          <div className="text-sm font-bold">Select detection location</div>
+          <div className="text-sm font-bold">{t('locationPicker.title')}</div>
           <div className="text-[11px] text-neutral-400">
-            Click the map to place the marker
+            {t('locationPicker.sub')}
           </div>
         </div>
         <button
           type="button"
           onClick={onClose}
-          aria-label="Close"
+          aria-label={t('common.close')}
           className="rounded-md px-2 py-1 text-neutral-300 transition-colors hover:bg-neutral-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
         >
           ×
@@ -186,10 +185,10 @@ function LocationPickerMap({ initial = null, onConfirm, onClose }: LocationPicke
         {askLocation ? (
           <div className="absolute top-3 left-1/2 z-[1000] w-[300px] -translate-x-1/2 rounded-lg border border-neutral-200 bg-white p-3 shadow-xl">
             <div className="text-sm font-semibold text-neutral-900">
-              Use your current location?
+              {t('locationPicker.useMyLocation')}
             </div>
             <p className="mt-0.5 text-xs leading-relaxed text-neutral-500">
-              Set the pin to where you are now, or click the map to choose elsewhere.
+              {t('locationPicker.useMyLocationSub')}
             </p>
             <div className="mt-2 flex gap-2">
               <button
@@ -197,14 +196,14 @@ function LocationPickerMap({ initial = null, onConfirm, onClose }: LocationPicke
                 onClick={useMyLocation}
                 className="flex-1 rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
               >
-                Use my location
+                {t('locationPicker.useLocationBtn')}
               </button>
               <button
                 type="button"
                 onClick={() => setAskLocation(false)}
                 className="flex-1 rounded-md border border-neutral-300 px-3 py-1.5 text-xs font-medium text-neutral-700 transition-colors hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
               >
-                Not now
+                {t('locationPicker.notNow')}
               </button>
             </div>
           </div>
@@ -212,8 +211,7 @@ function LocationPickerMap({ initial = null, onConfirm, onClose }: LocationPicke
 
         {!askLocation && (locateError || coarse) ? (
           <div className="absolute bottom-3 left-1/2 z-[1000] w-[300px] -translate-x-1/2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-900 shadow-lg">
-            {locateError ??
-              `Location is approximate (${accuracyLabel}) — click the map to fine-tune the pin.`}
+            {locateError ?? t('locationPicker.approx', { acc: accuracyLabel })}
           </div>
         ) : null}
       </div>
@@ -222,14 +220,14 @@ function LocationPickerMap({ initial = null, onConfirm, onClose }: LocationPicke
         <span className="min-w-0 flex-1 truncate font-mono text-xs text-neutral-300">
           {pos
             ? `${pos.lat.toFixed(5)}, ${pos.lng.toFixed(5)}${accuracy ? ` · ${accuracyLabel}` : ''}`
-            : 'No location yet — click the map'}
+            : t('locationPicker.noLocationYet')}
         </span>
         <button
           type="button"
           onClick={onClose}
           className="rounded-md border border-neutral-600 px-3 py-1.5 text-xs text-neutral-200 transition-colors hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
         >
-          Cancel
+          {t('common.cancel')}
         </button>
         <button
           type="button"
@@ -237,7 +235,7 @@ function LocationPickerMap({ initial = null, onConfirm, onClose }: LocationPicke
           onClick={() => pos && onConfirm(pos)}
           className="rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          Confirm location
+          {t('locationPicker.confirmLocation')}
         </button>
       </div>
     </div>

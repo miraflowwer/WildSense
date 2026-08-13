@@ -32,6 +32,7 @@ code in `src/`; if a prose document ever disagrees with the code, the code wins
 | [`docs/auth-and-workspaces.md`](docs/auth-and-workspaces.md) | Supabase auth, offline demo mode, stay-signed-in, per-account workspaces |
 | [`docs/dev-workflow.md`](docs/dev-workflow.md) | Running, verifying, updating, hosting, uninstalling the app |
 | [`docs/build-optimization.md`](docs/build-optimization.md) | Production bundle chunk splitting: why, the Rolldown config, measured sizes |
+| [`docs/i18n.md`](docs/i18n.md) | Interface languages (English / Kannada / Tamil): scope, catalog structure, per-account preference, adding strings |
 
 ## Quick orientation
 

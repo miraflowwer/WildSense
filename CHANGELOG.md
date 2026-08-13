@@ -5,6 +5,21 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v1.1.0] — 2026-08-13 — Multi-Language Support & Auth Scroll Fix
+
+### Added
+
+- **Interface languages (English / ಕನ್ನಡ / தமிழ்)** — the entire operational workflow is translatable: auth screens, header, filters, KPI bar, alert list & detail panel, detection form, outcome form, SMS simulator chrome, risk-engine explainer, map caption & tooltips. Implemented as a zero-dependency `I18nProvider` (`src/i18n/`) with typed `t('section.key')` lookups, `en`/`kn`/`ta` catalogs, and a segmented `LanguageSwitcher` in the dashboard header and auth cards.
+- **Risk-engine content translated** — species names/descriptions, weather names/descriptions, contributing-signal reason labels & descriptions, uncertainty warnings, and suggested next actions now render in the active language via stable keys (`src/engine/riskEngine.ts` emits `ContributionReason.key`). Number-bearing descriptions (proximity/history/group) stay in English; stored data values (statuses, outcome actions) are mapped to display labels.
+- **Per-account language preference** — `preferred_language` stored in a new `public.user_settings` table (RLS-protected, see `docs/supabase-schema-and-fixes.sql` §4); a local pick made before sign-in wins and writes through to the account on sign-in.
+- **Auth scroll-leak fix** — the landing-page sign-in/sign-up modal now locks background scroll (Lenis stop + `body` overflow lock), and signing out lands on a full-page locked auth view with a "Back to landing" link instead of the scrollable landing page.
+- **Localized formatting** — dates/times render with `en-IN`/`kn-IN`/`ta-IN` locales; `document.documentElement.lang` is synced.
+
+### Notes
+
+- Kannada and Tamil strings are machine-drafted; the ~50 demo-critical strings (alerts, forms, auth, engine) are marked for native-speaker review before Demo Day. Guided tour, ethics modal, and landing page stay English by design.
+- Dashboard header buttons reorganized on narrow screens (`xl:`/`md:` visibility tiers) to fit the language switcher without overflow.
+
 ## [v1.0.1] — 2026-08-13 — Build Performance
 
 ### Changed

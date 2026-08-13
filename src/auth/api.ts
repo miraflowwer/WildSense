@@ -204,3 +204,30 @@ export async function insertSmsLog(entry: {
     throw new Error(error.message)
   }
 }
+
+export async function loadUserLanguage(): Promise<string | null> {
+  const db = requireClient()
+  const userId = await currentUserId()
+  const { data, error } = await db
+    .from('user_settings')
+    .select('preferred_language')
+    .eq('user_id', userId)
+    .maybeSingle()
+  if (error) {
+    console.error('[GAHM API Error] loadUserLanguage failed:', error.message, error)
+    throw new Error(error.message)
+  }
+  return data?.preferred_language ?? null
+}
+
+export async function saveUserLanguage(lang: string): Promise<void> {
+  const db = requireClient()
+  const userId = await currentUserId()
+  const { error } = await db
+    .from('user_settings')
+    .upsert({ user_id: userId, preferred_language: lang }, { onConflict: 'user_id' })
+  if (error) {
+    console.error('[GAHM API Error] saveUserLanguage failed:', error.message, error)
+    throw new Error(error.message)
+  }
+}

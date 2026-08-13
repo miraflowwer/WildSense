@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import type { FormEvent, KeyboardEvent } from 'react'
 import { useAuth } from '../auth/authContext'
+import { UNREACHABLE_MESSAGE } from '../auth/AuthProvider'
+import { useI18n } from '../i18n/I18nContext'
+import LanguageSwitcher from './LanguageSwitcher'
 
 const MIN_PASSWORD = 8
 
@@ -10,6 +13,7 @@ const labelCls = 'mb-1 block text-[11px] font-semibold uppercase tracking-widest
 
 function SetPassword() {
   const { setNewPassword, errorText } = useAuth()
+  const { t } = useI18n()
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [show, setShow] = useState(false)
@@ -39,19 +43,19 @@ function SetPassword() {
         <div className="mb-6">
           <div className="mb-1 text-3xl font-bold tracking-tight text-neutral-900">GAHM</div>
           <div className="text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
-            Wildlife Conflict Risk Engine
+            {t('app.brandTagline')}
           </div>
         </div>
 
-        <h1 className="text-xl font-bold tracking-tight text-neutral-900">Set a new password</h1>
+        <h1 className="text-xl font-bold tracking-tight text-neutral-900">{t('setPassword.title')}</h1>
         <p className="mb-6 mt-1 text-sm leading-relaxed text-neutral-600">
-          The reset link is verified. Choose a new password for your account.
+          {t('setPassword.sub')}
         </p>
 
         <form onSubmit={submit} className="space-y-4">
           <div>
             <label htmlFor="reset-password" className={labelCls}>
-              New password
+              {t('setPassword.newPassword')}
             </label>
             <div className="relative">
               <input
@@ -67,29 +71,29 @@ function SetPassword() {
               <button
                 type="button"
                 onClick={() => setShow((s) => !s)}
-                aria-label={show ? 'Hide password' : 'Show password'}
+                aria-label={show ? t('common.hide') : t('common.show')}
                 className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-xs font-semibold text-neutral-500 transition-colors hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
               >
-                {show ? 'Hide' : 'Show'}
+                {show ? t('common.hide') : t('common.show')}
               </button>
             </div>
             {password === '' ? (
-              <p className="mt-1 text-xs text-neutral-500">Minimum {MIN_PASSWORD} characters required</p>
+              <p className="mt-1 text-xs text-neutral-500">
+                {t('auth.minChars', { n: MIN_PASSWORD })}
+              </p>
             ) : password.length < MIN_PASSWORD ? (
               <p className="mt-1 text-xs font-semibold text-red-600">
-                ⚠️ Password must be at least {MIN_PASSWORD} characters (currently {password.length})
+                {t('auth.pwTooShort', { n: MIN_PASSWORD, len: password.length })}
               </p>
             ) : (
-              <p className="mt-1 text-xs font-semibold text-emerald-600">
-                ✓ Password meets length requirements
-              </p>
+              <p className="mt-1 text-xs font-semibold text-emerald-600">{t('auth.pwOk')}</p>
             )}
-            {capsLock ? <p className="mt-1 text-xs text-amber-600">Caps Lock is on</p> : null}
+            {capsLock ? <p className="mt-1 text-xs text-amber-600">{t('auth.capsLock')}</p> : null}
           </div>
 
           <div>
             <label htmlFor="reset-confirm" className={labelCls}>
-              Confirm password
+              {t('auth.confirmPassword')}
             </label>
             <input
               id="reset-confirm"
@@ -102,7 +106,7 @@ function SetPassword() {
               className={inputCls}
             />
             {confirm !== '' && confirm !== password ? (
-              <p className="mt-1 text-xs text-red-600">Passwords don&apos;t match</p>
+              <p className="mt-1 text-xs text-red-600">{t('auth.pwMismatch')}</p>
             ) : null}
           </div>
 
@@ -111,7 +115,7 @@ function SetPassword() {
               role="alert"
               className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-xs leading-relaxed text-red-700"
             >
-              {errorText}
+              {errorText === UNREACHABLE_MESSAGE ? t('auth.unreachable') : errorText}
             </div>
           ) : null}
 
@@ -120,9 +124,13 @@ function SetPassword() {
             disabled={!valid || busy}
             className="w-full rounded-md bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {busy ? 'Saving…' : 'Save new password'}
+            {busy ? t('setPassword.saving') : t('setPassword.saveNewPassword')}
           </button>
         </form>
+
+        <div className="mt-4 flex justify-center">
+          <LanguageSwitcher variant="card" />
+        </div>
       </div>
     </div>
   )

@@ -1,23 +1,20 @@
 import { useMemo } from 'react'
 import type { ReactNode } from 'react'
 import { useGahm } from '../store/storeContext'
-import { formatSpeciesName } from '../engine/config'
+import { useI18n } from '../i18n/I18nContext'
+import { riskLevelLabel, speciesName, statusLabel } from '../i18n/helpers'
 import { communities } from '../data/demoData'
 import type { FilterState } from '../types'
 
-const RISK_LEVELS: [string, string][] = [
-  ['low', 'Low'],
-  ['medium', 'Medium'],
-  ['high', 'High'],
-]
+const RISK_LEVELS = ['low', 'medium', 'high']
 
-const STATUSES: [string, string][] = [
-  ['awaiting_review', 'Awaiting review'],
-  ['under_review', 'Under review'],
-  ['monitoring', 'Monitoring'],
-  ['escalated', 'Escalated'],
-  ['dismissed', 'Dismissed'],
-  ['resolved', 'Resolved'],
+const STATUSES = [
+  'awaiting_review',
+  'under_review',
+  'monitoring',
+  'escalated',
+  'dismissed',
+  'resolved',
 ]
 
 const selectCls =
@@ -34,6 +31,7 @@ function Label({ text, children }: { text: string; children: ReactNode }) {
 
 function FiltersBar() {
   const { state, dispatch } = useGahm()
+  const { t, catalog } = useI18n()
   const { filter } = state
 
   const species = useMemo(
@@ -52,43 +50,43 @@ function FiltersBar() {
   return (
     <div className="border-b border-neutral-300 bg-neutral-100/90 px-3 py-2">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
-        <Label text="Species">
+        <Label text={t('filters.species')}>
           <select value={filter.species} onChange={(e) => set({ species: e.target.value })} className={selectCls}>
-            <option value="">All species</option>
+            <option value="">{t('filters.allSpecies')}</option>
             {species.map((s) => (
               <option key={s} value={s}>
-                {formatSpeciesName(s)}
+                {speciesName(catalog, s)}
               </option>
             ))}
           </select>
         </Label>
-        <Label text="Risk">
+        <Label text={t('filters.risk')}>
           <select value={filter.risk} onChange={(e) => set({ risk: e.target.value })} className={selectCls}>
-            <option value="">All risk</option>
-            {RISK_LEVELS.map(([v, label]) => (
+            <option value="">{t('filters.allRisk')}</option>
+            {RISK_LEVELS.map((v) => (
               <option key={v} value={v}>
-                {label}
+                {riskLevelLabel(catalog, v)}
               </option>
             ))}
           </select>
         </Label>
-        <Label text="Status">
+        <Label text={t('filters.status')}>
           <select value={filter.status} onChange={(e) => set({ status: e.target.value })} className={selectCls}>
-            <option value="">All statuses</option>
-            {STATUSES.map(([v, label]) => (
+            <option value="">{t('filters.allStatuses')}</option>
+            {STATUSES.map((v) => (
               <option key={v} value={v}>
-                {label}
+                {statusLabel(catalog, v)}
               </option>
             ))}
           </select>
         </Label>
-        <Label text="Community">
+        <Label text={t('filters.community')}>
           <select
             value={filter.community}
             onChange={(e) => set({ community: e.target.value })}
             className={selectCls}
           >
-            <option value="">All communities</option>
+            <option value="">{t('filters.allCommunities')}</option>
             {communities.map((c) => (
               <option key={c.id} value={c.name}>
                 {c.name}
@@ -96,9 +94,9 @@ function FiltersBar() {
             ))}
           </select>
         </Label>
-        <Label text="Zone">
+        <Label text={t('filters.zone')}>
           <select value={filter.zone} onChange={(e) => set({ zone: e.target.value })} className={selectCls}>
-            <option value="">All zones</option>
+            <option value="">{t('filters.allZones')}</option>
             {zones.map((z) => (
               <option key={z} value={z}>
                 {z}
@@ -118,7 +116,7 @@ function FiltersBar() {
             }
             className="ml-auto text-[11px] font-semibold text-emerald-700 hover:text-emerald-800 hover:underline"
           >
-            Clear filters ({activeCount})
+            {t('filters.clearFilters', { n: activeCount })}
           </button>
         ) : null}
       </div>

@@ -2,9 +2,11 @@ import { useEffect, useRef } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useGahm } from '../store/storeContext'
-import { formatSpeciesName } from '../engine/config'
+import { useI18n } from '../i18n/I18nContext'
+import { riskLevelLabel, speciesName } from '../i18n/helpers'
 import { filterEvents } from '../store/selectors'
 import { zones, farmZones, communities, sensors, riskLevelColor } from '../data/demoData'
+import type { Catalog, TKey } from '../i18n/catalog-en'
 import type { DetectionEvent, FarmZone, Community, Sensor, ZonePolygon } from '../types'
 
 interface LatLngPoint {
@@ -55,6 +57,8 @@ function addDetection(
   dispatch: StoreDispatch,
   ev: DetectionEvent,
   selected: boolean,
+  cat: Catalog,
+  t: (k: TKey, p?: Record<string, string | number>) => string,
 ): void {
   const color = riskLevelColor[ev.risk_level]
 
@@ -79,7 +83,13 @@ function addDetection(
     fillOpacity: 0.9,
   })
     .bindTooltip(
-      `<b>${ev.event_id}</b> — ${formatSpeciesName(ev.species)}<br/>Risk ${ev.risk_score} (${ev.risk_level})`,
+      t('map.tooltip', {
+        id: ev.event_id,
+        species: speciesName(cat, ev.species),
+        score: ev.risk_score,
+        level: riskLevelLabel(cat, ev.risk_level),
+      }),
+      { opacity: 0.95 },
     )
     .on('click', () => {
       dispatch({ type: 'SELECT_ALERT', id: ev.event_id })
@@ -94,6 +104,11 @@ export default function MapView() {
   const detectionsGroupRef = useRef<L.LayerGroup | null>(null)
 
   const { state, dispatch } = useGahm()
+  const { t, catalog } = useI18n()
+  const tRef = useRef(t)
+  tRef.current = t
+  const catRef = useRef(catalog)
+  catRef.current = catalog
   const stateRef = useRef(state)
   stateRef.current = state
   const dispatchRef = useRef(dispatch)
@@ -161,7 +176,7 @@ export default function MapView() {
         fillColor: on ? '#0284c7' : '#dc2626',
         fillOpacity: 0.85,
       })
-        .bindTooltip(`${s.name} — ${on ? 'online' : 'offline'}`)
+        .bindTooltip(`${s.name} — ${on ? tRef.current('map.online') : tRef.current('map.offline')}`)
         .addTo(staticGroup)
     })
 
@@ -188,19 +203,19 @@ export default function MapView() {
     const st = stateRef.current
     group.clearLayers()
     for (const ev of filterEvents(st.events, st.filter)) {
-      addDetection(group, dispatchRef.current, ev, ev.event_id === st.selectedId)
+      addDetection(group, dispatchRef.current, ev, ev.event_id === st.selectedId, catRef.current, tRef.current)
     }
   }, [state.events, state.selectedId, state.filter, dispatch])
 
   return (
     <div data-tour="map-view" ref={containerRef} className="relative h-full w-full border-r border-neutral-300/70">
       <div className="pointer-events-none absolute bottom-3 left-3 z-[1000] max-w-[260px] rounded-md border border-emerald-900/20 bg-white/90 px-2.5 py-1.5 text-[11px] leading-snug text-neutral-700 shadow-sm backdrop-blur-xs">
-        <span className="font-semibold text-emerald-900">Real villages</span> · modeled
-        Bandipur–Nagarhole–Mudumalai corridor · events are simulated
+        <span className="font-semibold text-emerald-900">{t('map.realVillages')}</span>
+        {t('map.caption')}
       </div>
       {state.mode === 'demo' && (
         <div className="pointer-events-none absolute right-3 top-3 z-[1000] rounded-md border border-neutral-700 bg-neutral-900/90 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-amber-300 shadow-sm backdrop-blur-xs">
-          Demo data
+          {t('map.demoData')}
         </div>
       )}
     </div>

@@ -51,6 +51,7 @@ export function computeRisk(
         : Math.round((25 * (MAX_PROXIMITY_KM - d)) / (MAX_PROXIMITY_KM - 1))
   if (proximity > 0) {
     reasons.push({
+      key: 'proximity',
       label: 'Proximity to farms',
       points: proximity,
       description: `${d.toFixed(1)} km from the nearest farm boundary`,
@@ -64,6 +65,7 @@ export function computeRisk(
     : 0
   if (movement > 0) {
     reasons.push({
+      key: input.movement_toward_farm ? 'movement_toward' : 'movement_away',
       label: input.movement_toward_farm
         ? 'Movement toward boundary'
         : 'Movement away',
@@ -78,6 +80,7 @@ export function computeRisk(
   const speciesPts = SPECIES_IMPACT[speciesKey] ?? SPECIES_IMPACT[input.species] ?? 10
   if (speciesPts > 0) {
     reasons.push({
+      key: 'species',
       label: 'Species impact',
       points: speciesPts,
       description: `${formatSpeciesName(input.species)} has high conflict potential in this habitat`,
@@ -87,6 +90,7 @@ export function computeRisk(
   const history = Math.min(15, input.historical_incidents_nearby * 5)
   if (history > 0) {
     reasons.push({
+      key: 'history',
       label: 'Historical conflict hotspot',
       points: history,
       description: `${input.historical_incidents_nearby} previous incident${
@@ -102,6 +106,7 @@ export function computeRisk(
   const timeOfDay = inPeak ? 10 : 3
   if (timeOfDay > 0) {
     reasons.push({
+      key: inPeak ? 'time_peak' : 'time_outside',
       label: 'High-risk time window',
       points: timeOfDay,
       description: inPeak
@@ -116,6 +121,7 @@ export function computeRisk(
   )
   if (group > 0) {
     reasons.push({
+      key: 'group',
       label: 'Group size',
       points: group,
       description: `Estimated group of ${input.estimated_count} animals`,
@@ -125,6 +131,7 @@ export function computeRisk(
   const weather = WEATHER_FACTOR[input.weather_condition] ?? 2
   if (weather > 0) {
     reasons.push({
+      key: 'weather',
       label: 'Weather / seasonal',
       points: weather,
       description:
@@ -151,6 +158,7 @@ export function computeRisk(
   }
   if (penalty > 0) {
     reasons.push({
+      key: 'uncertainty',
       label: 'Data uncertainty adjustment',
       points: -penalty,
       description: warnings.length ? warnings[0] : 'Missing or uncertain data',

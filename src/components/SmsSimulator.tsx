@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react'
 import { useGahm } from '../store/storeContext'
 import { findById } from '../store/selectors'
 import { insertSmsLog } from '../auth/api'
+import { useI18n } from '../i18n/I18nContext'
 import { communities } from '../data/demoData'
 
-type Lang = 'en' | 'hi' | 'kn' | 'ta'
+type SmsLang = 'en' | 'hi' | 'kn' | 'ta'
 
-function langForCommunity(community: string | undefined): Lang {
+function langForCommunity(community: string | undefined): SmsLang {
   const comm = communities.find((c) => c.name === community)
   switch (comm?.preferredLanguage) {
     case 'Kannada':
@@ -20,7 +21,7 @@ function langForCommunity(community: string | undefined): Lang {
   }
 }
 
-function messageFor(lang: Lang, zone: string): string {
+function messageFor(lang: SmsLang, zone: string): string {
   switch (lang) {
     case 'hi':
       return `GAHM चेतावनी: ${zone} के पास वन्यजीव ख़तरा। पशुओं को सुरक्षित करें और खेत की सीमा से दूर रहें। वनरक्षकों को सूचित कर दिया गया है। सुरक्षित होने पर SAFE जवाब दें। रद्द करने के लिए STOP लिखें।`
@@ -49,15 +50,16 @@ const langBtn = (active: boolean) =>
       : 'border border-neutral-300 text-neutral-600 hover:bg-neutral-50'
   }`
 
-function fmtAt(iso: string) {
+function fmtAt(iso: string, locale: string) {
   const d = new Date(iso)
-  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  return d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })
 }
 
 function SmsSimulator() {
   const { state, dispatch } = useGahm()
+  const { t, lang } = useI18n()
   const event = state.sms.openEventId ? findById(state.events, state.sms.openEventId) : undefined
-  const [lang, setLang] = useState<Lang>(() => langForCommunity(event?.community))
+  const [smsLang, setSmsLang] = useState<SmsLang>(() => langForCommunity(event?.community))
   const [reply, setReply] = useState('SAFE')
 
   useEffect(() => {
@@ -70,12 +72,12 @@ function SmsSimulator() {
 
   useEffect(() => {
     if (!event) return
-    setLang(langForCommunity(event.community))
+    setSmsLang(langForCommunity(event.community))
   }, [event])
 
   if (!event) return null
 
-  const message = messageFor(lang, event.sensor_zone)
+  const message = messageFor(smsLang, event.sensor_zone)
 
   const sendWarning = () => {
     dispatch({ type: 'SEND_SMS' })
@@ -108,15 +110,15 @@ function SmsSimulator() {
       <div data-tour="sms-modal" className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-xl bg-white p-5 shadow-2xl">
         <div className="mb-3 flex items-start justify-between">
           <div>
-            <h3 className="text-base font-bold text-neutral-900">Simulated SMS warning — Demo</h3>
+            <h3 className="text-base font-bold text-neutral-900">{t('sms.title')}</h3>
             <p className="text-xs text-neutral-500">
-              Zone: {event.sensor_zone} · {event.event_id}
+              {t('sms.zone', { zone: event.sensor_zone, id: event.event_id })}
             </p>
           </div>
           <button
             type="button"
             onClick={() => dispatch({ type: 'CLOSE_SMS' })}
-            aria-label="Close"
+            aria-label={t('common.close')}
             className="rounded-md px-2 py-1 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
           >
             ×
@@ -125,22 +127,22 @@ function SmsSimulator() {
 
         <div className="mb-3">
           <div className="mb-1.5 flex items-center gap-2">
-            <span className="text-xs font-semibold text-neutral-600">Language:</span>
+            <span className="text-xs font-semibold text-neutral-600">{t('sms.language')}</span>
             <span className="text-[10px] text-neutral-400">
-              auto-selected for {event.community}
+              {t('sms.autoSelected', { community: event.community })}
             </span>
           </div>
           <div className="flex flex-wrap gap-1.5">
-            <button type="button" onClick={() => setLang('en')} className={langBtn(lang === 'en')}>
+            <button type="button" onClick={() => setSmsLang('en')} className={langBtn(smsLang === 'en')}>
               English
             </button>
-            <button type="button" onClick={() => setLang('hi')} className={langBtn(lang === 'hi')}>
+            <button type="button" onClick={() => setSmsLang('hi')} className={langBtn(smsLang === 'hi')}>
               हिन्दी
             </button>
-            <button type="button" onClick={() => setLang('kn')} className={langBtn(lang === 'kn')}>
+            <button type="button" onClick={() => setSmsLang('kn')} className={langBtn(smsLang === 'kn')}>
               ಕನ್ನಡ
             </button>
-            <button type="button" onClick={() => setLang('ta')} className={langBtn(lang === 'ta')}>
+            <button type="button" onClick={() => setSmsLang('ta')} className={langBtn(smsLang === 'ta')}>
               தமிழ்
             </button>
           </div>
@@ -148,14 +150,14 @@ function SmsSimulator() {
 
         <div className="mb-3 rounded-lg border border-neutral-200 bg-neutral-50 p-3">
           <div className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-neutral-500">
-            Composed message
+            {t('sms.composedMessage')}
           </div>
           <p className="text-sm leading-relaxed text-neutral-800">{message}</p>
         </div>
 
         <div className="mb-3">
           <div className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-neutral-500">
-            Recipients (demo numbers)
+            {t('sms.recipients')}
           </div>
           <ul className="space-y-0.5 rounded-lg border border-neutral-200 p-2">
             {RECIPIENTS.map((r) => (
@@ -174,29 +176,29 @@ function SmsSimulator() {
           disabled={state.sms.sending}
           className="w-full rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {state.sms.sending ? 'Sending…' : 'Send warning'}
+          {state.sms.sending ? t('sms.sending') : t('sms.sendWarning')}
         </button>
 
         {state.sms.sentAt ? (
           <div className="mt-2 flex flex-wrap items-center gap-3 text-xs">
-            <span className="font-semibold text-emerald-600">delivered · {state.sms.delivered}</span>
-            <span className="font-semibold text-red-600">delivery failed · {state.sms.failed}</span>
-            <span className="text-neutral-400">Sent {fmtAt(state.sms.sentAt)}</span>
+            <span className="font-semibold text-emerald-600">{t('sms.delivered', { n: state.sms.delivered })}</span>
+            <span className="font-semibold text-red-600">{t('sms.failed', { n: state.sms.failed })}</span>
+            <span className="text-neutral-400">{t('sms.sentAt', { time: fmtAt(state.sms.sentAt, lang) })}</span>
           </div>
         ) : null}
 
         <div className="mt-4">
           <div className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-neutral-500">
-            Replies
+            {t('sms.replies')}
           </div>
           {state.sms.replies.length === 0 ? (
-            <p className="text-xs text-neutral-400">No replies yet.</p>
+            <p className="text-xs text-neutral-400">{t('sms.noReplies')}</p>
           ) : (
             <ul className="space-y-1 rounded-lg border border-neutral-200 p-2">
               {state.sms.replies.map((r, i) => (
                 <li key={i} className="text-xs">
                   <span className="font-semibold text-emerald-700">{r.text}</span>
-                  <span className="ml-2 text-neutral-400">{fmtAt(r.at)}</span>
+                  <span className="ml-2 text-neutral-400">{fmtAt(r.at, lang)}</span>
                 </li>
               ))}
             </ul>
@@ -205,7 +207,7 @@ function SmsSimulator() {
             <input
               value={reply}
               onChange={(e) => setReply(e.target.value)}
-              placeholder="e.g. SAFE"
+              placeholder={t('sms.replyPlaceholder')}
               className="min-w-0 flex-1 rounded-md border border-neutral-300 px-2.5 py-1.5 text-xs text-neutral-900 placeholder:text-neutral-400 focus:border-emerald-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
             />
             <button
@@ -218,7 +220,7 @@ function SmsSimulator() {
               }}
               className="rounded-md border border-neutral-300 px-3 py-1.5 text-xs font-semibold text-neutral-700 transition-colors hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
             >
-              Send
+              {t('common.send')}
             </button>
           </div>
         </div>
@@ -229,18 +231,17 @@ function SmsSimulator() {
             onClick={sendAllClear}
             className="rounded-md border border-neutral-300 px-3 py-1.5 text-xs font-semibold text-neutral-700 transition-colors hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
           >
-            Send all-clear
+            {t('sms.sendAllClear')}
           </button>
           {state.sms.allClearSent ? (
             <div className="mt-2 rounded-md border border-emerald-200 bg-emerald-50 p-2.5 text-xs text-emerald-800">
-              All-clear sent: wildlife risk has cleared in {event.sensor_zone}. Thank you for securing
-              your area.
+              {t('sms.allClearSent', { zone: event.sensor_zone })}
             </div>
           ) : null}
         </div>
 
         <p className="mt-4 border-t border-neutral-100 pt-2 text-[10px] text-neutral-400">
-          DPDP Act 2023 &amp; Wildlife Protection Act 1972 Compliant: Exact GPS coordinates are never shared in public warnings to protect wildlife from poaching. Recipients may opt out by replying STOP.
+          {t('sms.compliance')}
         </p>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useGahm } from '../store/storeContext'
+import { useI18n } from '../i18n/I18nContext'
 
 const ACTIVE_STATUSES = ['awaiting_review', 'under_review', 'monitoring', 'escalated']
 
@@ -34,6 +35,7 @@ function Stat({
 
 function OperationsBar() {
   const { state } = useGahm()
+  const { t } = useI18n()
 
   const highRisk = useMemo(
     () =>
@@ -56,31 +58,31 @@ function OperationsBar() {
       className="grid grid-cols-2 gap-1.5 border-b border-neutral-300 bg-neutral-100/90 px-3 py-2 sm:grid-cols-5 sm:gap-2.5 sm:px-4 sm:py-2.5"
     >
       <Stat
-        label="Active high-risk incidents"
+        label={t('ops.activeHighRisk')}
         value={String(highRisk)}
         tone={highRisk > 0 ? 'text-red-600' : 'text-neutral-700'}
         accent="border-l-4 border-l-red-500"
       />
       <Stat
-        label="Unreviewed alerts"
+        label={t('ops.unreviewed')}
         value={String(unreviewed)}
         tone={unreviewed > 0 ? 'text-amber-600' : 'text-neutral-700'}
         accent="border-l-4 border-l-amber-500"
       />
       <Stat
-        label="Avg response time"
-        value={avg === null || avg === undefined ? '— min' : `${avg} min`}
+        label={t('ops.avgResponse')}
+        value={avg === null || avg === undefined ? t('ops.minDash') : t('ops.minutes', { n: avg })}
         tone="text-neutral-800"
         accent="border-l-4 border-l-sky-500"
       />
       <Stat
-        label="Sensors online"
+        label={t('ops.sensorsOnline')}
         value={`${state.kpis.sensorsOnline} / ${state.kpis.sensorsTotal}`}
         tone="text-emerald-700"
         accent="border-l-4 border-l-emerald-500"
       />
       <Stat
-        label="Communities affected"
+        label={t('ops.communitiesAffected')}
         value={String(state.kpis.communitiesAffected)}
         tone="text-purple-700"
         accent="border-l-4 border-l-purple-500"

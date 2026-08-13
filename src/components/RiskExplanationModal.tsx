@@ -1,10 +1,13 @@
 import { useEffect } from 'react'
+import { useI18n } from '../i18n/I18nContext'
 
 interface RiskExplanationModalProps {
   onClose: () => void
 }
 
 export default function RiskExplanationModal({ onClose }: RiskExplanationModalProps) {
+  const { t } = useI18n()
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -26,18 +29,18 @@ export default function RiskExplanationModal({ onClose }: RiskExplanationModalPr
           <div>
             <div className="flex items-center gap-2">
               <span className="rounded-md bg-emerald-100 px-2 py-0.5 text-xs font-extrabold uppercase tracking-wider text-emerald-800">
-                Risk Engine Specification
+                {t('riskExplain.badge')}
               </span>
-              <span className="text-xs font-medium text-neutral-500">SDG 15 Life on Land</span>
+              <span className="text-xs font-medium text-neutral-500">{t('riskExplain.sdg')}</span>
             </div>
             <h2 id="risk-explanation-title" className="mt-1 text-xl font-black tracking-tight text-neutral-900">
-              How Conflict Risk is Calculated
+              {t('riskExplain.title')}
             </h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close modal"
+            aria-label={t('common.close')}
             className="rounded-lg p-1.5 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
           >
             ✕
@@ -46,93 +49,79 @@ export default function RiskExplanationModal({ onClose }: RiskExplanationModalPr
 
         {/* Overview Box */}
         <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50/80 p-4 text-xs leading-relaxed text-emerald-950">
-          <p className="font-semibold text-emerald-900">
-            Multi-Signal Risk Aggregation &amp; Threshold Filtering
-          </p>
-          <p className="mt-1 text-emerald-800">
-            Instead of generating an alert for every single wildlife detection, GAHM identifies patterns across multiple environmental context signals. It automatically filters out routine animal behavior and generates targeted, explainable alerts only when the calculated risk crosses a defined threshold.
-          </p>
+          <p className="font-semibold text-emerald-900">{t('riskExplain.overviewTitle')}</p>
+          <p className="mt-1 text-emerald-800">{t('riskExplain.overview')}</p>
         </div>
 
         {/* 5 Core Environmental Context Signals */}
         <div className="mt-5 space-y-3">
           <h3 className="text-xs font-extrabold uppercase tracking-wider text-neutral-500">
-            5 Core Environmental Context Signals
+            {t('riskExplain.signalsTitle')}
           </h3>
 
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-xl border border-neutral-200 bg-neutral-50/60 p-3.5 shadow-2xs">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-extrabold text-neutral-900">1. Animal Movement &amp; Direction</span>
+                <span className="text-xs font-extrabold text-neutral-900">{t('riskExplain.signal1Title')}</span>
                 <span className="rounded-md bg-emerald-100 px-2 py-0.5 font-mono text-[11px] font-bold text-emerald-800">
-                  Weight: 20 pts
+                  {t('riskExplain.weight', { n: 20 })}
                 </span>
               </div>
-              <p className="mt-1 text-xs text-neutral-600">
-                Is the detected animal heading directly toward a human settlement, or moving parallel/away? Headward movement adds maximum risk points (+20).
-              </p>
+              <p className="mt-1 text-xs text-neutral-600">{t('riskExplain.signal1Body')}</p>
             </div>
 
             <div className="rounded-xl border border-neutral-200 bg-neutral-50/60 p-3.5 shadow-2xs">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-extrabold text-neutral-900">2. Proximity to Farms</span>
+                <span className="text-xs font-extrabold text-neutral-900">{t('riskExplain.signal2Title')}</span>
                 <span className="rounded-md bg-emerald-100 px-2 py-0.5 font-mono text-[11px] font-bold text-emerald-800">
-                  Weight: 25 pts
+                  {t('riskExplain.weight', { n: 25 })}
                 </span>
               </div>
-              <p className="mt-1 text-xs text-neutral-600">
-                Calculates precise distance to vulnerable human agriculture and residential zones. Highest priority (+25) within 1 km.
-              </p>
+              <p className="mt-1 text-xs text-neutral-600">{t('riskExplain.signal2Body')}</p>
             </div>
 
             <div className="rounded-xl border border-neutral-200 bg-neutral-50/60 p-3.5 shadow-2xs">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-extrabold text-neutral-900">3. Historical Conflict Data</span>
+                <span className="text-xs font-extrabold text-neutral-900">{t('riskExplain.signal3Title')}</span>
                 <span className="rounded-md bg-emerald-100 px-2 py-0.5 font-mono text-[11px] font-bold text-emerald-800">
-                  Weight: 15 pts
+                  {t('riskExplain.weight', { n: 15 })}
                 </span>
               </div>
-              <p className="mt-1 text-xs text-neutral-600">
-                Checks if the exact location is a known historical hotspot for past crop-raiding, property damage, or human-wildlife encounters.
-              </p>
+              <p className="mt-1 text-xs text-neutral-600">{t('riskExplain.signal3Body')}</p>
             </div>
 
             <div className="rounded-xl border border-neutral-200 bg-neutral-50/60 p-3.5 shadow-2xs">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-extrabold text-neutral-900">4. Weather &amp; Environmental</span>
+                <span className="text-xs font-extrabold text-neutral-900">{t('riskExplain.signal4Title')}</span>
                 <span className="rounded-md bg-emerald-100 px-2 py-0.5 font-mono text-[11px] font-bold text-emerald-800">
-                  Weight: 5 pts
+                  {t('riskExplain.weight', { n: 5 })}
                 </span>
               </div>
-              <p className="mt-1 text-xs text-neutral-600">
-                Seasonal conditions (like dry season droughts or post-monsoon crop ripening) force elephants and large fauna to forage near villages.
-              </p>
+              <p className="mt-1 text-xs text-neutral-600">{t('riskExplain.signal4Body')}</p>
             </div>
 
             <div className="rounded-xl border border-neutral-200 bg-neutral-50/60 p-3.5 shadow-2xs sm:col-span-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-extrabold text-neutral-900">5. Time of Day (Activity Windows)</span>
+                <span className="text-xs font-extrabold text-neutral-900">{t('riskExplain.signal5Title')}</span>
                 <span className="rounded-md bg-emerald-100 px-2 py-0.5 font-mono text-[11px] font-bold text-emerald-800">
-                  Weight: 10 pts
+                  {t('riskExplain.weight', { n: 10 })}
                 </span>
               </div>
-              <p className="mt-1 text-xs text-neutral-600">
-                Peak risk occurs during dusk (17:00–20:00) and dawn (05:00–08:00) when visibility is low and wildlife movement overlaps human agricultural hours.
-              </p>
+              <p className="mt-1 text-xs text-neutral-600">{t('riskExplain.signal5Body')}</p>
             </div>
           </div>
         </div>
 
         {/* Additional Scoring Factors */}
         <div className="mt-4 rounded-xl border border-neutral-200 bg-neutral-50/40 p-3.5">
-          <div className="text-xs font-bold text-neutral-800">Additional Signal Factors:</div>
+          <div className="text-xs font-bold text-neutral-800">{t('riskExplain.additionalTitle')}</div>
           <ul className="mt-1.5 grid gap-2 text-xs text-neutral-600 sm:grid-cols-2">
             <li className="flex items-center justify-between">
-              <span>• Species Impact Factor (Elephant, Tiger, Leopard)</span>
+              <span>{t('riskExplain.speciesFactor')}</span>
               <span className="font-mono font-bold text-neutral-800">+15 pts</span>
             </li>
             <li className="flex items-center justify-between">
-              <span>• Group Size &amp; Herd Count</span>
+              <span>{t('riskExplain.groupFactor')}</span>
               <span className="font-mono font-bold text-neutral-800">+10 pts</span>
             </li>
           </ul>
@@ -141,39 +130,31 @@ export default function RiskExplanationModal({ onClose }: RiskExplanationModalPr
         {/* Risk Thresholds & Action System */}
         <div className="mt-5 space-y-2">
           <h3 className="text-xs font-extrabold uppercase tracking-wider text-neutral-500">
-            Defined Risk Thresholds &amp; Automated Actions
+            {t('riskExplain.thresholdsTitle')}
           </h3>
 
           <div className="grid gap-2.5 sm:grid-cols-3">
             <div className="rounded-xl border border-blue-200 bg-blue-50/70 p-3 text-xs">
-              <div className="font-bold text-blue-900">Low Risk (&lt; 40)</div>
-              <p className="mt-0.5 text-blue-800">
-                Routine animal detection. Logged passively for ecological tracking. No immediate ranger dispatch.
-              </p>
+              <div className="font-bold text-blue-900">{t('riskExplain.lowTitle')}</div>
+              <p className="mt-0.5 text-blue-800">{t('riskExplain.lowBody')}</p>
             </div>
 
             <div className="rounded-xl border border-amber-200 bg-amber-50/70 p-3 text-xs">
-              <div className="font-bold text-amber-900">Medium Risk (40–69)</div>
-              <p className="mt-0.5 text-amber-800">
-                Elevated conflict threat. Added to active monitoring; alerts rangers to schedule a field check.
-              </p>
+              <div className="font-bold text-amber-900">{t('riskExplain.mediumTitle')}</div>
+              <p className="mt-0.5 text-amber-800">{t('riskExplain.mediumBody')}</p>
             </div>
 
             <div className="rounded-xl border border-red-200 bg-red-50/70 p-3 text-xs">
-              <div className="font-bold text-red-900">High Risk (≥ 70)</div>
-              <p className="mt-0.5 text-red-800">
-                Critical imminent threat. Triggers immediate ranger unit contact and community SMS warning preview.
-              </p>
+              <div className="font-bold text-red-900">{t('riskExplain.highTitle')}</div>
+              <p className="mt-0.5 text-red-800">{t('riskExplain.highBody')}</p>
             </div>
           </div>
         </div>
 
         {/* Data Uncertainty Penalty */}
         <div className="mt-4 rounded-xl border border-amber-300 bg-amber-50/60 p-3.5 text-xs text-amber-950">
-          <div className="font-bold text-amber-900">Data Uncertainty &amp; Safety Buffer</div>
-          <p className="mt-1 text-amber-800">
-            If sensor movement data or species confidence is missing, GAHM applies an explicit uncertainty penalty (-8 pts) and highlights an alert banner. Rather than making blind assumptions, it alerts human operators to manually review unverified detections.
-          </p>
+          <div className="font-bold text-amber-900">{t('riskExplain.uncertaintyTitle')}</div>
+          <p className="mt-1 text-amber-800">{t('riskExplain.uncertaintyBody')}</p>
         </div>
 
         {/* Footer */}
@@ -183,7 +164,7 @@ export default function RiskExplanationModal({ onClose }: RiskExplanationModalPr
             onClick={onClose}
             className="rounded-lg bg-emerald-700 px-5 py-2.5 text-xs font-extrabold text-white shadow-sm hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
           >
-            Got it, return to dashboard
+            {t('riskExplain.gotIt')}
           </button>
         </div>
       </div>
