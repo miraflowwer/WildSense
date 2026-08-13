@@ -92,9 +92,49 @@ export async function loadEvents(): Promise<DetectionEvent[]> {
     .from('events')
     .select('*')
     .order('happened_at', { ascending: false })
-  if (error) throw new Error(error.message)
+  if (error) {
+    console.error('[GAHM API Error] loadEvents failed:', error.message, error)
+    throw new Error(error.message)
+  }
   const rows = (data ?? []) as unknown as EventRow[]
   return rows.map(rowToEvent)
+}
+
+export async function seedUserEvents(events: DetectionEvent[]): Promise<void> {
+  const db = requireClient()
+  const ownerId = await currentUserId()
+  const rows = events.map((event) => ({
+    event_id: event.event_id,
+    owner_id: ownerId,
+    happened_at: event.timestamp,
+    sensor_zone: event.sensor_zone,
+    species: event.species,
+    detection_confidence: event.detection_confidence,
+    estimated_count: event.estimated_count,
+    distance_to_farm_km: event.distance_to_farm_km,
+    movement_toward_farm: event.movement_toward_farm,
+    movement_known: event.movementKnown,
+    historical_incidents_nearby: event.historical_incidents_nearby,
+    weather_condition: event.weather_condition,
+    lat: event.position.lat,
+    lng: event.position.lng,
+    trail: event.trail,
+    community: event.community,
+    risk_score: event.risk_score,
+    risk_level: event.risk_level,
+    reasons: event.reasons,
+    uncertainty: event.uncertainty,
+    status: event.status,
+    acknowledged_at: event.acknowledgedAt,
+    ranger_contacted_at: event.rangerContactedAt,
+    owner_name: event.owner,
+    outcome: event.outcome,
+  }))
+  const { error } = await db.from('events').insert(rows)
+  if (error) {
+    console.error('[GAHM API Error] seedUserEvents failed:', error.message, error)
+    throw new Error(error.message)
+  }
 }
 
 export async function insertEvent(event: DetectionEvent): Promise<void> {
@@ -127,13 +167,19 @@ export async function insertEvent(event: DetectionEvent): Promise<void> {
     owner_name: event.owner,
     outcome: event.outcome,
   })
-  if (error) throw new Error(error.message)
+  if (error) {
+    console.error('[GAHM API Error] insertEvent failed:', error.message, error)
+    throw new Error(error.message)
+  }
 }
 
 export async function updateEvent(eventId: string, patch: Record<string, unknown>): Promise<void> {
   const db = requireClient()
   const { error } = await db.from('events').update(patch).eq('event_id', eventId)
-  if (error) throw new Error(error.message)
+  if (error) {
+    console.error('[GAHM API Error] updateEvent failed:', error.message, error)
+    throw new Error(error.message)
+  }
 }
 
 export async function insertSmsLog(entry: {
@@ -153,5 +199,8 @@ export async function insertSmsLog(entry: {
     failed: entry.failed,
     all_clear: entry.allClear,
   })
-  if (error) throw new Error(error.message)
+  if (error) {
+    console.error('[GAHM API Error] insertSmsLog failed:', error.message, error)
+    throw new Error(error.message)
+  }
 }

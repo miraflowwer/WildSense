@@ -54,6 +54,9 @@ screen exposes them through the "Try the demo" card.
   signed-in Supabase user id).
 - RLS policies keep each account's rows private: `loadEvents()` returns only the
   caller's rows; inserts set `owner_id` from the session.
+- **Auto-seeding on sign-up**: when a new user signs up and `loadEvents()` returns an
+  empty database (`0` events), `store.tsx` automatically invokes `seedUserEvents()`
+  to seed all 8 standard demo incidents into Supabase under the new user's `owner_id`.
 - The demo account is shared: anyone signing in with it enters `demo` mode,
   which runs the synthetic in-browser scenario and writes nothing to the
   database.
@@ -61,18 +64,21 @@ screen exposes them through the "Try the demo" card.
 ## Write-through API (`src/auth/api.ts`)
 
 - `loadEvents()` — all rows for the caller, newest first (`happened_at` desc).
+- `seedUserEvents(events)` — batch seeds initial demo events into Supabase for a new user account.
 - `insertEvent(event)` — new detection (sets `owner_id`).
 - `updateEvent(eventId, patch)` — status/ownership/outcome updates by `event_id`.
 - `insertSmsLog(...)` — simulated SMS send records.
 
 The store dispatches actions first (instant UI) and writes through in the
 background; failures flip `notPersisted` so the UI can indicate offline-ish
-state. See [`data-model.md`](data-model.md) for the action → API mapping.
+state. Diagnostic logging (`console.error('[GAHM API Error] ...')`) surfaces
+PostgREST and RLS issues in the browser console. See [`data-model.md`](data-model.md) for the action → API mapping.
 
 ## Security Hardening (SECURITY DEFINER Functions)
 
 - Helper functions defined in `public` with `SECURITY DEFINER` (such as `public.rls_auto_enable()`) can present security risks if exposed to `anon` or `authenticated` roles via PostgREST RPC endpoints.
 - **Remediation**: Execute `REVOKE EXECUTE ON FUNCTION public.rls_auto_enable() FROM PUBLIC, anon, authenticated;` in Supabase SQL Editor and restrict execution to `service_role` and `postgres`.
 - Consolidated schema and patch scripts are stored in `docs/supabase-schema-and-fixes.sql`.
+
 
 

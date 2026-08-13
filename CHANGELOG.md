@@ -5,6 +5,19 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v0.7.6] — 2026-08-13 — Supabase Schema Alignment, Header Profile Sync & Database Setup Guidance
+
+### Fixed
+
+- **Blank Header Profile Indicator**: Fixed bug where logged-in user accounts displayed a blank header badge (`[ • ]`) by synchronizing `auth.user.name` into `state.rangerName` via `store.tsx` and adding multi-tier fallbacks in `App.tsx` (`displayRangerName` uses `auth.user.name` → `auth.user.email` → `'Ranger'`).
+- **Database Setup Diagnostic Banner**: Updated server unreachable banner in `App.tsx` to provide explicit setup instructions when tables are missing in Supabase (`Database setup required — run docs/supabase-schema-and-fixes.sql in SQL Editor`).
+- **Supabase SQL Schema Alignment**: Re-aligned `docs/supabase-schema-and-fixes.sql` table definitions for `public.events` and `public.sms_log` to 100% match `src/auth/api.ts` column names, types, primary keys, and Row-Level Security (RLS) policies.
+- **API Error Logging & Diagnostics**: Enhanced `loadEvents()`, `insertEvent()`, `updateEvent()`, `insertSmsLog()`, and `seedUserEvents()` in `src/auth/api.ts` with explicit `console.error` diagnostic logging.
+
+### Added
+
+- **New User Workspace Auto-Seeding**: Configured automatic workspace initialization in `store.tsx` (`seedUserEvents`) when a new user signs up and `loadEvents()` returns `0` events. Automatically populates the user's personal Supabase workspace with the 8 standard demo incidents (EVT-1038 through EVT-1046) under their `owner_id`.
+
 ## [v0.7.5] — 2026-08-13 — Guided Tour Tooltip Placement & Viewport Padding Fixes
 
 ### Fixed

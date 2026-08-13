@@ -17,7 +17,7 @@ import type {
 import { buildDemoState, sensors, farmZones, USER } from '../data/demoData'
 import { haversineKm } from '../engine/geo'
 import { useAuth } from '../auth/authContext'
-import { loadEvents, insertEvent, updateEvent } from '../auth/api'
+import { loadEvents, insertEvent, updateEvent, seedUserEvents } from '../auth/api'
 import { StoreContext, type StoreContextValue } from './storeContext'
 
 const EMPTY_SMS: SmsState = {
@@ -322,15 +322,33 @@ export function GahmProvider({ children }: { children: ReactNode }) {
   }, [auth.mode, auth.isBooting])
 
   useEffect(() => {
+    if (auth.mode === 'user' && auth.user?.name) {
+      rawDispatch({ type: 'SET_RANGER_NAME', name: auth.user.name })
+    }
+  }, [auth.mode, auth.user?.name])
+
+  useEffect(() => {
     if (auth.isBooting || auth.mode !== 'user') return
     let cancelled = false
     loadEvents()
-      .then((events) => {
+      .then(async (events) => {
         if (cancelled) return
-        rawDispatch({ type: 'HYDRATE_EVENTS', events, rangerName: auth.user?.name ?? '' })
+        let finalEvents = events
+        if (events.length === 0) {
+          const initialEvents = buildDemoState()
+          try {
+            await seedUserEvents(initialEvents)
+            finalEvents = initialEvents
+          } catch (seedErr) {
+            console.error('[GAHM Store] Seeding initial events failed:', seedErr)
+          }
+        }
+        if (cancelled) return
+        rawDispatch({ type: 'HYDRATE_EVENTS', events: finalEvents, rangerName: auth.user?.name ?? '' })
         rawDispatch({ type: 'SET_PERSISTED', ok: true })
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error('[GAHM Store] loadEvents failed:', err)
         if (!cancelled) rawDispatch({ type: 'SET_PERSISTED', ok: false })
       })
     return () => {
