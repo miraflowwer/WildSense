@@ -5,6 +5,7 @@ import { findById } from './store/selectors'
 import { formatTime } from './engine/geo'
 import MapView from './components/MapView'
 import AuthView from './components/AuthView'
+import SetPassword from './components/SetPassword'
 import OperationsBar from './components/OperationsBar'
 import FiltersBar from './components/FiltersBar'
 import AlertList from './components/AlertList'
@@ -13,7 +14,7 @@ import SmsSimulator from './components/SmsSimulator'
 import NewDetectionForm from './components/NewDetectionForm'
 
 function App() {
-  const { mode, serverReachable, isBooting, signOut } = useAuth()
+  const { mode, serverReachable, isBooting, passwordRecovery, signOut } = useAuth()
   const { state, dispatch } = useGahm()
 
   const [adding, setAdding] = useState(false)
@@ -24,6 +25,10 @@ function App() {
         GAHM…
       </div>
     )
+  }
+
+  if (passwordRecovery && mode !== 'demo') {
+    return <SetPassword />
   }
 
   if (!mode) {
