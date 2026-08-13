@@ -42,8 +42,8 @@ function SmsSimulator() {
 
   const message =
     lang === 'en'
-      ? `GAHM ALERT: High wildlife risk near ${event.sensor_zone}. Secure livestock and avoid the northern boundary. Rangers have been notified. Reply SAFE when secure.`
-      : `GAHM चेतावनी: ${event.sensor_zone} के पास वन्यजीव ख़तरा। पशुओं को सुरक्षित करें और सीमा से दूर रहें। वनरक्षकों को सूचित कर दिया गया है। सुरक्षित होने पर SAFE जवाब दें।`
+      ? `GAHM ALERT: High wildlife risk near ${event.sensor_zone}. Secure livestock and avoid the northern boundary. Rangers have been notified. Reply SAFE when secure. Reply STOP to opt out.`
+      : `GAHM चेतावनी: ${event.sensor_zone} के पास वन्यजीव ख़तरा। पशुओं को सुरक्षित करें और सीमा से दूर रहें। वनरक्षकों को सूचित कर दिया गया है। सुरक्षित होने पर SAFE जवाब दें। रद्द करने के लिए STOP लिखें।`
 
   const sendWarning = () => {
     dispatch({ type: 'SEND_SMS' })
@@ -195,7 +195,7 @@ function SmsSimulator() {
         </div>
 
         <p className="mt-4 border-t border-neutral-100 pt-2 text-[10px] text-neutral-400">
-          Coordinates are never shared with recipients. Recipients may opt out by replying STOP.
+          DPDP Act 2023 &amp; Wildlife Protection Act 1972 Compliant: Exact GPS coordinates are never shared in public warnings to protect wildlife from poaching. Recipients may opt out by replying STOP.
         </p>
       </div>
     </div>

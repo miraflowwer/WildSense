@@ -5,6 +5,14 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v0.5.0] — 2026-08-13 — DPDP Act & Wildlife Protection Act SMS Compliance Hardening
+
+### Added
+
+- Added explicit `Reply STOP to opt out` opt-out message text in both English and Hindi versions inside the `SmsSimulator` template strings in alignment with India's Digital Personal Data Protection (DPDP) Act 2023.
+- Enhanced SMS Simulator footer notice explicitly citing DPDP Act 2023 and Wildlife (Protection) Act 1972 compliance to highlight anti-poaching location privacy (omitting exact GPS coordinates from public community SMS alerts) and consent management.
+- Added interactive **Ethics & Legal** modal (`EthicsModal.tsx`) and header navigation button in `App.tsx` allowing rangers, judges, and mentors to inspect live legal frameworks and responsible AI principles directly in the app UI.
+
 ## [v0.4.4] — 2026-08-13 — Guided Tour Close (X) Backdrop Fix
 
 ### Fixed

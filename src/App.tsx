@@ -12,6 +12,8 @@ import AlertPanel from './components/AlertPanel'
 import SmsSimulator from './components/SmsSimulator'
 import DemoTour from './components/DemoTour'
 
+import EthicsModal from './components/EthicsModal'
+
 const MapView = lazy(() => import('./components/MapView'))
 const NewDetectionForm = lazy(() => import('./components/NewDetectionForm'))
 
@@ -20,6 +22,7 @@ function App() {
   const { state, dispatch } = useGahm()
 
   const [adding, setAdding] = useState(false)
+  const [showEthics, setShowEthics] = useState(false)
   const [runTour, setRunTour] = useState(true)
 
   if (isBooting) {
@@ -90,6 +93,13 @@ function App() {
           ) : null}
           <button
             type="button"
+            onClick={() => setShowEthics(true)}
+            className="rounded-md border border-neutral-700 px-2.5 py-1 text-neutral-300 transition-colors hover:bg-neutral-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+          >
+            Ethics &amp; Legal
+          </button>
+          <button
+            type="button"
             onClick={() => setAdding(true)}
             className="rounded-md bg-emerald-600 px-2.5 py-1 font-semibold text-white transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
           >
@@ -142,6 +152,7 @@ function App() {
       </main>
 
       {state.sms.openEventId ? <SmsSimulator /> : null}
+      {showEthics ? <EthicsModal onClose={() => setShowEthics(false)} /> : null}
       {adding ? (
         <Suspense
           fallback={
