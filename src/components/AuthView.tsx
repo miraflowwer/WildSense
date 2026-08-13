@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react'
 import type { FormEvent, KeyboardEvent } from 'react'
 import { useAuth } from '../auth/authContext'
-import { DEMO_EMAIL, DEMO_PASSWORD, DEMO_MODE_HINT } from '../auth/demoAccount'
+import { UNREACHABLE_MESSAGE } from '../auth/AuthProvider'
+import { DEMO_EMAIL, DEMO_PASSWORD } from '../auth/demoAccount'
 import { isStaySignedIn, setStaySignedIn } from '../auth/storage'
+import { useI18n } from '../i18n/I18nContext'
+import LanguageSwitcher from './LanguageSwitcher'
 
 const MIN_PASSWORD = 8
 
@@ -11,11 +14,12 @@ const inputCls =
 const labelCls = 'mb-1 block text-[11px] font-semibold uppercase tracking-widest text-neutral-700'
 
 function BrandLockup() {
+  const { t } = useI18n()
   return (
     <div className="mb-6">
       <div className="mb-1 text-3xl font-bold tracking-tight text-neutral-900">GAHM</div>
       <div className="text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
-        Wildlife Conflict Risk Engine
+        {t('app.brandTagline')}
       </div>
     </div>
   )
@@ -30,9 +34,15 @@ export interface AuthViewProps {
   initialView?: 'signin' | 'signup'
   isModal?: boolean
   onClose?: () => void
+  onBackToLanding?: () => void
 }
 
-function AuthView({ initialView = 'signin', isModal = false, onClose }: AuthViewProps = {}) {
+function AuthView({
+  initialView = 'signin',
+  isModal = false,
+  onClose,
+  onBackToLanding,
+}: AuthViewProps = {}) {
   const {
     signIn,
     signUp,
@@ -42,6 +52,7 @@ function AuthView({ initialView = 'signin', isModal = false, onClose }: AuthView
     dismissSignedOutNotice,
     clearError,
   } = useAuth()
+  const { t } = useI18n()
 
   const [view, setView] = useState<'signin' | 'signup'>(initialView)
   const [step, setStep] = useState<'form' | 'forgot' | 'forgot-sent'>('form')
@@ -133,8 +144,8 @@ function AuthView({ initialView = 'signin', isModal = false, onClose }: AuthView
 
   const demoCard = (
     <div className="mt-6 rounded-xl border border-neutral-200 bg-neutral-50 p-4">
-      <div className="mb-1 text-sm font-bold text-neutral-900">Try the demo</div>
-      <p className="mb-2 text-xs leading-relaxed text-neutral-600">{DEMO_MODE_HINT}</p>
+      <div className="mb-1 text-sm font-bold text-neutral-900">{t('auth.tryDemo')}</div>
+      <p className="mb-2 text-xs leading-relaxed text-neutral-600">{t('auth.demoHint')}</p>
       <p className="mb-3 font-mono text-xs text-neutral-500">
         {DEMO_EMAIL} / {DEMO_PASSWORD}
       </p>
@@ -144,7 +155,7 @@ function AuthView({ initialView = 'signin', isModal = false, onClose }: AuthView
         disabled={busy}
         className="w-full rounded-md border border-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-700 transition-colors hover:bg-emerald-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        Sign in with demo account
+        {t('auth.demoButton')}
       </button>
     </div>
   )
@@ -154,7 +165,7 @@ function AuthView({ initialView = 'signin', isModal = false, onClose }: AuthView
       role="alert"
       className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-xs leading-relaxed text-red-700"
     >
-      {errorText}
+      {errorText === UNREACHABLE_MESSAGE ? t('auth.unreachable') : errorText}
     </div>
   ) : null
 
@@ -164,7 +175,7 @@ function AuthView({ initialView = 'signin', isModal = false, onClose }: AuthView
         <button
           type="button"
           onClick={onClose}
-          aria-label="Close authentication modal"
+          aria-label={t('auth.closeAuthAria')}
           className="absolute right-4 top-4 rounded-md p-1.5 text-neutral-400 hover:bg-[#F6F2EA] hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#123524]"
         >
           ✕
@@ -177,31 +188,29 @@ function AuthView({ initialView = 'signin', isModal = false, onClose }: AuthView
             role="status"
             className="mb-4 rounded-md border border-neutral-200 bg-neutral-100 px-3 py-2 text-xs text-neutral-600"
           >
-            Signed out — sign in to continue.
+            {t('auth.signedOutNotice')}
           </div>
         ) : null}
 
         {step === 'forgot' || step === 'forgot-sent' ? (
           <>
-            <h1 className="text-xl font-bold tracking-tight text-neutral-900">Reset your password</h1>
+            <h1 className="text-xl font-bold tracking-tight text-neutral-900">{t('auth.resetTitle')}</h1>
             <p className="mb-6 mt-1 text-sm leading-relaxed text-neutral-600">
-              {step === 'forgot'
-                ? 'Enter your account email and we will send you a secure reset link.'
-                : `If an account exists for ${forgotEmail}, a reset link is on its way — check your inbox.`}
+              {step === 'forgot' ? t('auth.resetSub') : t('auth.resetSent', { email: forgotEmail })}
             </p>
 
             {step === 'forgot' ? (
               <form onSubmit={submitForgot} className="space-y-4">
                 <div>
                   <label htmlFor="auth-forgot-email" className={labelCls}>
-                    Email
+                    {t('auth.email')}
                   </label>
                   <input
                     id="auth-forgot-email"
                     type="email"
                     value={forgotEmail}
                     onChange={(e) => setForgotEmail(e.target.value)}
-                    placeholder="you@example.com"
+                    placeholder={t('auth.emailPlaceholder')}
                     autoComplete="email"
                     className={inputCls}
                   />
@@ -212,12 +221,12 @@ function AuthView({ initialView = 'signin', isModal = false, onClose }: AuthView
                   disabled={forgotBusy || forgotEmail.trim() === ''}
                   className="w-full rounded-md bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {forgotBusy ? 'Sending…' : 'Send reset link'}
+                  {forgotBusy ? t('auth.sending') : t('auth.sendResetLink')}
                 </button>
               </form>
             ) : (
               <div className="mb-4 rounded-md border border-neutral-200 bg-neutral-50 px-3 py-3 text-xs leading-relaxed text-neutral-600">
-                The link expires shortly. If you don&apos;t see it, check your spam folder.
+                {t('auth.resetNote')}
               </div>
             )}
 
@@ -229,19 +238,17 @@ function AuthView({ initialView = 'signin', isModal = false, onClose }: AuthView
               }}
               className="mt-4 w-full rounded-md border border-neutral-300 px-4 py-2 text-sm font-semibold text-neutral-600 transition-colors hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
             >
-              Back to sign in
+              {t('auth.backToSignin')}
             </button>
             {demoCard}
           </>
         ) : (
           <>
             <h1 className="text-xl font-bold tracking-tight text-neutral-900">
-              {view === 'signin' ? 'Welcome back' : 'Create your account'}
+              {view === 'signin' ? t('auth.welcomeBack') : t('auth.createAccountTitle')}
             </h1>
             <p className="mb-6 mt-1 text-sm leading-relaxed text-neutral-600">
-              {view === 'signin'
-                ? 'Sign in to your workspace of wildlife conflict alerts.'
-                : 'One account, one private workspace — your alerts, your decisions.'}
+              {view === 'signin' ? t('auth.signinSub') : t('auth.signupSub')}
             </p>
 
             <div className="mb-5 flex rounded-md bg-neutral-100 p-1">
@@ -259,7 +266,7 @@ function AuthView({ initialView = 'signin', isModal = false, onClose }: AuthView
                     : 'text-neutral-500 hover:text-neutral-700'
                 }`}
               >
-                Sign in
+                {t('auth.tabSignin')}
               </button>
               <button
                 type="button"
@@ -275,7 +282,7 @@ function AuthView({ initialView = 'signin', isModal = false, onClose }: AuthView
                     : 'text-neutral-500 hover:text-neutral-700'
                 }`}
               >
-                Sign up
+                {t('auth.tabSignup')}
               </button>
             </div>
 
@@ -283,38 +290,36 @@ function AuthView({ initialView = 'signin', isModal = false, onClose }: AuthView
               {view === 'signup' ? (
                 <div>
                   <label htmlFor="auth-name" className={labelCls}>
-                    Profile name
+                    {t('auth.profileName')}
                   </label>
                   <input
                     id="auth-name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g. Ranger Alex, Officer Sam"
+                    placeholder={t('auth.profileNamePlaceholder')}
                     autoComplete="name"
                     className={inputCls}
                   />
                   {name.trim() !== '' && isNameEmail ? (
                     <p className="mt-1 text-xs font-semibold text-red-600">
-                      ⚠️ Profile name cannot be an email address. Please use your name or callsign.
+                      {t('auth.profileNameEmailError')}
                     </p>
                   ) : (
-                    <p className="mt-1 text-xs text-neutral-500">
-                      Use your name or callsign (do not use an email address).
-                    </p>
+                    <p className="mt-1 text-xs text-neutral-500">{t('auth.profileNameHint')}</p>
                   )}
                 </div>
               ) : null}
 
               <div>
                 <label htmlFor="auth-email" className={labelCls}>
-                  Email
+                  {t('auth.email')}
                 </label>
                 <input
                   id="auth-email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
+                  placeholder={t('auth.emailPlaceholder')}
                   autoComplete="email"
                   className={inputCls}
                 />
@@ -322,7 +327,7 @@ function AuthView({ initialView = 'signin', isModal = false, onClose }: AuthView
 
               <div>
                 <label htmlFor="auth-password" className={labelCls}>
-                  Password
+                  {t('auth.password')}
                 </label>
                 <div className="relative">
                   <input
@@ -338,36 +343,34 @@ function AuthView({ initialView = 'signin', isModal = false, onClose }: AuthView
                   <button
                     type="button"
                     onClick={() => setShowPw((s) => !s)}
-                    aria-label={showPw ? 'Hide password' : 'Show password'}
+                    aria-label={showPw ? t('common.hide') : t('common.show')}
                     className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-xs font-semibold text-neutral-500 transition-colors hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
                   >
-                    {showPw ? 'Hide' : 'Show'}
+                    {showPw ? t('common.hide') : t('common.show')}
                   </button>
                 </div>
                 {view === 'signup' ? (
                   password === '' ? (
                     <p className="mt-1 text-xs text-neutral-500">
-                      Minimum {MIN_PASSWORD} characters required
+                      {t('auth.minChars', { n: MIN_PASSWORD })}
                     </p>
                   ) : !pwOk ? (
                     <p className="mt-1 text-xs font-semibold text-red-600">
-                      ⚠️ Password must be at least {MIN_PASSWORD} characters (currently {password.length})
+                      {t('auth.pwTooShort', { n: MIN_PASSWORD, len: password.length })}
                     </p>
                   ) : (
-                    <p className="mt-1 text-xs font-semibold text-emerald-600">
-                      ✓ Password meets length requirements
-                    </p>
+                    <p className="mt-1 text-xs font-semibold text-emerald-600">{t('auth.pwOk')}</p>
                   )
                 ) : null}
                 {capsLock ? (
-                  <p className="mt-1 text-xs text-amber-600">Caps Lock is on</p>
+                  <p className="mt-1 text-xs text-amber-600">{t('auth.capsLock')}</p>
                 ) : null}
               </div>
 
               {view === 'signup' ? (
                 <div>
                   <label htmlFor="auth-confirm" className={labelCls}>
-                    Confirm password
+                    {t('auth.confirmPassword')}
                   </label>
                   <div className="relative">
                     <input
@@ -383,14 +386,14 @@ function AuthView({ initialView = 'signin', isModal = false, onClose }: AuthView
                     <button
                       type="button"
                       onClick={() => setShowConfirm((s) => !s)}
-                      aria-label={showConfirm ? 'Hide password confirmation' : 'Show password confirmation'}
+                      aria-label={showConfirm ? t('common.hide') : t('common.show')}
                       className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-xs font-semibold text-neutral-500 transition-colors hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
                     >
-                      {showConfirm ? 'Hide' : 'Show'}
+                      {showConfirm ? t('common.hide') : t('common.show')}
                     </button>
                   </div>
                   {confirm !== '' && !confirmOk ? (
-                    <p className="mt-1 text-xs text-red-600">Passwords don&apos;t match</p>
+                    <p className="mt-1 text-xs text-red-600">{t('auth.pwMismatch')}</p>
                   ) : null}
                 </div>
               ) : null}
@@ -406,7 +409,7 @@ function AuthView({ initialView = 'signin', isModal = false, onClose }: AuthView
                     }}
                     className="h-4 w-4 rounded border-neutral-300 text-emerald-600 focus:ring-2 focus:ring-emerald-500/40"
                   />
-                  Stay signed in
+                  {t('auth.staySignedIn')}
                 </label>
                 {view === 'signin' ? (
                   <button
@@ -414,7 +417,7 @@ function AuthView({ initialView = 'signin', isModal = false, onClose }: AuthView
                     onClick={openForgot}
                     className="text-xs font-semibold text-emerald-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
                   >
-                    Forgot password?
+                    {t('auth.forgotPassword')}
                   </button>
                 ) : null}
               </div>
@@ -428,11 +431,11 @@ function AuthView({ initialView = 'signin', isModal = false, onClose }: AuthView
               >
                 {busy
                   ? view === 'signin'
-                    ? 'Signing in…'
-                    : 'Creating account…'
+                    ? t('auth.signingIn')
+                    : t('auth.creatingAccount')
                   : view === 'signin'
-                    ? 'Sign in'
-                    : 'Create account'}
+                    ? t('auth.signInSubmit')
+                    : t('auth.createAccountSubmit')}
               </button>
             </form>
 
@@ -441,10 +444,12 @@ function AuthView({ initialView = 'signin', isModal = false, onClose }: AuthView
         )}
 
         <p className="mt-6 text-center text-xs leading-relaxed text-neutral-400">
-          {view === 'signin'
-            ? 'Each account only ever sees its own data.'
-            : 'Your data is stored securely and used only for this application. By creating an account, you agree to the GAHM ethics and data policy.'}
+          {view === 'signin' ? t('auth.privacySignin') : t('auth.privacySignup')}
         </p>
+
+        <div className="mt-4 flex justify-center">
+          <LanguageSwitcher variant="card" />
+        </div>
       </div>
   )
 
@@ -462,8 +467,17 @@ function AuthView({ initialView = 'signin', isModal = false, onClose }: AuthView
   }
 
   return (
-    <div className="flex h-dvh items-center justify-center overflow-hidden bg-neutral-900 p-4">
+    <div className="flex h-dvh flex-col items-center justify-center overflow-hidden bg-neutral-900 p-4">
       {content}
+      {onBackToLanding ? (
+        <button
+          type="button"
+          onClick={onBackToLanding}
+          className="mt-3 rounded-md px-3 py-2 text-xs font-semibold text-neutral-400 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+        >
+          ← {t('auth.backToLanding')}
+        </button>
+      ) : null}
     </div>
   )
 }

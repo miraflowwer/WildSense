@@ -161,6 +161,18 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
     }
   }, [])
 
+  // Lock background scroll while the auth modal is open (Lenis + native fallback)
+  useEffect(() => {
+    if (!authModal.open) return
+    const lenis = lenisHolder.instance
+    lenis?.stop()
+    document.body.style.overflow = 'hidden'
+    return () => {
+      lenis?.start()
+      document.body.style.overflow = ''
+    }
+  }, [authModal.open])
+
   const handleEnterDemo = async () => {
     if (demoBusy) return
     setDemoBusy(true)

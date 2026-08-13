@@ -3,6 +3,7 @@ import { useAuth } from './auth/authContext'
 import { useGahm } from './store/storeContext'
 import { findById } from './store/selectors'
 import { formatUtcClock } from './engine/geo'
+import { useI18n } from './i18n/I18nContext'
 import LandingView from './components/LandingView'
 import SetPassword from './components/SetPassword'
 import OperationsBar from './components/OperationsBar'
@@ -11,9 +12,11 @@ import AlertList from './components/AlertList'
 import AlertPanel from './components/AlertPanel'
 import SmsSimulator from './components/SmsSimulator'
 import DemoTour from './components/DemoTour'
+import LanguageSwitcher from './components/LanguageSwitcher'
 
 import EthicsModal from './components/EthicsModal'
 import RiskExplanationModal from './components/RiskExplanationModal'
+import AuthView from './components/AuthView'
 
 const MapView = lazy(() => import('./components/MapView'))
 const NewDetectionForm = lazy(() => import('./components/NewDetectionForm'))
@@ -25,6 +28,7 @@ function isEmailAddress(val: string): boolean {
 function App() {
   const { mode, user, serverReachable, isBooting, passwordRecovery, signOut } = useAuth()
   const { state, dispatch } = useGahm()
+  const { t } = useI18n()
 
   const rawRangerName = state.rangerName.trim() || user?.name || ''
   const displayRangerName =
@@ -36,6 +40,7 @@ function App() {
   const [showEthics, setShowEthics] = useState(false)
   const [showRiskModal, setShowRiskModal] = useState(false)
   const [showLanding, setShowLanding] = useState(false)
+  const [showAuthPage, setShowAuthPage] = useState(false)
   const [runTour, setRunTour] = useState(false)
   const [now, setNow] = useState(() => new Date())
   const [mobileTab, setMobileTab] = useState<'map' | 'alerts'>('map')
@@ -89,7 +94,7 @@ function App() {
   if (isBooting) {
     return (
       <div className="flex h-dvh items-center justify-center bg-neutral-900 text-white">
-        GAHM…
+        {t('app.boot')}
       </div>
     )
   }
@@ -99,7 +104,11 @@ function App() {
   }
 
   if (!mode) {
-    return <LandingView />
+    return showAuthPage ? (
+      <AuthView onBackToLanding={() => setShowAuthPage(false)} />
+    ) : (
+      <LandingView />
+    )
   }
 
   if (showLanding) {
@@ -122,7 +131,7 @@ function App() {
               GAHM
             </span>
             <span className="hidden text-xs font-medium text-neutral-400 sm:inline">
-              Wildlife Conflict Risk Engine
+              {t('app.brandTagline')}
             </span>
           </div>
 
@@ -133,7 +142,7 @@ function App() {
                 : 'bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/40 ring-inset'
             }`}
           >
-            {demoMode ? 'DEMO MODE' : 'LIVE MODE'}
+            {demoMode ? t('app.demoMode') : t('app.liveMode')}
           </span>
 
           <span className="hidden items-center gap-1.5 font-mono text-xs text-neutral-400 md:inline-flex" aria-live="polite">
@@ -143,45 +152,45 @@ function App() {
         </div>
 
         {/* Right Nav / Actions */}
-        <nav aria-label="Main Navigation" className="flex items-center gap-2 sm:gap-3">
+        <nav aria-label={t('app.navLabel')} className="flex items-center gap-2 sm:gap-3">
           {/* Landing Page Link */}
           <button
             type="button"
             onClick={() => setShowLanding(true)}
-            aria-label="View GAHM landing page and ethics charter"
+            aria-label={t('app.aboutGahmAria')}
             className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs font-medium text-neutral-200 transition-colors hover:bg-neutral-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900"
           >
-            About GAHM
+            {t('app.aboutGahm')}
           </button>
 
           {/* Primary Action: Log detection */}
           <button
             type="button"
             onClick={() => setAdding(true)}
-            aria-label="Log new wildlife detection"
+            aria-label={t('app.logDetectionAria')}
             className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md bg-emerald-700 px-3.5 py-2 text-xs font-semibold text-white shadow-2xs transition-colors hover:bg-emerald-800 active:bg-emerald-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900"
           >
-            Log detection
+            {t('app.logDetection')}
           </button>
 
           {/* Secondary Action: Guided Tour (Available for all users) */}
           <button
             type="button"
             onClick={handleStartTour}
-            aria-label="Start guided interactive tour"
-            className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-emerald-500/50 bg-emerald-950/60 px-3 py-2 text-xs font-medium text-emerald-300 transition-colors hover:bg-emerald-900/80 hover:text-emerald-200 active:bg-emerald-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900"
+            aria-label={t('app.guidedTourAria')}
+            className="hidden min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-emerald-500/50 bg-emerald-950/60 px-3 py-2 text-xs font-medium text-emerald-300 transition-colors hover:bg-emerald-900/80 hover:text-emerald-200 active:bg-emerald-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 xl:inline-flex"
           >
-            Guided tour
+            {t('app.guidedTour')}
           </button>
 
           {/* Risk Engine Explanation Button */}
           <button
             type="button"
             onClick={() => setShowRiskModal(true)}
-            aria-label="View Risk Engine signal breakdown"
-            className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-emerald-500/40 bg-emerald-950/40 px-3 py-2 text-xs font-medium text-emerald-300 transition-colors hover:bg-emerald-900/70 hover:text-emerald-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900"
+            aria-label={t('app.riskEngineAria')}
+            className="hidden min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-emerald-500/40 bg-emerald-950/40 px-3 py-2 text-xs font-medium text-emerald-300 transition-colors hover:bg-emerald-900/70 hover:text-emerald-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 md:inline-flex"
           >
-            Risk Engine
+            {t('app.riskEngine')}
           </button>
 
           {/* Visual Divider */}
@@ -189,14 +198,16 @@ function App() {
 
           {/* Zone 3: User Profile Indicator & Account Actions */}
           <div className="flex items-center gap-2">
+            <LanguageSwitcher variant="header" />
+
             {/* User Profile Indicator */}
             <span
-              className="inline-flex min-h-[44px] items-center gap-1.5 rounded-md border border-neutral-700/80 bg-neutral-800/90 px-2.5 py-1 text-xs font-medium text-neutral-200"
-              aria-label={`Ranger profile: ${displayRangerName}`}
+              className="hidden min-h-[44px] items-center gap-1.5 rounded-md border border-neutral-700/80 bg-neutral-800/90 px-2.5 py-1 text-xs font-medium text-neutral-200 sm:inline-flex"
+              aria-label={t('app.profileAria', { name: displayRangerName })}
             >
               <span className="h-2 w-2 rounded-full bg-emerald-400" aria-hidden="true" />
-              <span className="hidden sm:inline">{displayRangerName}</span>
-              <span className="sm:hidden">{displayRangerName.split(' ')[0]}</span>
+              <span className="hidden lg:inline">{displayRangerName}</span>
+              <span className="lg:hidden">{displayRangerName.split(' ')[0]}</span>
             </span>
 
             {demoMode ? (
@@ -206,32 +217,33 @@ function App() {
                   dispatch({ type: 'RESET_DEMO' })
                   setRunTour(true)
                 }}
-                aria-label="Reset demo data and restart tour"
+                aria-label={t('app.resetDemoAria')}
                 className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-neutral-700 bg-neutral-800/80 px-2.5 py-2 text-xs font-medium text-neutral-200 transition-colors hover:bg-neutral-700 hover:text-white active:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900"
               >
-                Reset demo
+                {t('app.resetDemo')}
               </button>
             ) : null}
 
             <button
               type="button"
               onClick={() => setShowEthics(true)}
-              aria-label="View ethics and legal compliance modal"
-              className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-neutral-700 bg-neutral-800/80 px-2.5 py-2 text-xs font-medium text-neutral-300 transition-colors hover:bg-neutral-700 hover:text-white active:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900"
+              aria-label={t('app.ethicsAria')}
+              className="hidden min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-neutral-700 bg-neutral-800/80 px-2.5 py-2 text-xs font-medium text-neutral-300 transition-colors hover:bg-neutral-700 hover:text-white active:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 md:inline-flex"
             >
-              Ethics &amp; Legal
+              {t('app.ethicsLegal')}
             </button>
 
             <button
               type="button"
               onClick={() => {
                 setAdding(false)
+                setShowAuthPage(true)
                 void signOut()
               }}
-              aria-label="Sign out of account"
+              aria-label={t('app.signOutAria')}
               className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-transparent px-2.5 py-2 text-xs font-medium text-neutral-300 transition-colors hover:bg-neutral-800 hover:text-white active:bg-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900"
             >
-              Sign out
+              {t('app.signOut')}
             </button>
           </div>
         </nav>
@@ -239,23 +251,23 @@ function App() {
 
       {demoMode && !serverReachable ? (
         <div className="flex items-center gap-2 border-b border-amber-300 bg-amber-100 px-4 py-1.5 text-xs font-semibold text-amber-900">
-          Server unreachable — demo mode
+          {t('app.serverUnreachableBanner')}
         </div>
       ) : null}
       {!demoMode && state.notPersisted ? (
         <div className="flex items-center gap-2 border-b border-amber-300 bg-amber-100 px-4 py-1.5 text-xs font-semibold text-amber-900">
-          Changes not saved — server unreachable (Database setup required: run docs/supabase-schema-and-fixes.sql in SQL Editor)
+          {t('app.notSavedBanner')}
         </div>
       ) : null}
       {!demoMode && state.inTutorial ? (
         <div className="flex items-center justify-between border-b border-emerald-400 bg-emerald-900 px-4 py-1.5 text-xs font-semibold text-emerald-100">
-          <span>Tutorial Mode Active — sample data displayed temporarily. User database updates are suspended.</span>
+          <span>{t('app.tutorialBanner')}</span>
           <button
             type="button"
             onClick={handleFinishTour}
             className="rounded bg-emerald-800 px-2 py-0.5 text-[11px] font-bold text-white hover:bg-emerald-700"
           >
-            Exit Tutorial
+            {t('app.exitTutorial')}
           </button>
         </div>
       ) : null}
@@ -273,7 +285,7 @@ function App() {
               : 'text-neutral-700 hover:bg-neutral-300/80'
           }`}
         >
-          🗺️ Map View
+          🗺️ {t('app.mapView')}
         </button>
         <button
           type="button"
@@ -284,7 +296,7 @@ function App() {
               : 'text-neutral-700 hover:bg-neutral-300/80'
           }`}
         >
-          🔔 Alerts &amp; Details {state.events.length > 0 ? `(${state.events.length})` : ''}
+          🔔 {t('app.alertsView', { count: state.events.length > 0 ? `(${state.events.length})` : '' })}
         </button>
       </div>
 
@@ -300,7 +312,7 @@ function App() {
             <Suspense
               fallback={
                 <div className="flex h-full w-full items-center justify-center bg-neutral-200 text-xs text-neutral-500">
-                  Loading map…
+                  {t('app.loadingMap')}
                 </div>
               }
             >
@@ -334,7 +346,7 @@ function App() {
           fallback={
             <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 p-4">
               <div className="rounded-md bg-white px-4 py-3 text-xs text-neutral-600">
-                Loading form…
+                {t('app.loadingForm')}
               </div>
             </div>
           }

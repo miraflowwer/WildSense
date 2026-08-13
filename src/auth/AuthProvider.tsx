@@ -17,7 +17,7 @@ import {
   type AuthUser,
 } from './authContext'
 
-const UNREACHABLE_MESSAGE = 'Server unreachable — check your connection and try again.'
+export const UNREACHABLE_MESSAGE = 'Server unreachable — check your connection and try again.'
 const SESSION_VALIDATION_TIMEOUT_MS = 8000
 const DEMO_USER: AuthUser = { email: DEMO_EMAIL, name: 'Ranger Demo' }
 
