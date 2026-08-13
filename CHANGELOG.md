@@ -5,6 +5,14 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v0.7.5] — 2026-08-13 — Guided Tour Tooltip Placement & Viewport Padding Fixes
+
+### Fixed
+
+- **Map View Tooltip Centering & Clipping Elimination**: Updated Step 2 (`[data-tour="map-view"]`) tooltip placement to `'center'` over the map area in `DemoTour.tsx`, completely eliminating top-of-viewport screen clipping and header overlap.
+- **SMS Simulator Modal Tooltip Shift**: Shifted SMS Simulator tooltip placement to `'left'` in `DemoTour.tsx` so the tooltip floats in the open space over the map to the left of the modal, leaving the entire SMS Simulator card (composed warning message, language toggles, recipient list, and Send warning button) 100% unobscured.
+- **Floating UI Viewport Padding**: Added `floatingOptions={{ shiftOptions: { padding: 24 } }}` to the `<Joyride />` component to enforce a minimum 24px clearance from screen boundaries across all viewport sizes.
+
 ## [v0.7.4] — 2026-08-13 — Guided Tour Background Interaction Lockdown & Tour Step Refinements
 
 ### Added
