@@ -49,3 +49,11 @@ code in `src/`; if a prose document ever disagrees with the code, the code wins
   text-menu helper that launches the demo at `http://localhost:5173`, installs/checks
   dependencies, runs the verify gate, updates (verify + commit + push), or uninstalls. It
   locates the app folder whether you double-click it inside `app/` or one level above.
+
+## Team GAHM
+
+Developed by **Team GAHM** for the Teens in AI — AI4Good Incubator 2026:
+
+- **Harima K.** — Project Lead
+- **Mathew M.** — Prototype Lead
+- **Gabriel L.** — Technical Lead

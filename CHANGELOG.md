@@ -5,6 +5,12 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v1.1.2] — 2026-08-14 — Team Credits
+
+### Added
+
+- **Team credits in README** — the README now lists the GAHM team: **Harima K.** (Project Lead), **Mathew M.** (Prototype Lead), and **Gabriel L.** (Technical Lead).
+
 ## [v1.1.1] — 2026-08-14 — i18n Review Fixes
 
 ### Fixed
