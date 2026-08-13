@@ -49,7 +49,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setResendCountdown(60)
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { shouldCreateUser: false },
+      options: {
+        shouldCreateUser: false,
+        emailRedirectTo: window.location.origin,
+      },
     })
     if (error) setErrorText(error.message)
   }, [])

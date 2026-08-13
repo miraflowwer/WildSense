@@ -249,8 +249,10 @@ function AuthView() {
           <>
             <h1 className="text-xl font-bold tracking-tight text-neutral-900">Verify your email</h1>
             <p className="mb-6 mt-1 text-sm leading-relaxed text-neutral-600">
-              We sent a 6-digit code to <span className="font-semibold text-neutral-800">{pendingVerification.email}</span>.
-              Enter it below to finish signing in.
+              We emailed a sign-in link and a 6-digit code to{' '}
+              <span className="font-semibold text-neutral-800">{pendingVerification.email}</span>.
+              Use the link in the email, or enter the code below. Both expire in
+              15 minutes.
             </p>
             <AriaText>Verification code sent to {pendingVerification.email}</AriaText>
 
