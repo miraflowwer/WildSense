@@ -42,3 +42,8 @@ export function formatLocalTime(iso: string): string {
   const d = new Date(iso)
   return `${DAY_NAMES[d.getUTCDay()]} ${formatTime(iso)}`
 }
+
+export function formatUtcClock(d: Date = new Date()): string {
+  return `${two(d.getUTCHours())}:${two(d.getUTCMinutes())}:${two(d.getUTCSeconds())} UTC`
+}
+

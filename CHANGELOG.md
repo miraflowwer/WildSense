@@ -5,6 +5,19 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v0.6.0] — 2026-08-13 — WCAG 2.1 AA Navigation Header & Visual Hierarchy Refactor
+
+### Changed
+
+- Replaced static sync timestamp indicator in the top header with a real-time live UTC clock (`HH:MM:SS UTC`) with an animated pulsing indicator (`animate-pulse bg-emerald-500`) and monospace font styling (`font-mono`).
+- Refactored top navigation header in `App.tsx` into 3 clear functional zones: **Brand & System Status** (left: GAHM logo, title badge, mode badge, sync status), **Primary User Actions** (center/right: `Log detection` primary CTA and `Guided tour` demo CTA), and **Account & Secondary Actions** (far right: User profile indicator, `Reset demo`, `Ethics & Legal`, `Sign out`) separated by a visual divider.
+- Standardized User Profile Indicator (`state.rangerName`) strictly inside Zone 3 across both demo and live operating modes.
+- Hardened color contrast to strictly comply with WCAG 2.1 AA (≥ 4.5:1 ratio): replaced low-contrast `bg-emerald-500` hover state with `bg-emerald-700` default and `hover:bg-emerald-800` active styles for primary white-on-emerald buttons.
+- Enhanced responsive accessibility for sync status: replaced `hidden md:inline-flex` with `sr-only md:not-sr-only md:inline` so screen readers on mobile devices retain `aria-live="polite"` updates.
+- Wrapped top navigation elements in semantic `<header>` and `<nav aria-label="Main Navigation">` elements.
+- Ensured all header buttons (`Guided tour`, `Log detection`, `Reset demo`, `Ethics & Legal`, `Sign out`) have explicit `type="button"`, distinct visual hierarchy, minimum 44×44px active touch target hit areas (`min-h-[44px] min-w-[44px]`), and high-contrast WCAG focus rings (`focus-visible:ring-2 focus-visible:ring-emerald-400`).
+- Preserved single-screen layout (`h-dvh` / `overflow-hidden`) across desktop and mobile responsive viewports without horizontal or vertical page scrolling.
+
 ## [v0.5.0] — 2026-08-13 — DPDP Act & Wildlife Protection Act SMS Compliance Hardening
 
 ### Added
