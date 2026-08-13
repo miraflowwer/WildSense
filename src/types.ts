@@ -152,5 +152,6 @@ export type StoreAction =
   | { type: 'ADD_EVENT'; event: DetectionEvent }
   | { type: 'SET_PERSISTED'; ok: boolean }
   | { type: 'RESET_EVENT_STATUS'; id: string; status: EventStatus }
+  | { type: 'CLEAR_RANGER_CONTACT'; id: string }
   | { type: 'START_TUTORIAL' }
   | { type: 'FINISH_TUTORIAL' }

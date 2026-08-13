@@ -5,6 +5,14 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v1.2.0] — 2026-08-14 — Guided Tour Fix & WICRE Naming
+
+### Fixed
+
+- **Guided tour Back button works on every step** — clicking Back previously bounced the tour forward again: the `prev` handler decremented `stepIndex`, but the state machine's forward rules re-fired in the same commit because the trigger state (event acknowledged, ranger contacted, SMS open/sent, outcome recorded, EVT-1045 selected) was still set. The machine now skips one run after a Back click (`skipNextMachineRun` ref in `DemoTour.tsx`), while the per-step sync effect resets the relevant store state on re-entry: `rangerContactedAt` is cleared (new `CLEAR_RANGER_CONTACT` store action), EVT-1042's status is reset to `under_review` after a recorded outcome, the SMS modal re-opens fresh, and the alert selection is cleared. Re-doing the step's action then advances forward normally. Verified headless with real clicks: Back at every action step stays put and re-doing the action re-advances (45/45 checks).
+- **Guided tour now completes with real user clicks** — Joyride's spotlight overlay (a full-screen SVG path with an evenodd cutout) intercepted real mouse clicks inside its hole, and the lockdown allow-rule (`#react-joyride-portal *`) was broad enough to keep it that way. The portal exemption is now scoped to the tooltip and the whole overlay is `pointer-events: none` (safe: `overlayClickAction` is off). The OutcomeForm, which opens *after* the step-8 exemption is applied, now self-registers `data-tour-active` on mount during lockdown so its inputs/buttons are clickable and the outcome can be saved. Step 7→8 fires as soon as the SMS warning is sent (the simulator closes automatically). Demo-mode tour starts dispatch `RESET_DEMO`, so re-running the demo never stalls on stale resolved events. Verified headless with real CDP clicks across all 12 steps (see `docs/guided-tour-and-branding.md`).
+- **Branding: the product is WICRE** — header, auth cards, boot splash, landing page (hero, ethics, footer), feature carousel, and all four SMS warning templates now call the engine **WICRE (Wildlife Conflict Risk Engine)** and name **GAHM** only as the org ("· by GAHM"). GAHM stays in org-policy copy (ethics & data policy), internal console prefixes, and the demo credential. i18n key names unchanged; values updated in all three catalogs (en/kn/ta), including the risk-engine explainer.
+
 ## [v1.1.2] — 2026-08-14 — Team Credits
 
 ### Added

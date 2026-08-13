@@ -267,6 +267,14 @@ function reducer(state: StoreState, action: StoreAction): StoreState {
         ),
       }
 
+    case 'CLEAR_RANGER_CONTACT':
+      return {
+        ...state,
+        events: state.events.map((e) =>
+          e.event_id === action.id ? { ...e, rangerContactedAt: null } : e,
+        ),
+      }
+
     case 'START_TUTORIAL': {
       return {
         ...state,

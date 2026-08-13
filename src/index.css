@@ -19,17 +19,37 @@ body.tour-active .leaflet-control {
   cursor: not-allowed !important;
 }
 
-/* Allow interaction strictly for Joyride portal (tooltip, buttons, X) and active step target */
-#react-joyride-portal,
-#react-joyride-portal *,
-[data-tour-active],
-[data-tour-active] * {
+/* Allow interaction strictly for the Joyride tooltip (buttons, X, progress) and the active step
+   target. NOTE: the higher-specificity `body.tour-active ...` prefix is required — without it the
+   `pointer-events: none` lockdown above (e.g. `body.tour-active button`) wins and the active
+   tour target becomes unclickable, which stalls the guided tour.
+   IMPORTANT: the portal allow-rule must NOT include `#react-joyride-portal` itself or `*` —
+   the spotlight overlay lives inside the portal too, and `#react-joyride-portal *` (specificity
+   1,0,0) would out-rank `.react-joyride__overlay .react-joyride__spotlight path` (0,2,1) below,
+   keeping the spotlight hole clickable-blocked. */
+#react-joyride-portal .react-joyride__tooltip,
+#react-joyride-portal .react-joyride__tooltip *,
+body.tour-active [data-tour-active],
+body.tour-active [data-tour-active] * {
   pointer-events: auto !important;
+}
+
+/* Let real mouse clicks pass through the Joyride spotlight overlay to the highlighted target.
+   react-joyride's overlay is an SVG with an evenodd cutout: the full-screen cover path still
+   intercepts pointer events inside the "hole", so the tour's clickable targets would otherwise
+   be dead. Neutralize the entire overlay (overlayClickAction is disabled, so nothing breaks).
+   NOTE: `pointer-events: none` on SVG paths is respected by the renderer hit-test, but NOT by
+   `document.elementFromPoint` (known Chromium quirk) — verify fixes with real clicks, not probes. */
+.react-joyride__overlay,
+.react-joyride__overlay * {
+  pointer-events: none !important;
 }
 
 body.tour-active [data-tour-active] button,
 body.tour-active [data-tour-active] input,
 body.tour-active [data-tour-active] a,
+body.tour-active [data-tour-active] select,
+body.tour-active [data-tour-active] textarea,
 body.tour-active [data-tour-active] [role="button"],
 #react-joyride-portal button,
 #react-joyride-portal a,

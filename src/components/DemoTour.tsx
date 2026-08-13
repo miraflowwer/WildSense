@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Joyride, STATUS } from 'react-joyride'
 import type { EventData, Step } from 'react-joyride'
 import { useGahm } from '../store/storeContext'
@@ -74,20 +74,20 @@ const STEPS: Step[] = [
   {
     target: '[data-tour="btn-close-record"]',
     content:
-      'Close the SMS simulator modal when done, then click Close & record outcome to save field results and response duration.',
+      'The SMS simulator closes automatically. Click Close & record outcome to save field results and response duration.',
     skipScroll: true,
     placement: 'left',
   },
   {
     target: '[data-tour="alert-EVT-1045"]',
-    content: 'Now click EVT-1045 to explore how GAHM handles uncertain or missing sensor data.',
+    content: 'Now click EVT-1045 to explore how WICRE handles uncertain or missing sensor data.',
     skipScroll: true,
     placement: 'left',
   },
   {
     target: '[data-tour="uncertainty-warning"]',
     content:
-      'Notice the amber uncertainty warning: GAHM penalizes missing data instead of guessing, keeping human operators informed and in full control.',
+      'Notice the amber uncertainty warning: WICRE penalizes missing data instead of guessing, keeping human operators informed and in full control.',
     skipScroll: true,
     placement: 'left',
   },
@@ -97,7 +97,7 @@ const STEPS: Step[] = [
       <div className="space-y-1.5">
         <div className="text-sm font-bold text-neutral-900">Guided Tour Complete!</div>
         <p className="text-xs leading-relaxed text-neutral-600">
-          You've explored GAHM's risk engine, ranger dispatch, community SMS warning simulator, and uncertainty penalty system.
+          You've explored WICRE's risk engine, ranger dispatch, community SMS warning simulator, and uncertainty penalty system.
         </p>
       </div>
     ),
@@ -112,6 +112,13 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
 
   const evt1042 = state.events.find((e) => e.event_id === 'EVT-1042')
   const evt1045 = state.events.find((e) => e.event_id === 'EVT-1045')
+
+  // Set when the user clicks Back: the stepIndex has already changed, but the store state that
+  // triggered the forward rule is still set (e.g. SMS still open, EVT-1045 still selected), so
+  // the state machine would immediately bounce forward again. The next machine run is skipped —
+  // the sync effect below resets the relevant store state, and re-doing the step action advances
+  // forward normally.
+  const skipNextMachineRun = useRef(false)
 
   // Reset step index when tour is activated
   useEffect(() => {
@@ -158,6 +165,9 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
         if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
         if (state.selectedId !== 'EVT-1042') dispatch({ type: 'SELECT_ALERT', id: 'EVT-1042' })
         if (evt1042.status === 'awaiting_review') dispatch({ type: 'ACKNOWLEDGE', id: 'EVT-1042' })
+        if (evt1042.rangerContactedAt != null) {
+          dispatch({ type: 'CLEAR_RANGER_CONTACT', id: 'EVT-1042' })
+        }
         break
 
       case 6:
@@ -178,6 +188,9 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
         // Step 9 of 12: target btn-close-record in AlertPanel
         if (state.selectedId !== 'EVT-1042') dispatch({ type: 'SELECT_ALERT', id: 'EVT-1042' })
         if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
+        if (evt1042.status === 'resolved' || evt1042.status === 'dismissed') {
+          dispatch({ type: 'RESET_EVENT_STATUS', id: 'EVT-1042', status: 'under_review' })
+        }
         break
 
       case 9:
@@ -213,6 +226,13 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
   useEffect(() => {
     if (!runTour || !evt1042 || !evt1045) return
 
+    // One-run suppression after a Back click: the store state that triggered the previous
+    // forward rule is still set in this render, and the sync effect above resets it in a
+    // follow-up render — skipping this single run prevents the "Back bounces forward" bug.
+    const skipThisRun = skipNextMachineRun.current
+    skipNextMachineRun.current = false
+    if (skipThisRun) return
+
     if (stepIndex === 2 && state.selectedId === 'EVT-1042') {
       setStepIndex(3)
     } else if (stepIndex === 4 && evt1042.status === 'under_review') {
@@ -221,7 +241,7 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
       setStepIndex(6)
     } else if (stepIndex === 6 && state.sms.openEventId === 'EVT-1042') {
       setStepIndex(7)
-    } else if (stepIndex === 7 && !state.sms.openEventId && state.sms.sentAt != null) {
+    } else if (stepIndex === 7 && state.sms.sentAt != null) {
       setStepIndex(8)
     } else if (
       stepIndex === 8 &&
@@ -257,18 +277,33 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
 
     document.body.classList.add('tour-active')
 
+    // Secondary targets that must stay interactive alongside the main spotlighted target.
+    // Step 8 (btn-close-record) opens the OutcomeForm modal — its inputs/buttons need the
+    // lockdown exemption too, or the user cannot save the outcome and the tour stalls.
+    const EXTRA_ACTIVE_TARGETS: Record<number, string[]> = {
+      8: ['[data-tour="outcome-form"]'],
+    }
+
     const updateActiveTarget = () => {
       document.querySelectorAll('[data-tour-active]').forEach((el) => {
         el.removeAttribute('data-tour-active')
       })
 
+      const markActive = (sel: string) => {
+        const el = document.querySelector(sel)
+        if (el) el.setAttribute('data-tour-active', 'true')
+      }
+
       const targetSel = STEPS[stepIndex]?.target
       if (typeof targetSel === 'string') {
+        markActive(targetSel)
         const activeEl = document.querySelector(targetSel)
         if (activeEl) {
-          activeEl.setAttribute('data-tour-active', 'true')
           activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
         }
+      }
+      for (const sel of EXTRA_ACTIVE_TARGETS[stepIndex] ?? []) {
+        markActive(sel)
       }
     }
 
@@ -334,6 +369,7 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
       if (action === 'next') {
         setStepIndex(index + 1)
       } else if (action === 'prev') {
+        skipNextMachineRun.current = true
         setStepIndex(Math.max(0, index - 1))
       }
     }

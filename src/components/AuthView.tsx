@@ -17,7 +17,7 @@ function BrandLockup() {
   const { t } = useI18n()
   return (
     <div className="mb-6">
-      <div className="mb-1 text-3xl font-bold tracking-tight text-neutral-900">GAHM</div>
+      <div className="mb-1 text-3xl font-bold tracking-tight text-neutral-900">WICRE</div>
       <div className="text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
         {t('app.brandTagline')}
       </div>

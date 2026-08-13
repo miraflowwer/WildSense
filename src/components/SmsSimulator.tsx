@@ -25,13 +25,13 @@ function langForCommunity(community: string | undefined): SmsLang {
 function messageFor(lang: SmsLang, zone: string): string {
   switch (lang) {
     case 'hi':
-      return `GAHM चेतावनी: ${zone} के पास वन्यजीव ख़तरा। पशुओं को सुरक्षित करें और खेत की सीमा से दूर रहें। वनरक्षकों को सूचित कर दिया गया है। सुरक्षित होने पर SAFE जवाब दें। रद्द करने के लिए STOP लिखें।`
+      return `WICRE चेतावनी: ${zone} के पास वन्यजीव ख़तरा। पशुओं को सुरक्षित करें और खेत की सीमा से दूर रहें। वनरक्षकों को सूचित कर दिया गया है। सुरक्षित होने पर SAFE जवाब दें। रद्द करने के लिए STOP लिखें।`
     case 'kn':
-      return `GAHM ಎಚ್ಚರಿಕೆ: ${zone} ಬಳಿ ವನ್ಯಜೀವಿ ಅಪಾಯ. ಜಾನುವಾರುಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿಡಿ ಮತ್ತು ಹೊಲದ ಗಡಿಯಿಂದ ದೂರವಿರಿ. ರೇಂಜರ್ಗಳಿಗೆ ಸೂಚಿಸಲಾಗಿದೆ. ಸುರಕ್ಷಿತವಾದಾಗ SAFE ಎಂದು ಉತ್ತರಿಸಿ. ನಿರ್ಗಮನಕ್ಕೆ STOP ಬರೆಯಿರಿ.`
+      return `WICRE ಎಚ್ಚರಿಕೆ: ${zone} ಬಳಿ ವನ್ಯಜೀವಿ ಅಪಾಯ. ಜಾನುವಾರುಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿಡಿ ಮತ್ತು ಹೊಲದ ಗಡಿಯಿಂದ ದೂರವಿರಿ. ರೇಂಜರ್ಗಳಿಗೆ ಸೂಚಿಸಲಾಗಿದೆ. ಸುರಕ್ಷಿತವಾದಾಗ SAFE ಎಂದು ಉತ್ತರಿಸಿ. ನಿರ್ಗಮನಕ್ಕೆ STOP ಬರೆಯಿರಿ.`
     case 'ta':
-      return `GAHM எச்சரிக்கை: ${zone} அருகே வனவிலங்கு ஆபத்து. கால்நடைகளை பாதுகாப்பாக வைத்து, வயல் எல்லையைத் தவிர்க்கவும். வனக்காவலர்களுக்கு தெரிவிக்கப்பட்டது. பாதுகாப்பாக இருந்தால் SAFE என்று பதிலளிக்கவும். விலகுவதற்கு STOP அனுப்பவும்.`
+      return `WICRE எச்சரிக்கை: ${zone} அருகே வனவிலங்கு ஆபத்து. கால்நடைகளை பாதுகாப்பாக வைத்து, வயல் எல்லையைத் தவிர்க்கவும். வனக்காவலர்களுக்கு தெரிவிக்கப்பட்டது. பாதுகாப்பாக இருந்தால் SAFE என்று பதிலளிக்கவும். விலகுவதற்கு STOP அனுப்பவும்.`
     default:
-      return `GAHM ALERT: High wildlife risk near ${zone}. Secure livestock and avoid the farm boundary. Rangers have been notified. Reply SAFE when secure. Reply STOP to opt out.`
+      return `WICRE ALERT: High wildlife risk near ${zone}. Secure livestock and avoid the farm boundary. Rangers have been notified. Reply SAFE when secure. Reply STOP to opt out.`
   }
 }
 

@@ -93,7 +93,7 @@ const SLIDES: FeatureSlide[] = [
       badge: 'SMS Dispatched · 34 Recipients',
       badgeColor: 'bg-emerald-100 text-emerald-900 border-emerald-200',
       stats: [
-        { label: 'Message', value: 'GAHM ALERT: High elephant risk near Hangala.' },
+        { label: 'Message', value: 'WICRE ALERT: High elephant risk near Hangala.' },
         { label: 'Action Advice', value: 'Avoid field boundary until 21:00 UTC.' },
         { label: 'Opt-out', value: 'Reply STOP to unsubscribe' },
       ],

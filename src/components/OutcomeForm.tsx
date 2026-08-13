@@ -48,6 +48,13 @@ function OutcomeForm({ event, onClose }: { event: DetectionEvent; onClose: () =>
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
 
+  useEffect(() => {
+    if (!document.body.classList.contains('tour-active')) return
+    const root = document.querySelector('[data-tour="outcome-form"]')
+    root?.setAttribute('data-tour-active', 'true')
+    return () => root?.removeAttribute('data-tour-active')
+  }, [])
+
   const minutes = Number(responseMinutes)
   const valid = responseMinutes.trim() !== '' && Number.isFinite(minutes) && minutes >= 0
 
@@ -68,7 +75,7 @@ function OutcomeForm({ event, onClose }: { event: DetectionEvent; onClose: () =>
   }
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 p-4">
+    <div data-tour="outcome-form" className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 p-4">
       <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-xl bg-white p-5 shadow-2xl">
         <div className="mb-4 flex items-center justify-between">
           <div>

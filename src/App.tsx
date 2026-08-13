@@ -78,7 +78,11 @@ function App() {
   }, [mode])
 
   const handleStartTour = () => {
-    if (mode === 'user') {
+    if (mode === 'demo') {
+      // Reset to a pristine scenario so every tour run starts from a clean, scripted state
+      // (a previously resolved EVT-1042 would otherwise be filtered out and stall the tour).
+      dispatch({ type: 'RESET_DEMO' })
+    } else {
       dispatch({ type: 'START_TUTORIAL' })
     }
     setRunTour(true)
@@ -128,7 +132,7 @@ function App() {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <span className="text-base font-extrabold tracking-tight text-white sm:text-lg">
-              GAHM
+              WICRE
             </span>
             <span className="hidden text-xs font-medium text-neutral-400 sm:inline">
               {t('app.brandTagline')}
