@@ -70,7 +70,8 @@ shows "Server unreachable"). See
 
 The build is fully static (`dist/`). Deployed on **Vercel** with auto-deploy on git push:
 
-- **Vercel** — repo `miraflowwer/GAHM-Prototype` (branch `main`); import at
+- **Vercel** — repo `miraflowwer/Wildlife-Conflict-Risk-Engine` (branch `main`; the
+  repo was renamed 2026-08-14 from `GAHM-Prototype`, the old URL redirects); import at
   vercel.com/new. Vite is auto-detected, and SPA route rewrites are configured in `vercel.json`.
 
 Updating the hosted app is one command:

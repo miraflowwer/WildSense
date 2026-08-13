@@ -11,6 +11,10 @@ project adheres to [Semantic Versioning](https://semver.org).
 
 - **Team credits in README** — the README now lists the GAHM team: **Harima K.** (Project Lead), **Mathew M.** (Prototype Lead), and **Gabriel L.** (Technical Lead).
 
+### Changed
+
+- **Repo renamed to `Wildlife-Conflict-Risk-Engine`** — the GitHub remote was renamed 2026-08-14 from `GAHM-Prototype` (old URL redirects); the local `origin` was updated via `git remote set-url origin`, and the versioned docs (`dev-workflow.md`, `build-optimization.md`) now reference the new URL.
+
 ## [v1.1.1] — 2026-08-14 — i18n Review Fixes
 
 ### Fixed
