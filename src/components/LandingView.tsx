@@ -234,7 +234,7 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
           <div className="flex items-center gap-3">
             <div className="flex flex-col">
               <span className="text-xl font-extrabold tracking-tight text-[#123524] sm:text-2xl">
-                WICRE
+                WildSense
               </span>
               <span className="text-sm font-bold text-[#C05621]">
                 Wildlife Conflict Risk Engine · by GAHM
@@ -293,7 +293,7 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
         {/* Section 1: Hero Section */}
         <section ref={heroRef} className="relative pt-6 text-center lg:pt-14 space-y-6">
           <div className="inline-flex items-center gap-2 rounded-full border border-[#123524]/20 bg-white/80 backdrop-blur-xs px-4 py-1.5 text-sm font-bold text-[#123524] shadow-xs">
-            <span>🌿 WICRE: Wildlife Conflict Risk Engine · by GAHM</span>
+            <span>🌿 WildSense: Wildlife Conflict Risk Engine · by GAHM</span>
             <span className="text-[#C05621]">•</span>
             <span>UN SDG 15 Dedicated</span>
           </div>
@@ -304,7 +304,7 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
           </h1>
 
           <p className="mx-auto max-w-2xl text-lg leading-relaxed text-neutral-700 sm:text-xl">
-            WICRE (Wildlife Conflict Risk Engine) turns weak environmental signals into transparent conflict risk scores, empowering forest rangers and fringe agricultural communities with early warning alerts, anti-poaching privacy guards, and non-lethal mitigation dispatches. It is built by GAHM (Global Actions on Habitats and Marines).
+            WildSense (Wildlife Conflict Risk Engine) turns weak environmental signals into transparent conflict risk scores, empowering forest rangers and fringe agricultural communities with early warning alerts, anti-poaching privacy guards, and non-lethal mitigation dispatches. It is built by GAHM (Global Actions on Habitats and Marines).
           </p>
 
           {/* Action CTAs */}
@@ -499,7 +499,7 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
               matter — a herd drifting toward a village at dusk — hide inside the noise.
             </p>
             <p className="text-base leading-relaxed text-neutral-700">
-              WICRE's job is to turn those weak signals into one transparent, explainable risk score,
+              WildSense's job is to turn those weak signals into one transparent, explainable risk score,
               so the human ranger's attention goes where the conflict is about to happen.
             </p>
           </div>
@@ -545,7 +545,7 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
               Seven signals. One transparent score.
             </h2>
             <p className="text-base text-neutral-600 max-w-lg mx-auto">
-              Scroll down — the page locks while the deck steps through WICRE’s end-to-end conflict prediction and non-lethal dispatch modules.
+              Scroll down — the page locks while the deck steps through WildSense’s end-to-end conflict prediction and non-lethal dispatch modules.
             </p>
           </div>
 
@@ -573,14 +573,14 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
             <div className="space-y-2.5 rounded-2xl border border-[#E8E2D5] bg-[#FDFBF7] p-6 shadow-xs">
               <h3 className="text-lg font-bold text-[#123524]">Habitat Boundary Protection</h3>
               <p>
-                As agricultural communities expand near protected forest reserves, human-wildlife encounters increase. WICRE focuses exclusively on land habitat conflict risk prediction to protect both local livelihoods and wild species.
+                As agricultural communities expand near protected forest reserves, human-wildlife encounters increase. WildSense focuses exclusively on land habitat conflict risk prediction to protect both local livelihoods and wild species.
               </p>
             </div>
 
             <div className="space-y-2.5 rounded-2xl border border-[#E8E2D5] bg-[#FDFBF7] p-6 shadow-xs">
               <h3 className="text-lg font-bold text-[#C05621]">Non-Lethal Early Warning</h3>
               <p>
-                Traditional deterrents often involve high-risk confrontation or lethal force. WICRE uses weak signal predictive analytics to alert rangers and villagers hours before potential breach events occur.
+                Traditional deterrents often involve high-risk confrontation or lethal force. WildSense uses weak signal predictive analytics to alert rangers and villagers hours before potential breach events occur.
               </p>
             </div>
 
@@ -593,7 +593,7 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
           </div>
         </section>
 
-        {/* Section 4: Who Is WICRE Built For (Scroll-Break Persona Showcase) */}
+        {/* Section 4: Who Is WildSense Built For (Scroll-Break Persona Showcase) */}
         <section className="space-y-16">
           <div className="text-center space-y-2">
             <span className="text-sm font-bold uppercase tracking-widest text-[#C05621]">
@@ -772,7 +772,7 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
                 />
                 <div className="absolute bottom-4 left-4 right-4 rounded-xl bg-white/90 p-4 backdrop-blur-md border border-[#E8E2D5] shadow-md">
                   <div className="text-sm font-bold text-[#123524]">Simulated SMS Alert Message</div>
-                  <div className="text-xs text-neutral-600">WICRE ALERT: High elephant risk near Hangala. Avoid field boundary until 21:00 UTC. Reply STOP to opt out.</div>
+                  <div className="text-xs text-neutral-600">WildSense ALERT: High elephant risk near Hangala. Avoid field boundary until 21:00 UTC. Reply STOP to opt out.</div>
                 </div>
               </div>
             </div>
@@ -874,7 +874,7 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
                 1. Human-in-the-Loop Safeguard
               </div>
               <p className="text-base text-neutral-700 leading-relaxed">
-                WICRE never performs autonomous dispatch or automatic acoustic/visual deterrent triggers. The human ranger evaluates all risk signals and retains sole authority for field actions.
+                WildSense never performs autonomous dispatch or automatic acoustic/visual deterrent triggers. The human ranger evaluates all risk signals and retains sole authority for field actions.
               </p>
             </div>
 
@@ -942,7 +942,7 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
         {/* Footer & Final CTA */}
         <footer className="border-t border-[#E8E2D5] pt-12 pb-10 text-center space-y-8">
           <div className="max-w-xl mx-auto space-y-4">
-            <h2 className="text-3xl font-extrabold text-[#123524]">Ready to Explore WICRE?</h2>
+            <h2 className="text-3xl font-extrabold text-[#123524]">Ready to Explore WildSense?</h2>
             <p className="text-sm text-neutral-600">
               Try the live interactive demo or sign up for a workspace to start managing wildlife conflict risk.
             </p>
@@ -967,10 +967,13 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
 
           <div className="border-t border-[#E8E2D5] pt-8 text-sm text-neutral-500 space-y-1.5">
             <div>
-              WICRE — Wildlife Conflict Risk Engine · by GAHM (Global Actions on Habitats and Marines) · Teens in AI Incubator 2026
+              WildSense — Wildlife Conflict Risk Engine · by GAHM (Global Actions on Habitats and Marines) · Teens in AI Incubator 2026
             </div>
             <div>
-              Target SDG 15: Life on Land · Version 1.2.0
+              Built by Team GAHM — Harima K. (Project Lead) · Mathew M. (Prototype Lead) · Gabriel L. (Technical Lead)
+            </div>
+            <div>
+              Target SDG 15: Life on Land · Version 1.3.0
             </div>
           </div>
         </footer>

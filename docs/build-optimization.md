@@ -67,4 +67,4 @@ Notes:
 - `package.json` bumped **1.0.0 → 1.0.1** (also `package-lock.json`,
   `CHANGELOG.md`).
 - Shipped on branch **`perf/vendor-chunk-splitting`** (b05674f) — **not merged
-  to `main`**; PR: `https://github.com/miraflowwer/Wildlife-Conflict-Risk-Engine/pull/new/perf/vendor-chunk-splitting`.
+  to `main`**; PR: `https://github.com/miraflowwer/WildSense/pull/new/perf/vendor-chunk-splitting`.

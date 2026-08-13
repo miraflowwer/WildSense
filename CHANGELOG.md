@@ -5,6 +5,16 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v1.3.0] — 2026-08-14 — WildSense Branding & Team Credits
+
+### Changed
+
+- **Product renamed WICRE → WildSense** — every user-facing surface now calls the engine **WildSense (Wildlife Conflict Risk Engine)**: dashboard header, auth cards, boot splash, landing page (header, hero, sections, footer), guided-tour copy, feature carousel, risk-engine explainer, and all four SMS warning templates. The header brand is now a link that returns to the landing page. i18n: the now-unused `app.aboutGahm` / `app.aboutGahmAria` keys were replaced by `app.brandAria`; values updated in all three catalogs (en/kn/ta).
+- **Dashboard header simplified** — the "About WICRE" button was removed; clicking the WildSense brand in the header now leads back to the landing page.
+- **Footer credits** — the landing footer now reads "Built by Team GAHM — Harima K. (Project Lead) · Mathew M. (Prototype Lead) · Gabriel L. (Technical Lead)". GAHM stays the org name throughout.
+- **Repo renamed to `WildSense`** — the GitHub remote was renamed 2026-08-14 from `Wildlife-Conflict-Risk-Engine` (old URL redirects); the local `origin` was updated via `git remote set-url origin`, and the versioned docs (`dev-workflow.md`, `build-optimization.md`) now reference the new URL.
+- Version bump 1.2.0 → **1.3.0** (`package.json`, landing footer).
+
 ## [v1.2.0] — 2026-08-14 — Guided Tour Fix & WICRE Naming
 
 ### Fixed

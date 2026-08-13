@@ -131,9 +131,14 @@ function App() {
         {/* Left: Brand & Status */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-base font-extrabold tracking-tight text-white sm:text-lg">
-              WICRE
-            </span>
+            <button
+              type="button"
+              onClick={() => setShowLanding(true)}
+              aria-label={t('app.brandAria')}
+              className="text-base font-extrabold tracking-tight text-white transition-colors hover:text-emerald-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 sm:text-lg"
+            >
+              WildSense
+            </button>
             <span className="hidden text-xs font-medium text-neutral-400 sm:inline">
               {t('app.brandTagline')}
             </span>
@@ -157,16 +162,6 @@ function App() {
 
         {/* Right Nav / Actions */}
         <nav aria-label={t('app.navLabel')} className="flex items-center gap-2 sm:gap-3">
-          {/* Landing Page Link */}
-          <button
-            type="button"
-            onClick={() => setShowLanding(true)}
-            aria-label={t('app.aboutGahmAria')}
-            className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-xs font-medium text-neutral-200 transition-colors hover:bg-neutral-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900"
-          >
-            {t('app.aboutGahm')}
-          </button>
-
           {/* Primary Action: Log detection */}
           <button
             type="button"

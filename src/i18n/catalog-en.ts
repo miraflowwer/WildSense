@@ -17,8 +17,7 @@ export const enRaw = {
     demoMode: 'DEMO MODE',
     liveMode: 'LIVE MODE',
     navLabel: 'Main Navigation',
-    aboutGahm: 'About WICRE',
-    aboutGahmAria: 'View WICRE landing page and ethics charter',
+    brandAria: 'Go to WildSense landing page',
     logDetection: 'Log detection',
     logDetectionAria: 'Log new wildlife detection',
     guidedTour: 'Guided tour',
@@ -42,7 +41,7 @@ export const enRaw = {
     alertsView: 'Alerts & Details {count}',
     loadingMap: 'Loading map…',
     loadingForm: 'Loading form…',
-    boot: 'WICRE…',
+    boot: 'WildSense…',
   },
   auth: {
     welcomeBack: 'Welcome back',
@@ -225,7 +224,7 @@ export const enRaw = {
     title: 'How Conflict Risk is Calculated',
     overviewTitle: 'Multi-Signal Risk Aggregation & Threshold Filtering',
     overview:
-      'Instead of generating an alert for every single wildlife detection, WICRE identifies patterns across multiple environmental context signals. It automatically filters out routine animal behavior and generates targeted, explainable alerts only when the calculated risk crosses a defined threshold.',
+      'Instead of generating an alert for every single wildlife detection, WildSense identifies patterns across multiple environmental context signals. It automatically filters out routine animal behavior and generates targeted, explainable alerts only when the calculated risk crosses a defined threshold.',
     signalsTitle: '5 Core Environmental Context Signals',
     signal1Title: '1. Animal Movement & Direction',
     signal2Title: '2. Proximity to Farms',
@@ -255,7 +254,7 @@ export const enRaw = {
     highBody: 'Critical imminent threat. Triggers immediate ranger unit contact and community SMS warning preview.',
     uncertaintyTitle: 'Data Uncertainty & Safety Buffer',
     uncertaintyBody:
-      'If sensor movement data or species confidence is missing, WICRE applies an explicit uncertainty penalty (-8 pts) and highlights an alert banner. Rather than making blind assumptions, it alerts human operators to manually review unverified detections.',
+      'If sensor movement data or species confidence is missing, WildSense applies an explicit uncertainty penalty (-8 pts) and highlights an alert banner. Rather than making blind assumptions, it alerts human operators to manually review unverified detections.',
     gotIt: 'Got it, return to dashboard',
   },
   map: {

@@ -1,8 +1,12 @@
-# Guided Tour Fixes & WICRE Naming (v1.2.0)
+# Guided Tour Fixes & Branding Naming (v1.2.0)
 
-_Audience: developers. This is the versioned record of the two v1.2.0 changes:
+_Audience: developers. This is the versioned record of the v1.2.0 changes:
 why the guided tour could stall on real user clicks, how it was fixed and
 verified headlessly, and how the product/org naming is split across the UI._
+
+> **Superseded 2026-08-14 (v1.3.0):** the product was renamed from **WICRE** to
+> **WildSense** (see the note at the end of §2). Section 1 (guided tour) is
+> unchanged; §2 documents both the original WICRE sweep and the rename.
 
 ## 1. The guided tour could not be completed with real clicks
 
@@ -94,11 +98,11 @@ EVT-1045, Next, Finish — every step advanced and `body.tour-active` was
 removed at the end. Repro scripts live in
 `C:\Users\miraf\AppData\Local\Temp\opencode\tour-probe*.mjs`.
 
-## 2. WICRE vs GAHM naming
+## 2. WICRE vs GAHM naming (v1.2.0)
 
-**WICRE** (Wildlife Conflict Risk Engine) is the product; **GAHM** (Global
-Actions on Habitats and Marines) is the team/org. v1.2.0 sweeps the UI so the
-product is called WICRE and GAHM appears only as the builder:
+**WICRE** (Wildlife Conflict Risk Engine) was the product; **GAHM** (Global
+Actions on Habitats and Marines) is the team/org. v1.2.0 swept the UI so the
+product was called WICRE and GAHM appeared only as the builder:
 
 - Header, auth cards, boot splash, landing page (hero, ethics, footer),
   FeatureCarousel, and all four SMS warning templates say WICRE (product) or
@@ -113,3 +117,18 @@ product is called WICRE and GAHM appears only as the builder:
   `riskExplain.uncertaintyBody` explain the engine, so they say WICRE too.
 - Version bump 1.1.1 → **1.2.0** (`package.json`; the landing footer already
   reads "Version 1.2.0").
+
+### Renamed to WildSense (v1.3.0, 2026-08-14)
+
+The product name **WICRE** was replaced by **WildSense** everywhere users see
+it (dashboard header, auth cards, boot splash, landing page, guided-tour copy,
+feature carousel, risk-engine explainer, all four SMS templates). The landing
+footer now adds "Built by Team GAHM — Harima K. (Project Lead) · Mathew M.
+(Prototype Lead) · Gabriel L. (Technical Lead)" credits. Details:
+
+- The dashboard's "About WICRE" button was removed; the header brand
+  **WildSense** is now a link back to the landing page (`setShowLanding`).
+- i18n: `app.aboutGahm` / `app.aboutGahmAria` were removed (button gone) and
+  replaced by `app.brandAria`; values updated in all three catalogs.
+- GAHM remains the org name everywhere ("· by GAHM", footer credits).
+- Version bump 1.2.0 → **1.3.0** (`package.json`, landing footer).

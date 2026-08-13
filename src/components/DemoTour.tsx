@@ -80,14 +80,14 @@ const STEPS: Step[] = [
   },
   {
     target: '[data-tour="alert-EVT-1045"]',
-    content: 'Now click EVT-1045 to explore how WICRE handles uncertain or missing sensor data.',
+    content: 'Now click EVT-1045 to explore how WildSense handles uncertain or missing sensor data.',
     skipScroll: true,
     placement: 'left',
   },
   {
     target: '[data-tour="uncertainty-warning"]',
     content:
-      'Notice the amber uncertainty warning: WICRE penalizes missing data instead of guessing, keeping human operators informed and in full control.',
+      'Notice the amber uncertainty warning: WildSense penalizes missing data instead of guessing, keeping human operators informed and in full control.',
     skipScroll: true,
     placement: 'left',
   },
@@ -97,7 +97,7 @@ const STEPS: Step[] = [
       <div className="space-y-1.5">
         <div className="text-sm font-bold text-neutral-900">Guided Tour Complete!</div>
         <p className="text-xs leading-relaxed text-neutral-600">
-          You've explored WICRE's risk engine, ranger dispatch, community SMS warning simulator, and uncertainty penalty system.
+          You've explored WildSense's risk engine, ranger dispatch, community SMS warning simulator, and uncertainty penalty system.
         </p>
       </div>
     ),
