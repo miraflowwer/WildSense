@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useGahm } from '../store/storeContext'
+import { formatSpeciesName } from '../engine/config'
 import type { DetectionEvent } from '../types'
 import OutcomeForm from './OutcomeForm'
 
@@ -88,7 +89,7 @@ function AlertPanel({ event }: { event: DetectionEvent }) {
 
         <div className="space-y-4 p-3">
           <div>
-            <h2 className="text-lg font-bold capitalize text-neutral-900">{event.species}</h2>
+            <h2 className="text-lg font-bold text-neutral-900">{formatSpeciesName(event.species)}</h2>
             <p className="text-xs text-neutral-500">
               {fmtTime(event.timestamp)} · {event.sensor_zone} · {event.estimated_count} animal
               {event.estimated_count === 1 ? '' : 's'}

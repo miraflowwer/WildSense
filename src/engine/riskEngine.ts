@@ -2,6 +2,7 @@ import {
   THRESHOLDS,
   MAX_PROXIMITY_KM,
   SPECIES_IMPACT,
+  formatSpeciesName,
   TIME_WINDOWS,
   WEATHER_FACTOR,
   WEATHER_DESCRIPTIONS,
@@ -73,12 +74,13 @@ export function computeRisk(
     })
   }
 
-  const species = SPECIES_IMPACT[input.species] ?? 3
-  if (species > 0) {
+  const speciesKey = input.species.toLowerCase().trim().replace(/\s+/g, '_')
+  const speciesPts = SPECIES_IMPACT[speciesKey] ?? SPECIES_IMPACT[input.species] ?? 10
+  if (speciesPts > 0) {
     reasons.push({
       label: 'Species impact',
-      points: species,
-      description: `${input.species} has high conflict potential in this habitat`,
+      points: speciesPts,
+      description: `${formatSpeciesName(input.species)} has high conflict potential in this habitat`,
     })
   }
 

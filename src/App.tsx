@@ -88,15 +88,13 @@ function App() {
               </button>
             </>
           ) : null}
-          {!demoMode ? (
-            <button
-              type="button"
-              onClick={() => setAdding(true)}
-              className="rounded-md bg-emerald-600 px-2.5 py-1 font-semibold text-white transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
-            >
-              Log detection
-            </button>
-          ) : null}
+          <button
+            type="button"
+            onClick={() => setAdding(true)}
+            className="rounded-md bg-emerald-600 px-2.5 py-1 font-semibold text-white transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+          >
+            Log detection
+          </button>
           <button
             type="button"
             onClick={() => {

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useGahm } from '../store/storeContext'
 import {
   SPECIES_IMPACT,
+  formatSpeciesName,
   WEATHER_FACTOR,
   GROUP_SIZE_POINTS,
   thresholdsForZone,
@@ -24,6 +25,7 @@ const labelCls = 'mb-1 block text-xs font-semibold uppercase tracking-wide text-
 function NewDetectionForm({ onClose }: NewDetectionFormProps) {
   const { dispatch } = useGahm()
   const [species, setSpecies] = useState('elephant')
+  const [customSpecies, setCustomSpecies] = useState('')
   const [count, setCount] = useState('1')
   const [confidence, setConfidence] = useState(0.8)
   const [weather, setWeather] = useState('dry_season')
@@ -42,6 +44,10 @@ function NewDetectionForm({ onClose }: NewDetectionFormProps) {
 
   const submit = () => {
     if (!location) return
+    const targetSpecies =
+      species === 'other' ? customSpecies.trim().toLowerCase().replace(/\s+/g, '_') || 'wildlife' : species
+    if (!targetSpecies) return
+
     const timestamp = new Date().toISOString()
     const distance = Math.min(
       ...farmZones.map((f) =>
@@ -50,7 +56,7 @@ function NewDetectionForm({ onClose }: NewDetectionFormProps) {
     )
     const risk = computeRisk(
       {
-        species,
+        species: targetSpecies,
         detection_confidence: confidence,
         estimated_count: Number(count),
         distance_to_farm_km: distance,
@@ -67,7 +73,7 @@ function NewDetectionForm({ onClose }: NewDetectionFormProps) {
       event_id: `EVT-${Date.now().toString(36).toUpperCase()}`,
       timestamp,
       sensor_zone: 'Manual Detection',
-      species,
+      species: targetSpecies,
       detection_confidence: confidence,
       estimated_count: Number(count),
       distance_to_farm_km: distance,
@@ -124,10 +130,27 @@ function NewDetectionForm({ onClose }: NewDetectionFormProps) {
             >
               {Object.keys(SPECIES_IMPACT).map((s) => (
                 <option key={s} value={s}>
-                  {s}
+                  {formatSpeciesName(s)}
                 </option>
               ))}
+              <option value="other">Other species (custom)…</option>
             </select>
+
+            {species === 'other' ? (
+              <div className="mt-2">
+                <label htmlFor="nd-custom-species" className={labelCls}>
+                  Species name
+                </label>
+                <input
+                  id="nd-custom-species"
+                  type="text"
+                  placeholder="e.g. Snow leopard, Sloth bear, Wolf"
+                  value={customSpecies}
+                  onChange={(e) => setCustomSpecies(e.target.value)}
+                  className={inputCls}
+                />
+              </div>
+            ) : null}
           </div>
 
           <div>
@@ -223,7 +246,7 @@ function NewDetectionForm({ onClose }: NewDetectionFormProps) {
           <button
             type="button"
             onClick={submit}
-            disabled={!location}
+            disabled={!location || (species === 'other' && !customSpecies.trim())}
             className="rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Log detection

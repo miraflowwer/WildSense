@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useGahm } from '../store/storeContext'
+import { formatSpeciesName } from '../engine/config'
 import { filterEvents, sortedEvents } from '../store/selectors'
 
 const STATUS_LABELS: Record<string, string> = {
@@ -75,8 +76,8 @@ function AlertList() {
                 </span>
                 <span className="font-mono text-[11px] text-neutral-500">{e.event_id}</span>
               </div>
-              <div className="mt-1 text-sm font-semibold capitalize text-neutral-900">
-                {e.species} <span className="font-normal text-neutral-500">×{e.estimated_count}</span>
+              <div className="mt-1 text-sm font-semibold text-neutral-900">
+                {formatSpeciesName(e.species)} <span className="font-normal text-neutral-500">×{e.estimated_count}</span>
               </div>
               <div className="mt-0.5 text-xs text-neutral-500">
                 {e.sensor_zone} · {e.distance_to_farm_km.toFixed(1)} km · {fmtTime(e.timestamp)}

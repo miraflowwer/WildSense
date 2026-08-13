@@ -43,9 +43,21 @@ export const MAX_PROXIMITY_KM = 12
 export const SPECIES_IMPACT: Record<string, number> = {
   elephant: 15,
   tiger: 14,
+  snow_leopard: 13,
   leopard: 13,
+  sloth_bear: 11,
+  wolf: 10,
   gaur: 10,
   wild_boar: 8,
+}
+
+export function formatSpeciesName(species: string): string {
+  if (!species) return ''
+  const cleaned = species.replace(/_/g, ' ').trim()
+  return cleaned
+    .split(/\s+/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ')
 }
 
 export const TIME_WINDOWS = {
