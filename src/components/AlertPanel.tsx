@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useGahm } from '../store/storeContext'
-import { formatSpeciesName } from '../engine/config'
+import { formatSpeciesName, formatWeatherName } from '../engine/config'
 import type { DetectionEvent } from '../types'
 import OutcomeForm from './OutcomeForm'
 
@@ -42,7 +42,13 @@ const btnCls =
 const btnPrimaryCls =
   'inline-flex min-h-[44px] items-center justify-center rounded-lg bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white shadow-xs transition-all hover:bg-emerald-700 active:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:cursor-not-allowed disabled:opacity-40'
 
-function AlertPanel({ event }: { event: DetectionEvent }) {
+function AlertPanel({
+  event,
+  onOpenRiskExplanation,
+}: {
+  event: DetectionEvent
+  onOpenRiskExplanation?: () => void
+}) {
   const { state, dispatch } = useGahm()
   const [falseNote, setFalseNote] = useState('')
   const [showOutcome, setShowOutcome] = useState(false)
@@ -120,9 +126,20 @@ function AlertPanel({ event }: { event: DetectionEvent }) {
           </div>
 
           <section data-tour="contributing-signals" className="rounded-lg border border-neutral-300 bg-neutral-50/60 p-3 shadow-2xs">
-            <h3 className="mb-2 text-xs font-extrabold uppercase tracking-wider text-neutral-600">
-              Contributing signals
-            </h3>
+            <div className="mb-2 flex items-center justify-between">
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-neutral-600">
+                Contributing signals
+              </h3>
+              {onOpenRiskExplanation ? (
+                <button
+                  type="button"
+                  onClick={onOpenRiskExplanation}
+                  className="text-[11px] font-bold text-emerald-700 underline hover:text-emerald-800"
+                >
+                  How risk is calculated?
+                </button>
+              ) : null}
+            </div>
             <ul className="space-y-2">
               {event.reasons.map((r, i) => (
                 <li key={i} className="flex items-start gap-2 text-xs">
@@ -162,7 +179,7 @@ function AlertPanel({ event }: { event: DetectionEvent }) {
             </div>
             <div>
               <span className="font-bold text-neutral-900">Weather:</span>{' '}
-              <span className="capitalize">{event.weather_condition}</span>
+              <span>{formatWeatherName(event.weather_condition)}</span>
             </div>
           </section>
 

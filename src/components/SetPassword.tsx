@@ -73,7 +73,17 @@ function SetPassword() {
                 {show ? 'Hide' : 'Show'}
               </button>
             </div>
-            <p className="mt-1 text-xs text-neutral-500">min {MIN_PASSWORD} characters</p>
+            {password === '' ? (
+              <p className="mt-1 text-xs text-neutral-500">Minimum {MIN_PASSWORD} characters required</p>
+            ) : password.length < MIN_PASSWORD ? (
+              <p className="mt-1 text-xs font-semibold text-red-600">
+                ⚠️ Password must be at least {MIN_PASSWORD} characters (currently {password.length})
+              </p>
+            ) : (
+              <p className="mt-1 text-xs font-semibold text-emerald-600">
+                ✓ Password meets length requirements
+              </p>
+            )}
             {capsLock ? <p className="mt-1 text-xs text-amber-600">Caps Lock is on</p> : null}
           </div>
 

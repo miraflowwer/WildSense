@@ -89,6 +89,14 @@ dispatch(action)  ──►  reducer mutates state  ──►  selectors re-rend
   the flow is identical on screen.
 - In **user mode**, every mutating action is written through to Supabase; failed
   writes flip `notPersisted` in state (see `data-model.md`).
+- **Tutorial (guided tour) mode** (`state.inTutorial`, see `DemoTour.tsx` and
+  `App.tsx`): when a logged-in user runs the tour, real events are snapshotted
+  into `realEventsSnapshot` and sample events (EVT-1042, EVT-1045, …) are loaded
+  in memory only. Writes are suspended: the store's dispatch guard skips
+  `persistAction`, and `SmsSimulator` skips `insertSmsLog`, so no tutorial
+  activity (events or SMS logs) ever reaches Supabase. Finishing/skipping the
+  tour dispatches `FINISH_TUTORIAL`, which discards the sample data and restores
+  the snapshot — the workspace always returns to its real, clean state.
 
 ## Lazy loading
 

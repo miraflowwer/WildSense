@@ -122,6 +122,8 @@ export interface StoreState {
   lastSyncAt: string
   mode: 'demo' | 'user'
   notPersisted: boolean
+  realEventsSnapshot?: DetectionEvent[]
+  inTutorial?: boolean
 }
 
 export type StoreAction =
@@ -146,3 +148,5 @@ export type StoreAction =
   | { type: 'ADD_EVENT'; event: DetectionEvent }
   | { type: 'SET_PERSISTED'; ok: boolean }
   | { type: 'RESET_EVENT_STATUS'; id: string; status: EventStatus }
+  | { type: 'START_TUTORIAL' }
+  | { type: 'FINISH_TUTORIAL' }

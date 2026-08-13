@@ -75,6 +75,22 @@ export const WEATHER_FACTOR: Record<string, number> = {
   monsoon: 2,
 }
 
+export function formatWeatherName(weather: string): string {
+  if (!weather) return ''
+  const cleaned = weather.replace(/_/g, ' ').trim()
+  return cleaned
+    .split(/\s+/)
+    .map((word) => {
+      const lower = word.toLowerCase()
+      if (lower === 'pre' || lower === 'post') {
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase() + '-'
+      }
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+    })
+    .join(' ')
+    .replace(/-\s+/g, '-')
+}
+
 export const WEATHER_DESCRIPTIONS: Record<string, string> = {
   dry_season: 'Dry season conditions push wildlife toward water and farmland',
   post_monsoon: 'Post-monsoon: fresh vegetation and full water sources draw wildlife to farm edges',

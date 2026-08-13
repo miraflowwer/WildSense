@@ -21,6 +21,11 @@ function BrandLockup() {
   )
 }
 
+function isEmailAddress(val: string): boolean {
+  const trimmed = val.trim()
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)
+}
+
 function AuthView() {
   const {
     signIn,
@@ -42,7 +47,6 @@ function AuthView() {
   const [showPw, setShowPw] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [capsLock, setCapsLock] = useState(false)
-  const [pwFocused, setPwFocused] = useState(false)
   const [busy, setBusy] = useState(false)
 
   const [forgotEmail, setForgotEmail] = useState('')
@@ -50,10 +54,11 @@ function AuthView() {
 
   const pwOk = password.length >= MIN_PASSWORD
   const confirmOk = confirm !== '' && confirm === password
+  const isNameEmail = isEmailAddress(name)
   const canSubmit =
     view === 'signin'
       ? email.trim() !== '' && password !== ''
-      : email.trim() !== '' && name.trim() !== '' && pwOk && confirmOk
+      : email.trim() !== '' && name.trim() !== '' && !isNameEmail && pwOk && confirmOk
 
   const submit = async (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault()
@@ -64,6 +69,7 @@ function AuthView() {
       if (view === 'signin') {
         await signIn(email.trim(), password)
       } else {
+        sessionStorage.setItem('gahm_just_signed_up', 'true')
         await signUp(email.trim(), password, name.trim())
       }
     } finally {
@@ -254,10 +260,19 @@ function AuthView() {
                     id="auth-name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Your name"
+                    placeholder="e.g. Ranger Alex, Officer Sam"
                     autoComplete="name"
                     className={inputCls}
                   />
+                  {name.trim() !== '' && isNameEmail ? (
+                    <p className="mt-1 text-xs font-semibold text-red-600">
+                      ⚠️ Profile name cannot be an email address. Please use your name or callsign.
+                    </p>
+                  ) : (
+                    <p className="mt-1 text-xs text-neutral-500">
+                      Use your name or callsign (do not use an email address).
+                    </p>
+                  )}
                 </div>
               ) : null}
 
@@ -286,8 +301,6 @@ function AuthView() {
                     type={showPw ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    onFocus={() => setPwFocused(true)}
-                    onBlur={() => setPwFocused(false)}
                     onKeyDown={onKeyDownPassword}
                     placeholder="••••••••"
                     autoComplete={view === 'signup' ? 'new-password' : 'current-password'}
@@ -302,10 +315,20 @@ function AuthView() {
                     {showPw ? 'Hide' : 'Show'}
                   </button>
                 </div>
-                {view === 'signup' && pwFocused ? (
-                  <p className="mt-1 text-xs text-neutral-500">
-                    min {MIN_PASSWORD} characters {pwOk ? '— looks good' : ''}
-                  </p>
+                {view === 'signup' ? (
+                  password === '' ? (
+                    <p className="mt-1 text-xs text-neutral-500">
+                      Minimum {MIN_PASSWORD} characters required
+                    </p>
+                  ) : !pwOk ? (
+                    <p className="mt-1 text-xs font-semibold text-red-600">
+                      ⚠️ Password must be at least {MIN_PASSWORD} characters (currently {password.length})
+                    </p>
+                  ) : (
+                    <p className="mt-1 text-xs font-semibold text-emerald-600">
+                      ✓ Password meets length requirements
+                    </p>
+                  )
                 ) : null}
                 {capsLock ? (
                   <p className="mt-1 text-xs text-amber-600">Caps Lock is on</p>

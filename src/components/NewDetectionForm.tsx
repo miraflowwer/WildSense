@@ -4,7 +4,7 @@ import {
   SPECIES_IMPACT,
   formatSpeciesName,
   WEATHER_FACTOR,
-  GROUP_SIZE_POINTS,
+  formatWeatherName,
   thresholdsForZone,
 } from '../engine/config'
 import { computeRisk } from '../engine/riskEngine'
@@ -18,15 +18,15 @@ interface NewDetectionFormProps {
 }
 
 const inputCls =
-  'w-full rounded-md border border-neutral-300 px-2.5 py-1.5 text-sm text-neutral-900 focus:border-emerald-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40'
+  'w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm text-neutral-900 shadow-2xs transition-colors focus:border-emerald-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40'
 
-const labelCls = 'mb-1 block text-xs font-semibold uppercase tracking-wide text-neutral-600'
+const labelCls = 'mb-1 block text-xs font-extrabold uppercase tracking-wider text-neutral-700'
 
 function NewDetectionForm({ onClose }: NewDetectionFormProps) {
   const { dispatch } = useGahm()
   const [species, setSpecies] = useState('elephant')
   const [customSpecies, setCustomSpecies] = useState('')
-  const [count, setCount] = useState('1')
+  const [count, setCount] = useState<number>(1)
   const [confidence, setConfidence] = useState(0.8)
   const [weather, setWeather] = useState('dry_season')
   const [towardFarm, setTowardFarm] = useState(true)
@@ -42,12 +42,17 @@ function NewDetectionForm({ onClose }: NewDetectionFormProps) {
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose, picking])
 
+  const addPresetCount = (delta: number) => {
+    setCount((prev) => Math.max(1, (prev || 0) + delta))
+  }
+
   const submit = () => {
     if (!location) return
     const targetSpecies =
       species === 'other' ? customSpecies.trim().toLowerCase().replace(/\s+/g, '_') || 'wildlife' : species
     if (!targetSpecies) return
 
+    const parsedCount = Math.max(1, Number(count) || 1)
     const timestamp = new Date().toISOString()
     const distance = Math.min(
       ...farmZones.map((f) =>
@@ -58,7 +63,7 @@ function NewDetectionForm({ onClose }: NewDetectionFormProps) {
       {
         species: targetSpecies,
         detection_confidence: confidence,
-        estimated_count: Number(count),
+        estimated_count: parsedCount,
         distance_to_farm_km: distance,
         movement_toward_farm: towardFarm,
         movementKnown: true,
@@ -75,7 +80,7 @@ function NewDetectionForm({ onClose }: NewDetectionFormProps) {
       sensor_zone: 'Manual Detection',
       species: targetSpecies,
       detection_confidence: confidence,
-      estimated_count: Number(count),
+      estimated_count: parsedCount,
       distance_to_farm_km: distance,
       movement_toward_farm: towardFarm,
       movementKnown: true,
@@ -100,27 +105,31 @@ function NewDetectionForm({ onClose }: NewDetectionFormProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 p-4">
-      <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-xl bg-white p-5 shadow-2xl">
-        <div className="mb-4 flex items-center justify-between">
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
+      <div className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl transition-all">
+        {/* Header */}
+        <div className="mb-5 flex items-center justify-between border-b border-neutral-200 pb-3">
           <div>
-            <h3 className="text-sm font-bold text-neutral-900">Log detection</h3>
-            <p className="font-mono text-xs text-neutral-500">Manual field report</p>
+            <span className="rounded-md bg-emerald-100 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-emerald-800">
+              Field Report
+            </span>
+            <h3 className="mt-0.5 text-lg font-black text-neutral-900">Log Wildlife Detection</h3>
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="rounded-md px-2 py-1 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+            className="rounded-lg p-1.5 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
           >
-            ×
+            ✕
           </button>
         </div>
 
         <div className="space-y-4">
+          {/* Species Selector */}
           <div>
             <label htmlFor="nd-species" className={labelCls}>
-              Species
+              Target Species
             </label>
             <select
               id="nd-species"
@@ -137,9 +146,9 @@ function NewDetectionForm({ onClose }: NewDetectionFormProps) {
             </select>
 
             {species === 'other' ? (
-              <div className="mt-2">
+              <div className="mt-2.5">
                 <label htmlFor="nd-custom-species" className={labelCls}>
-                  Species name
+                  Custom Species Name
                 </label>
                 <input
                   id="nd-custom-species"
@@ -153,28 +162,49 @@ function NewDetectionForm({ onClose }: NewDetectionFormProps) {
             ) : null}
           </div>
 
+          {/* Uncapped Estimated Count */}
           <div>
             <label htmlFor="nd-count" className={labelCls}>
-              Estimated count
+              Estimated Animal Count
             </label>
-            <select
-              id="nd-count"
-              value={count}
-              onChange={(e) => setCount(e.target.value)}
-              className={inputCls}
-            >
-              {Object.keys(GROUP_SIZE_POINTS).map((n) => (
-                <option key={n} value={n}>
-                  {n}
-                </option>
-              ))}
-            </select>
+            <div className="flex items-center gap-2">
+              <input
+                id="nd-count"
+                type="number"
+                min={1}
+                max={999}
+                value={count}
+                onChange={(e) => setCount(Math.max(1, parseInt(e.target.value, 10) || 1))}
+                className={`${inputCls} text-base font-extrabold text-emerald-950`}
+              />
+              <div className="flex shrink-0 gap-1">
+                {[1, 5, 10, 25].map((preset) => (
+                  <button
+                    key={preset}
+                    type="button"
+                    onClick={() => addPresetCount(preset)}
+                    className="rounded-lg border border-neutral-300 bg-neutral-50 px-2.5 py-1.5 text-xs font-bold text-neutral-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-800"
+                  >
+                    +{preset}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <p className="mt-1 text-[11px] text-neutral-500">
+              Input any positive integer quantity. Herd sizes over 6 receive maximum group risk points (+10).
+            </p>
           </div>
 
+          {/* Detection Confidence Slider */}
           <div>
-            <label htmlFor="nd-confidence" className={labelCls}>
-              Detection confidence — {Math.round(confidence * 100)}%
-            </label>
+            <div className="flex items-center justify-between">
+              <label htmlFor="nd-confidence" className={labelCls}>
+                Detection Confidence
+              </label>
+              <span className="font-mono text-xs font-extrabold text-emerald-700">
+                {Math.round(confidence * 100)}%
+              </span>
+            </div>
             <input
               id="nd-confidence"
               type="range"
@@ -187,9 +217,10 @@ function NewDetectionForm({ onClose }: NewDetectionFormProps) {
             />
           </div>
 
+          {/* Weather Dropdown (Clean Formatting) */}
           <div>
             <label htmlFor="nd-weather" className={labelCls}>
-              Weather
+              Weather &amp; Seasonal Condition
             </label>
             <select
               id="nd-weather"
@@ -199,47 +230,63 @@ function NewDetectionForm({ onClose }: NewDetectionFormProps) {
             >
               {Object.keys(WEATHER_FACTOR).map((w) => (
                 <option key={w} value={w}>
-                  {w}
+                  {formatWeatherName(w)}
                 </option>
               ))}
             </select>
           </div>
 
-          <label className="flex items-center gap-2 text-sm text-neutral-800">
-            <input
-              type="checkbox"
-              checked={towardFarm}
-              onChange={(e) => setTowardFarm(e.target.checked)}
-              className="h-4 w-4 accent-emerald-600"
-            />
-            Moving toward farm?
-          </label>
+          {/* Movement Toward Farm Checkbox */}
+          <div className="rounded-xl border border-neutral-200 bg-neutral-50/60 p-3">
+            <label className="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-neutral-800">
+              <input
+                type="checkbox"
+                checked={towardFarm}
+                onChange={(e) => setTowardFarm(e.target.checked)}
+                className="h-4 w-4 rounded-md accent-emerald-600"
+              />
+              <span>Animal vector: Moving directly toward farm boundary?</span>
+            </label>
+          </div>
 
-          <div className="rounded-lg border border-neutral-200 p-3">
-            <span className={labelCls}>Location</span>
-            <p className="font-mono text-sm text-neutral-900">
+          {/* Location Picker Card */}
+          <div className="rounded-xl border border-neutral-200 bg-neutral-50/80 p-3.5 shadow-2xs">
+            <div className="flex items-center justify-between">
+              <span className={labelCls}>Coordinates</span>
+              {location ? (
+                <span className="rounded-md bg-emerald-100 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-800">
+                  Location Set
+                </span>
+              ) : (
+                <span className="rounded-md bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">
+                  Required
+                </span>
+              )}
+            </div>
+            <p className="mt-1 font-mono text-sm font-bold text-neutral-900">
               {location
                 ? `${location.lat.toFixed(5)}, ${location.lng.toFixed(5)}`
-                : 'No location yet'}
+                : 'No map point selected'}
             </p>
             <button
               type="button"
               onClick={() => setPicking(true)}
-              className="mt-3 w-full rounded-md border border-emerald-600 px-3 py-2 text-xs font-semibold text-emerald-700 transition-colors hover:bg-emerald-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+              className="mt-2.5 w-full rounded-lg border border-emerald-600 bg-white px-3 py-2 text-xs font-extrabold text-emerald-700 shadow-2xs transition-colors hover:bg-emerald-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
             >
-              {location ? 'Change location' : 'Select location'}
+              {location ? '🗺️ Change location on map' : '🗺️ Select location on map'}
             </button>
-            <p className="mt-2 text-[11px] text-neutral-500">
-              Distance to the nearest farm boundary is computed automatically.
+            <p className="mt-1.5 text-[11px] text-neutral-500">
+              Proximity to nearest community boundary is computed automatically.
             </p>
           </div>
         </div>
 
-        <div className="mt-5 flex justify-end gap-2">
+        {/* Footer Actions */}
+        <div className="mt-6 flex justify-end gap-2 border-t border-neutral-200 pt-4">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-md border border-neutral-300 px-3 py-1.5 text-xs font-medium text-neutral-700 transition-colors hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50"
+            className="rounded-lg border border-neutral-300 bg-white px-4 py-2 text-xs font-bold text-neutral-700 shadow-2xs transition-colors hover:bg-neutral-50"
           >
             Cancel
           </button>
@@ -247,9 +294,9 @@ function NewDetectionForm({ onClose }: NewDetectionFormProps) {
             type="button"
             onClick={submit}
             disabled={!location || (species === 'other' && !customSpecies.trim())}
-            className="rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-lg bg-emerald-700 px-5 py-2 text-xs font-extrabold text-white shadow-xs transition-colors hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            Log detection
+            Log Detection
           </button>
         </div>
       </div>

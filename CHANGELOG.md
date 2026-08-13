@@ -5,6 +5,26 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v0.8.0] — 2026-08-13 — Logged-In User Tutorial, Uncapped Count Input, Clean Weather Labels & Environmental Risk Engine Spec
+
+### Added
+
+- **Logged-In User Guided Tour**: Enabled full access to the interactive Guided Tour for logged-in users in Live Mode (`mode === 'user'`).
+- **Temporary Tutorial Data Cleanup**: When a logged-in user launches the Guided Tour, sample tutorial events (`EVT-1042`, `EVT-1045`) are temporarily loaded and database updates are suspended. When the tour finishes or is skipped, the tutorial data is purged and the user's workspace is restored to its clean real state.
+- **Auto-Playing Guided Tour on Sign-Up**: Configured explicit sign-up session flags (`gahm_just_signed_up` in `sessionStorage` & `gahm_tour_played_[email]` in `localStorage`) in `AuthView.tsx` and `App.tsx`. Guarantees that when a new user completes account creation, the Guided Tour immediately mounts, loads sample tutorial data, and auto-plays step 1 automatically.
+- **Uncapped Animal Count Input**: Redesigned the estimated animal count field in `NewDetectionForm.tsx` to allow any positive integer input (1 to 500+) with direct numeric entry and quick increment buttons (`+1`, `+5`, `+10`, `+25`).
+- **Environmental Context Risk Engine Specification (`RiskExplanationModal.tsx`)**: Created a detailed, interactive specification modal accessible via the header nav ("Risk Engine") and AlertPanel ("How risk is calculated?"). Details the 5 core environmental context signals (*Animal Movement & Direction*, *Proximity to Farms*, *Historical Hotspots*, *Weather & Environmental Factors*, *Time of Day*) and multi-signal threshold filtering (low: 40, high: 70) that prevents false alert fatigue.
+
+### Fixed
+
+- **Tutorial SMS Logs No Longer Persist**: Fixed `SmsSimulator.tsx` so sending simulated SMS warnings or all-clear messages during the Guided Tour no longer writes `sms_log` rows referencing tutorial sample events (`EVT-1042`) into the user's Supabase database. The `insertSmsLog` call is now guarded by `!state.inTutorial` (alongside the existing `mode === 'user'` check), keeping all tutorial activity strictly temporary.
+- **Complete Workspace Cleanup After Tutorial**: Removed automatic demo event database seeding (`seedUserEvents`) for logged-in user accounts in `store.tsx`. Ensures that new user accounts start with a completely clean workspace (`0 alerts`), display sample tutorial events strictly as temporary visual placeholders during the tour, and purge all sample events upon tutorial completion.
+- **Prohibit Email Address as Profile Name (With Handle Support)**: Updated `AuthView.tsx`, `AuthProvider.tsx`, and `App.tsx` to use strict email pattern matching (`/^[^\s@]+@[^\s@]+\.[^\s@]+$/`) rather than checking for simple `@` symbols. Prohibits actual email addresses (e.g. `alex@gmail.com`) while allowing callsigns/handles containing `@` (e.g. `@ranger_alex` or `@patrol1`).
+- **Guided Tour Freeze & Missing Visual Data Fix**: Fixed freeze bug where `DemoTour.tsx` applied the `tour-active` grey overlay before sample tutorial events (`EVT-1042`, `EVT-1045`) were loaded into `state.events`. Updated `store.tsx` (`SET_MODE`, `RESET_DEMO`, `START_TUTORIAL`) and `DemoTour.tsx` to automatically inject sample tutorial events when `runTour` is active and guard `tour-active` CSS class application on sample event presence.
+- **Explicit Sign-Up Password Validation Warning**: Updated `AuthView.tsx` and `SetPassword.tsx` to display immediate inline warning/error messages when a password is shorter than 8 characters (e.g., `⚠️ Password must be at least 8 characters (currently 3)`) and positive validation indicators (`✓ Password meets length requirements`) once the threshold is met.
+- **Weather Label Formatting**: Added `formatWeatherName()` helper in `config.ts` to replace raw underscored string keys (`dry_season`, `post_monsoon`, `pre_monsoon`) with clean human-readable titles (`Dry Season`, `Post-Monsoon`, `Pre-Monsoon`) across forms, filters, and alert detail cards.
+- **Log Detection Menu UI Redesign**: Modernized `NewDetectionForm.tsx` with a wider modal, refined typography, section dividers, location coordinate status tags, and improved species selection.
+
 ## [v0.7.6] — 2026-08-13 — Supabase Schema Alignment, Header Profile Sync & Database Setup Guidance
 
 ### Fixed

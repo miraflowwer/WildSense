@@ -47,7 +47,7 @@ function SmsSimulator() {
 
   const sendWarning = () => {
     dispatch({ type: 'SEND_SMS' })
-    if (state.mode === 'user' && event) {
+    if (state.mode === 'user' && !state.inTutorial && event) {
       insertSmsLog({
         eventId: event.event_id,
         message,
@@ -60,7 +60,7 @@ function SmsSimulator() {
 
   const sendAllClear = () => {
     dispatch({ type: 'SEND_ALL_CLEAR' })
-    if (state.mode === 'user' && event) {
+    if (state.mode === 'user' && !state.inTutorial && event) {
       insertSmsLog({
         eventId: event.event_id,
         message,

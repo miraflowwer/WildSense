@@ -21,9 +21,13 @@ const UNREACHABLE_MESSAGE = 'Server unreachable — check your connection and tr
 const SESSION_VALIDATION_TIMEOUT_MS = 8000
 const DEMO_USER: AuthUser = { email: DEMO_EMAIL, name: 'Ranger Demo' }
 
+function isEmailAddress(val: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim())
+}
+
 function displayName(u: User): string {
   const full = u.user_metadata?.full_name
-  if (typeof full === 'string' && full.trim() !== '') return full
+  if (typeof full === 'string' && full.trim() !== '' && !isEmailAddress(full)) return full.trim()
   const local = (u.email ?? '').split('@')[0] ?? ''
   return local.trim() !== '' ? local : 'Ranger'
 }

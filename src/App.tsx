@@ -13,20 +13,29 @@ import SmsSimulator from './components/SmsSimulator'
 import DemoTour from './components/DemoTour'
 
 import EthicsModal from './components/EthicsModal'
+import RiskExplanationModal from './components/RiskExplanationModal'
 
 const MapView = lazy(() => import('./components/MapView'))
 const NewDetectionForm = lazy(() => import('./components/NewDetectionForm'))
+
+function isEmailAddress(val: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim())
+}
 
 function App() {
   const { mode, user, serverReachable, isBooting, passwordRecovery, signOut } = useAuth()
   const { state, dispatch } = useGahm()
 
+  const rawRangerName = state.rangerName.trim() || user?.name || ''
   const displayRangerName =
-    state.rangerName.trim() || user?.name || (user?.email ? user.email.split('@')[0] : '') || 'Ranger'
+    rawRangerName && !isEmailAddress(rawRangerName)
+      ? rawRangerName
+      : (user?.email ? user.email.split('@')[0] : '') || 'Ranger'
 
   const [adding, setAdding] = useState(false)
   const [showEthics, setShowEthics] = useState(false)
-  const [runTour, setRunTour] = useState(true)
+  const [showRiskModal, setShowRiskModal] = useState(false)
+  const [runTour, setRunTour] = useState(false)
   const [now, setNow] = useState(() => new Date())
   const [mobileTab, setMobileTab] = useState<'map' | 'alerts'>('map')
 
@@ -41,6 +50,40 @@ function App() {
       setMobileTab('alerts')
     }
   }, [state.selectedId])
+
+  // Auto-play guided tour for first-time logged-in users upon sign up
+  useEffect(() => {
+    if (isBooting || mode !== 'user' || !user?.email) return
+    const tourKey = `gahm_tour_played_${user.email.toLowerCase()}`
+    const justSignedUp = sessionStorage.getItem('gahm_just_signed_up') === 'true'
+    if (justSignedUp || !localStorage.getItem(tourKey)) {
+      sessionStorage.removeItem('gahm_just_signed_up')
+      localStorage.setItem(tourKey, 'true')
+      dispatch({ type: 'START_TUTORIAL' })
+      setRunTour(true)
+    }
+  }, [mode, user?.email, isBooting, dispatch])
+
+  // Start tour in demo mode by default
+  useEffect(() => {
+    if (mode === 'demo') {
+      setRunTour(true)
+    }
+  }, [mode])
+
+  const handleStartTour = () => {
+    if (mode === 'user') {
+      dispatch({ type: 'START_TUTORIAL' })
+    }
+    setRunTour(true)
+  }
+
+  const handleFinishTour = () => {
+    setRunTour(false)
+    if (mode === 'user' && state.inTutorial) {
+      dispatch({ type: 'FINISH_TUTORIAL' })
+    }
+  }
 
   if (isBooting) {
     return (
@@ -63,9 +106,8 @@ function App() {
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-neutral-100 font-sans text-neutral-900 antialiased">
-      {demoMode ? (
-        <DemoTour runTour={runTour} onFinishTour={() => setRunTour(false)} />
-      ) : null}
+      <DemoTour runTour={runTour} onFinishTour={handleFinishTour} />
+
       {/* Header */}
       <header className="flex h-14 shrink-0 items-center justify-between border-b border-neutral-800 bg-neutral-950 px-4 text-white">
         {/* Left: Brand & Status */}
@@ -107,17 +149,25 @@ function App() {
             Log detection
           </button>
 
-          {/* Secondary Action: Guided Tour (Demo mode) */}
-          {demoMode ? (
-            <button
-              type="button"
-              onClick={() => setRunTour(true)}
-              aria-label="Start guided interactive demo tour"
-              className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-emerald-500/50 bg-emerald-950/60 px-3 py-2 text-xs font-medium text-emerald-300 transition-colors hover:bg-emerald-900/80 hover:text-emerald-200 active:bg-emerald-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900"
-            >
-              Guided tour
-            </button>
-          ) : null}
+          {/* Secondary Action: Guided Tour (Available for all users) */}
+          <button
+            type="button"
+            onClick={handleStartTour}
+            aria-label="Start guided interactive tour"
+            className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-emerald-500/50 bg-emerald-950/60 px-3 py-2 text-xs font-medium text-emerald-300 transition-colors hover:bg-emerald-900/80 hover:text-emerald-200 active:bg-emerald-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900"
+          >
+            Guided tour
+          </button>
+
+          {/* Risk Engine Explanation Button */}
+          <button
+            type="button"
+            onClick={() => setShowRiskModal(true)}
+            aria-label="View Risk Engine signal breakdown"
+            className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-emerald-500/40 bg-emerald-950/40 px-3 py-2 text-xs font-medium text-emerald-300 transition-colors hover:bg-emerald-900/70 hover:text-emerald-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900"
+          >
+            Risk Engine
+          </button>
 
           {/* Visual Divider */}
           <div className="h-5 w-[1px] bg-neutral-800" aria-hidden="true" />
@@ -182,6 +232,18 @@ function App() {
           Changes not saved — server unreachable (Database setup required: run docs/supabase-schema-and-fixes.sql in SQL Editor)
         </div>
       ) : null}
+      {!demoMode && state.inTutorial ? (
+        <div className="flex items-center justify-between border-b border-emerald-400 bg-emerald-900 px-4 py-1.5 text-xs font-semibold text-emerald-100">
+          <span>Tutorial Mode Active — sample data displayed temporarily. User database updates are suspended.</span>
+          <button
+            type="button"
+            onClick={handleFinishTour}
+            className="rounded bg-emerald-800 px-2 py-0.5 text-[11px] font-bold text-white hover:bg-emerald-700"
+          >
+            Exit Tutorial
+          </button>
+        </div>
+      ) : null}
 
       <OperationsBar />
 
@@ -239,12 +301,19 @@ function App() {
           }
         >
           <FiltersBar />
-          {selected ? <AlertPanel event={selected} /> : <AlertList />}
+          {selected ? (
+            <AlertPanel event={selected} onOpenRiskExplanation={() => setShowRiskModal(true)} />
+          ) : (
+            <AlertList />
+          )}
         </div>
       </main>
 
+
+
       {state.sms.openEventId ? <SmsSimulator /> : null}
       {showEthics ? <EthicsModal onClose={() => setShowEthics(false)} /> : null}
+      {showRiskModal ? <RiskExplanationModal onClose={() => setShowRiskModal(false)} /> : null}
       {adding ? (
         <Suspense
           fallback={

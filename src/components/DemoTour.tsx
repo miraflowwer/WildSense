@@ -119,6 +119,13 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
     }
   }, [runTour])
 
+  // Auto-inject tutorial events if tour is running but sample events are missing from state
+  useEffect(() => {
+    if (runTour && (!evt1042 || !evt1045)) {
+      dispatch({ type: 'START_TUTORIAL' })
+    }
+  }, [runTour, evt1042, evt1045, dispatch])
+
   // Synchronize workspace UI state so required DOM targets exist and are enabled for stepIndex
   useEffect(() => {
     if (!runTour || !evt1042 || !evt1045) return
@@ -239,7 +246,7 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
 
   // Synchronize lockdown CSS class, active target attribute, and auto-scroll for current stepIndex
   useEffect(() => {
-    if (!runTour) {
+    if (!runTour || !evt1042 || !evt1045) {
       document.body.classList.remove('tour-active')
       document.querySelectorAll('[data-tour-active]').forEach((el) => {
         el.removeAttribute('data-tour-active')
@@ -276,7 +283,7 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
         el.removeAttribute('data-tour-active')
       })
     }
-  }, [runTour, stepIndex])
+  }, [runTour, stepIndex, evt1042, evt1045])
 
   // Prevent tabbing out of active tour elements while tour is running
   useEffect(() => {

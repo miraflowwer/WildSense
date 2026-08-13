@@ -17,7 +17,7 @@ import type {
 import { buildDemoState, sensors, farmZones, USER } from '../data/demoData'
 import { haversineKm } from '../engine/geo'
 import { useAuth } from '../auth/authContext'
-import { loadEvents, insertEvent, updateEvent, seedUserEvents } from '../auth/api'
+import { loadEvents, insertEvent, updateEvent } from '../auth/api'
 import { StoreContext, type StoreContextValue } from './storeContext'
 
 const EMPTY_SMS: SmsState = {
@@ -217,10 +217,29 @@ function reducer(state: StoreState, action: StoreAction): StoreState {
     case 'SEND_ALL_CLEAR':
       return { ...state, sms: { ...state.sms, allClearSent: true } }
 
-    case 'SET_MODE':
-      return initialState(action.mode)
+    case 'SET_MODE': {
+      const next = initialState(action.mode)
+      if (state.inTutorial) {
+        return {
+          ...next,
+          inTutorial: true,
+          realEventsSnapshot: state.realEventsSnapshot,
+          events: buildDemoState(),
+        }
+      }
+      return next
+    }
 
-    case 'HYDRATE_EVENTS':
+    case 'HYDRATE_EVENTS': {
+      if (state.inTutorial) {
+        return {
+          ...state,
+          realEventsSnapshot: action.events,
+          rangerName: action.rangerName.trim() || USER.name,
+          lastSyncAt: new Date().toISOString(),
+          notPersisted: false,
+        }
+      }
       return {
         ...state,
         events: action.events,
@@ -228,6 +247,7 @@ function reducer(state: StoreState, action: StoreAction): StoreState {
         lastSyncAt: new Date().toISOString(),
         notPersisted: false,
       }
+    }
 
     case 'ADD_EVENT':
       return {
@@ -247,8 +267,39 @@ function reducer(state: StoreState, action: StoreAction): StoreState {
         ),
       }
 
-    case 'RESET_DEMO':
-      return initialState(state.mode)
+    case 'START_TUTORIAL': {
+      return {
+        ...state,
+        realEventsSnapshot: state.inTutorial ? state.realEventsSnapshot : state.events,
+        events: buildDemoState(),
+        inTutorial: true,
+        selectedId: null,
+      }
+    }
+
+    case 'FINISH_TUTORIAL': {
+      if (!state.inTutorial) return state
+      const restoredEvents = state.realEventsSnapshot ?? []
+      return {
+        ...state,
+        events: restoredEvents,
+        realEventsSnapshot: undefined,
+        inTutorial: false,
+        selectedId: null,
+      }
+    }
+
+    case 'RESET_DEMO': {
+      const next = initialState(state.mode)
+      if (state.inTutorial) {
+        return {
+          ...next,
+          inTutorial: true,
+          events: buildDemoState(),
+        }
+      }
+      return next
+    }
 
     default:
       return state
@@ -331,20 +382,9 @@ export function GahmProvider({ children }: { children: ReactNode }) {
     if (auth.isBooting || auth.mode !== 'user') return
     let cancelled = false
     loadEvents()
-      .then(async (events) => {
+      .then((events) => {
         if (cancelled) return
-        let finalEvents = events
-        if (events.length === 0) {
-          const initialEvents = buildDemoState()
-          try {
-            await seedUserEvents(initialEvents)
-            finalEvents = initialEvents
-          } catch (seedErr) {
-            console.error('[GAHM Store] Seeding initial events failed:', seedErr)
-          }
-        }
-        if (cancelled) return
-        rawDispatch({ type: 'HYDRATE_EVENTS', events: finalEvents, rangerName: auth.user?.name ?? '' })
+        rawDispatch({ type: 'HYDRATE_EVENTS', events, rangerName: auth.user?.name ?? '' })
         rawDispatch({ type: 'SET_PERSISTED', ok: true })
       })
       .catch((err) => {
@@ -360,7 +400,7 @@ export function GahmProvider({ children }: { children: ReactNode }) {
     (action: StoreAction) => {
       rawDispatch(action)
       const s = stateRef.current
-      if (s.mode !== 'user') return
+      if (s.mode !== 'user' || s.inTutorial) return
       const task = persistAction(action, s)
       if (!task) return
       task.then(
