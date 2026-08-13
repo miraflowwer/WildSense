@@ -5,6 +5,14 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v0.4.3] — 2026-08-13 — Guided Tour Scrolling, Alignment & Interaction Fixes
+
+### Fixed
+
+- Prevented camera/page downward scrolling ("Camera moves downward" bug) by setting `skipScroll: true` on all tour steps, adhering strictly to the "One screen, no page scroll" architectural rule.
+- Fixed step 4 Acknowledge button interaction ("text for number 4 doesn't work") by dispatching `RESET_EVENT_STATUS` when stepIndex is 3 to guarantee the Acknowledge button is enabled (`disabled={false}`) and interactive for the ranger.
+- Eliminated tooltip card right-side clipping by setting `placement: 'left'` for right-sidebar targets and constraining tooltip width to 310px (`styles.tooltip.width = '310px'`), anchoring tooltips inside the map area pointing at sidebar buttons.
+
 ## [v0.4.2] — 2026-08-13 — Guided Tour Position & Target Sync Fixes
 
 ### Fixed

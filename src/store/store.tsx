@@ -239,6 +239,14 @@ function reducer(state: StoreState, action: StoreAction): StoreState {
     case 'SET_PERSISTED':
       return { ...state, notPersisted: !action.ok }
 
+    case 'RESET_EVENT_STATUS':
+      return {
+        ...state,
+        events: state.events.map((e) =>
+          e.event_id === action.id ? { ...e, status: action.status } : e,
+        ),
+      }
+
     case 'RESET_DEMO':
       return initialState(state.mode)
 

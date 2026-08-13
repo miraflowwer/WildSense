@@ -22,7 +22,7 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
     }
   }, [runTour])
 
-  // Synchronize workspace UI state so required DOM targets exist for stepIndex
+  // Synchronize workspace UI state so required DOM targets exist and are enabled for stepIndex
   useEffect(() => {
     if (!runTour || !evt1042 || !evt1045) return
 
@@ -39,9 +39,12 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
         break
 
       case 3:
-        // Step 4 of 10: target btn-acknowledge in AlertPanel
+        // Step 4 of 10: target btn-acknowledge in AlertPanel (ensure button is enabled!)
         if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
         if (state.selectedId !== 'EVT-1042') dispatch({ type: 'SELECT_ALERT', id: 'EVT-1042' })
+        if (evt1042.status !== 'awaiting_review') {
+          dispatch({ type: 'RESET_EVENT_STATUS', id: 'EVT-1042', status: 'awaiting_review' })
+        }
         break
 
       case 4:
@@ -153,6 +156,7 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
       content:
         'Monitor operational metrics at a glance: active high-risk incidents, unreviewed alerts, average response time, online sensors, and affected communities.',
       skipBeacon: true,
+      skipScroll: true,
       placement: 'bottom',
     },
     {
@@ -160,52 +164,61 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
       content:
         'Interactive reserve map displaying farm zones (amber), protected boundaries (green), communities (purple), sensors, and detection movement trails.',
       skipBeacon: true,
+      skipScroll: true,
       placement: 'center',
     },
     {
       target: '[data-tour="alert-EVT-1042"]',
       content:
         'EVT-1042 is the flagship high-risk incident (87/100 Elephant group moving toward farm at dusk). Click EVT-1042 to inspect.',
+      skipScroll: true,
       placement: 'left',
     },
     {
       target: '[data-tour="btn-acknowledge"]',
       content:
         'Review signal points (+25 proximity, +20 movement, +15 hotspot). Click Acknowledge to claim ownership and track response time.',
-      placement: 'top',
+      skipScroll: true,
+      placement: 'left',
     },
     {
       target: '[data-tour="btn-contact-ranger"]',
       content: 'Click Contact ranger unit to log dispatch of field patrols.',
-      placement: 'top',
+      skipScroll: true,
+      placement: 'left',
     },
     {
       target: '[data-tour="btn-prepare-sms"]',
       content: 'Click Prepare community warning to launch the localized SMS simulator.',
-      placement: 'top',
+      skipScroll: true,
+      placement: 'left',
     },
     {
       target: '[data-tour="btn-send-sms"]',
       content:
         'Toggle language (English/Hindi) and click Send warning to simulate a community alert without broadcasting exact animal coordinates.',
+      skipScroll: true,
       placement: 'top',
     },
     {
       target: '[data-tour="btn-close-record"]',
       content:
         'Close the SMS simulator modal when done, then click Close & record outcome to save field results and response duration.',
-      placement: 'top',
+      skipScroll: true,
+      placement: 'left',
     },
     {
       target: '[data-tour="alert-EVT-1045"]',
       content: 'Now click EVT-1045 to explore how GAHM handles uncertain or missing sensor data.',
+      skipScroll: true,
       placement: 'left',
     },
     {
       target: '[data-tour="uncertainty-warning"]',
       content:
         'Notice the amber uncertainty warning: GAHM penalizes missing data instead of guessing, keeping human operators informed and in full control. Tour complete!',
-      placement: 'top',
+      skipScroll: true,
+      placement: 'left',
     },
   ]
 
@@ -227,8 +240,12 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
         showProgress: true,
         zIndex: 10000,
         overlayClickAction: false,
+        width: 310,
       }}
       styles={{
+        tooltip: {
+          width: '310px',
+        },
         buttonPrimary: {
           backgroundColor: '#059669',
           fontSize: '12px',
@@ -247,7 +264,7 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
         },
         tooltipContent: {
           fontSize: '13px',
-          padding: '12px 4px 4px 4px',
+          padding: '8px 4px 4px 4px',
         },
       }}
     />

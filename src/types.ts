@@ -145,3 +145,4 @@ export type StoreAction =
   | { type: 'HYDRATE_EVENTS'; events: DetectionEvent[]; rangerName: string }
   | { type: 'ADD_EVENT'; event: DetectionEvent }
   | { type: 'SET_PERSISTED'; ok: boolean }
+  | { type: 'RESET_EVENT_STATUS'; id: string; status: EventStatus }
