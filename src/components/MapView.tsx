@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useGahm } from '../store/storeContext'
+import { formatSpeciesName } from '../engine/config'
 import { filterEvents } from '../store/selectors'
 import { zones, farmZones, communities, sensors, riskLevelColor } from '../data/demoData'
 import type { DetectionEvent, FarmZone, Community, Sensor, ZonePolygon } from '../types'
@@ -78,7 +79,7 @@ function addDetection(
     fillOpacity: 0.9,
   })
     .bindTooltip(
-      `<b>${ev.event_id}</b> — ${ev.species}<br/>Risk ${ev.risk_score} (${ev.risk_level})`,
+      `<b>${ev.event_id}</b> — ${formatSpeciesName(ev.species)}<br/>Risk ${ev.risk_score} (${ev.risk_level})`,
     )
     .on('click', () => {
       dispatch({ type: 'SELECT_ALERT', id: ev.event_id })

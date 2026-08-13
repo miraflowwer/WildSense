@@ -5,6 +5,15 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v0.4.1] — 2026-08-13 — Demo Mode Detection Logging & Expanded Species
+
+### Added
+
+- Enabled manual detection logging ("Log detection") directly in Demo Mode, allowing presenters and testers to log new wildlife detections live during demo scenarios.
+- Expanded species support in risk engine and dropdown selector to include Snow Leopard (`snow_leopard`), Elephant, Tiger, Sloth Bear, Wolf, Gaur, Wild Boar, and custom user-specified species.
+- Added `formatSpeciesName` utility function for consistent title-cased species display across alert lists, detail panels, map tooltips, and species filter dropdowns.
+- Custom species entry support when "Other species (custom)..." is chosen in the detection form.
+
 ## [v0.4.0] — 2026-08-13 — Interactive Guided Tour
 
 ### Added

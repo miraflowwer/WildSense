@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import type { ReactNode } from 'react'
 import { useGahm } from '../store/storeContext'
+import { formatSpeciesName } from '../engine/config'
 import { communities } from '../data/demoData'
 import type { FilterState } from '../types'
 
@@ -53,7 +54,7 @@ function FiltersBar() {
           <option value="">All species</option>
           {species.map((s) => (
             <option key={s} value={s}>
-              {s}
+              {formatSpeciesName(s)}
             </option>
           ))}
         </select>
