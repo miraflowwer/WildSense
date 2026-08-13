@@ -112,6 +112,12 @@ dispatch(action)  ──►  reducer mutates state  ──►  selectors re-rend
 the Leaflet library ships in its own on-demand chunk instead of the initial
 bundle. Initial load stays fast; the map appears after a brief fallback.
 
+Beyond lazy loading, the production build splits vendors into dedicated chunks
+(react, supabase, gsap+lenis, react-joyride) via Rolldown
+`output.codeSplitting.groups` in `vite.config.ts` — see
+[`build-optimization.md`](build-optimization.md) for the config and measured
+sizes.
+
 ## Layout constraints
 
 - **One screen, no page scroll** — every view fits the viewport (`h-dvh` +
