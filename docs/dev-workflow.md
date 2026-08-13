@@ -2,9 +2,9 @@
 
 _Audience: developers. This is the app-side companion to
 [`docs/implementations/developer-menu.md`](../../docs/implementations/developer-menu.md)
-(the team's detailed `gahm.bat` reference) and
-[`app/README.md`](../README.md) (run/host quickstart). Keep the three in sync
-when scripts change._
+(the team's detailed `gahm.bat` reference). It is also the run/host/update
+quickstart for the repo; the full documentation index lives in
+[`app/README.md`](../README.md). Keep the three in sync when scripts change._
 
 ## Requirements
 
