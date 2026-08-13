@@ -3,6 +3,7 @@ import { useGahm } from '../store/storeContext'
 import { findById } from '../store/selectors'
 import { insertSmsLog } from '../auth/api'
 import { useI18n } from '../i18n/I18nContext'
+import { LOCALE_IDS } from '../i18n'
 import { communities } from '../data/demoData'
 
 type SmsLang = 'en' | 'hi' | 'kn' | 'ta'
@@ -183,7 +184,7 @@ function SmsSimulator() {
           <div className="mt-2 flex flex-wrap items-center gap-3 text-xs">
             <span className="font-semibold text-emerald-600">{t('sms.delivered', { n: state.sms.delivered })}</span>
             <span className="font-semibold text-red-600">{t('sms.failed', { n: state.sms.failed })}</span>
-            <span className="text-neutral-400">{t('sms.sentAt', { time: fmtAt(state.sms.sentAt, lang) })}</span>
+            <span className="text-neutral-400">{t('sms.sentAt', { time: fmtAt(state.sms.sentAt, LOCALE_IDS[lang]) })}</span>
           </div>
         ) : null}
 
@@ -198,7 +199,7 @@ function SmsSimulator() {
               {state.sms.replies.map((r, i) => (
                 <li key={i} className="text-xs">
                   <span className="font-semibold text-emerald-700">{r.text}</span>
-                  <span className="ml-2 text-neutral-400">{fmtAt(r.at, lang)}</span>
+                  <span className="ml-2 text-neutral-400">{fmtAt(r.at, LOCALE_IDS[lang])}</span>
                 </li>
               ))}
             </ul>

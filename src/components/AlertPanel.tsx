@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useGahm } from '../store/storeContext'
 import { useI18n } from '../i18n/I18nContext'
+import { LOCALE_IDS } from '../i18n'
 import {
   reasonDescription,
   reasonLabel,
@@ -94,7 +95,7 @@ function AlertPanel({
           <div>
             <h2 className="text-lg font-extrabold text-neutral-900">{speciesName(catalog, event.species)}</h2>
             <p className="text-xs text-neutral-500">
-              {fmtTime(event.timestamp, lang)} · {event.sensor_zone} ·{' '}
+              {fmtTime(event.timestamp, LOCALE_IDS[lang])} · {event.sensor_zone} ·{' '}
               {t('common.animals', {
                 count: event.estimated_count,
                 plural: event.estimated_count === 1 ? '' : 's',
@@ -214,7 +215,7 @@ function AlertPanel({
             <p className="text-[11px] font-semibold text-neutral-600">
               {t('alertPanel.rangerContacted', {
                 owner: event.owner || state.rangerName,
-                time: fmtTime(event.rangerContactedAt, lang),
+                time: fmtTime(event.rangerContactedAt, LOCALE_IDS[lang]),
               })}
             </p>
           ) : null}

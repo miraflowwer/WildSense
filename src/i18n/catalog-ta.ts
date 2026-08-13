@@ -12,7 +12,7 @@ export const ta: Catalog = {
     hide: 'மறை',
     show: 'காட்டு',
     loading: 'ஏற்றுகிறது…',
-    animals: '{count} விலங்கு{plural}',
+    animals: '{count} விலங்கு',
   },
   app: {
     brandTagline: 'வனவிலங்கு மோதல் ஆபத்து எஞ்சின்',

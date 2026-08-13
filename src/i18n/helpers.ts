@@ -1,6 +1,6 @@
 import type { Catalog } from './catalog-en'
 import { formatSpeciesName, formatWeatherName } from '../engine/config'
-import type { ContributionReason } from '../types'
+import type { ContributionReason, UncertaintyWarning } from '../types'
 
 export function speciesName(cat: Catalog, species: string): string {
   const key = species.toLowerCase().trim().replace(/\s+/g, '_')
@@ -54,7 +54,10 @@ export function reasonDescription(
   return reason.description
 }
 
-export function uncertaintyWarning(cat: Catalog, warning: string | null): string | null {
+export function uncertaintyWarning(
+  cat: Catalog,
+  warning: UncertaintyWarning | null,
+): string | null {
   if (!warning) return null
-  return (cat.engine.uncertainty as Record<string, string>)[warning] ?? warning
+  return cat.engine.uncertainty[warning] ?? warning
 }

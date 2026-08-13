@@ -10,7 +10,13 @@ import {
   MAX_GROUP_SIZE_POINTS,
   type RiskThresholds,
 } from './config'
-import type { RiskLevel, ContributionReason, Uncertainty, DetectionEvent } from '../types'
+import type {
+  RiskLevel,
+  ContributionReason,
+  Uncertainty,
+  UncertaintyWarning,
+  DetectionEvent,
+} from '../types'
 
 export interface RiskInput {
   species: string
@@ -139,29 +145,34 @@ export function computeRisk(
     })
   }
 
-  const warnings: string[] = []
+  const warnings: UncertaintyWarning[] = []
   let penalty = 0
   if (!input.movementKnown) {
     penalty += 8
-    warnings.push(
-      'Risk uncertain: recent movement data is unavailable. Manual review recommended.',
-    )
+    warnings.push('recentMovement')
   }
   if (input.detection_confidence < 0.6) {
     penalty += 5
-    warnings.push('Low detection confidence; species identification uncertain.')
+    warnings.push('lowConfidence')
   }
 
   const uncertainty: Uncertainty = {
     penalty,
-    warning: warnings.length ? warnings.join(' ') : null,
+    warning:
+      warnings.length === 0
+        ? null
+        : warnings.length === 1
+          ? warnings[0]
+          : 'both',
   }
   if (penalty > 0) {
     reasons.push({
       key: 'uncertainty',
       label: 'Data uncertainty adjustment',
       points: -penalty,
-      description: warnings.length ? warnings[0] : 'Missing or uncertain data',
+      description: warnings.length
+        ? 'Risk uncertain: recent movement data is unavailable. Manual review recommended.'
+        : 'Missing or uncertain data',
     })
   }
 

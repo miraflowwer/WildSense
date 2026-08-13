@@ -36,6 +36,9 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const { mode, user } = useAuth()
   const [lang, setLangState] = useState<Lang>(readSavedLang)
   const syncedRef = useRef(false)
+  const pickedRef = useRef(false)
+  const authRef = useRef({ mode, user })
+  authRef.current = { mode, user }
 
   useEffect(() => {
     document.documentElement.lang = lang
@@ -60,6 +63,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     syncedRef.current = true
     loadUserLanguage()
       .then((accountLang) => {
+        if (authRef.current.mode !== 'user' || !authRef.current.user) return
+        if (pickedRef.current || readSavedLang() !== saved) return
         if (accountLang === 'en' || accountLang === 'kn' || accountLang === 'ta') {
           setLangState(accountLang)
         }
@@ -71,6 +76,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   const setLang = useCallback(
     (next: Lang) => {
+      pickedRef.current = true
       setLangState(next)
       saveLangToStorage(next)
       document.documentElement.lang = next

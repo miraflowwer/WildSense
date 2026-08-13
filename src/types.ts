@@ -16,9 +16,11 @@ export interface ContributionReason {
   description: string
 }
 
+export type UncertaintyWarning = 'recentMovement' | 'lowConfidence' | 'both'
+
 export interface Uncertainty {
   penalty: number
-  warning: string | null
+  warning: UncertaintyWarning | null
 }
 
 export interface DetectionEvent {

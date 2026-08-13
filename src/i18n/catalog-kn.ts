@@ -12,7 +12,7 @@ export const kn: Catalog = {
     hide: 'ಮರೆಮಾಡಿ',
     show: 'ತೋರಿಸಿ',
     loading: 'ಲೋಡ್ ಆಗುತ್ತಿದೆ…',
-    animals: '{count} ಪ್ರಾಣಿ{plural}',
+    animals: '{count} ಪ್ರಾಣಿ',
   },
   app: {
     brandTagline: 'ವನ್ಯಜೀವಿ ಸಂಘರ್ಷ ಅಪಾಯ ಎಂಜಿನ್',

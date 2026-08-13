@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useGahm } from '../store/storeContext'
 import { useI18n } from '../i18n/I18nContext'
+import { LOCALE_IDS } from '../i18n'
 import { riskLevelLabel, speciesName, statusLabel } from '../i18n/helpers'
 import { filterEvents, sortedEvents } from '../store/selectors'
 
@@ -95,7 +96,7 @@ function AlertList() {
                 <span>·</span>
                 <span>{e.distance_to_farm_km.toFixed(1)} km</span>
                 <span>·</span>
-                <span>{fmtTime(e.timestamp, lang)}</span>
+                <span>{fmtTime(e.timestamp, LOCALE_IDS[lang])}</span>
               </div>
             </button>
           )

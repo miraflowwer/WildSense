@@ -5,6 +5,15 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v1.1.1] — 2026-08-14 — i18n Review Fixes
+
+### Fixed
+
+- **Uncertainty banner now translates (kn/ta)** — `src/engine/riskEngine.ts` previously stored full English sentences in `uncertainty.warning`, so the `helpers.ts` catalog lookup never matched and the amber uncertainty banner on the EVT-1045 demo path (and the 9 `engine.uncertainty` catalog entries) stayed English in Kannada/Tamil. The engine now emits stable codes (`'recentMovement' | 'lowConfidence' | 'both'`, typed as `UncertaintyWarning` in `src/types.ts`), which `uncertaintyWarning()` maps through the catalogs. The contributing-reason description keeps an English fallback sentence.
+- **Account-language load race** — `I18nProvider`'s async `loadUserLanguage()` could overwrite a language picked in the switcher (or apply after sign-out). It now re-checks the current localStorage pick and the latest auth state (`authRef`) before applying the account value.
+- **`LOCALE_IDS` wired in** — alert list, alert panel, and SMS simulator now pass `LOCALE_IDS[lang]` (`en-IN`/`kn-IN`/`ta-IN`) to `toLocaleString`, matching the v1.1.0 claim instead of falling back to `en-US` formatting.
+- **Kannada/Tamil plural placeholder** — `common.animals` in `catalog-kn.ts`/`catalog-ta.ts` no longer renders a stray Latin `s` for counts ≠ 1 (the `{plural}` param is English-only; the placeholder was dropped, `{count}` remains).
+
 ## [v1.1.0] — 2026-08-13 — Multi-Language Support & Auth Scroll Fix
 
 ### Added
