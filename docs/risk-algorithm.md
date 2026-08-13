@@ -19,11 +19,11 @@ audited, tuned, and overridden.
 | --- | --- | --- |
 | **25** | Proximity to farms | 25 pts at ≤1 km; 0 pts at ≥12 km (`MAX_PROXIMITY_KM`); linear in between, rounded |
 | **20** | Movement toward farm | 20 pts heading toward farmland; 6 pts moving away; **0 if unknown** |
-| **15** | Species impact | `SPECIES_IMPACT`: elephant 15, hippo 14, lion 12, buffalo 12, hyena 10, zebra 5, impala 3, gazelle 3; unknown → 3 |
+| **15** | Species impact | `SPECIES_IMPACT`: elephant 15, tiger 14, leopard 13, gaur 10, wild_boar 8; unknown → 3 |
 | **15** | Historical conflict | `min(15, incidents × 5)` — 3 prior incidents saturate the factor |
 | **10** | Time of day | 10 pts in the dusk (17:00–20:00) or dawn (05:00–08:00) UTC peak; 3 pts otherwise |
 | **10** | Group size | `GROUP_SIZE_POINTS`: 1→2, 2→4, 3→5, 4→7, 5→8, 6→9; cap at 10 |
-| **5** | Weather / season | `WEATHER_FACTOR`: drought 5, dry 5, fog 4, clear 3, rain 2 |
+| **5** | Weather / season | `WEATHER_FACTOR`: dry_season 5, post_monsoon 5, pre_monsoon 4, clear 3, monsoon 2 |
 
 Maximum raw score: 25 + 20 + 15 + 15 + 10 + 10 + 5 = **100**.
 
@@ -47,8 +47,8 @@ a human-readable warning in the panel.
 - `≥ 70` → **High** (explainable ranger alert)
 
 Thresholds are **per reserve** (`RESERVE_THRESHOLDS`; the demo reserve is
-Kijani Reserve at 40/70) with a global fallback. `thresholdsForZone()` maps
-sensor zones to their reserve. The final score is clamped to 0–100.
+Aranya Corridor Reserve at 40/70) with a global fallback. `thresholdsForZone()`
+maps sensor zones to their reserve. The final score is clamped to 0–100.
 
 ## Suggested next action
 
@@ -64,8 +64,8 @@ The ranger remains accountable — the engine recommends, the human decides.
 ### EVT-1042 — the flagship High event (87/100)
 
 Elephant, confidence 0.91, group of 5, 5.9 km from a farm, moving toward the
-farm (movement known), 3 historical incidents nearby, dry weather, 18:42 UTC
-(in the dusk peak):
+farm (movement known), 3 historical incidents nearby, dry season weather,
+18:42 UTC (in the dusk peak):
 
 | Factor | Points |
 | --- | --- |
@@ -75,25 +75,25 @@ farm (movement known), 3 historical incidents nearby, dry weather, 18:42 UTC
 | Historical conflict hotspot | 15 (3 × 5, saturated) |
 | High-risk time window | 10 |
 | Group size (5) | 8 |
-| Weather / seasonal (dry) | 5 |
+| Weather / seasonal (dry_season) | 5 |
 | **Total** | **87 → High** |
 
-### EVT-1045 — the uncertainty path (43/100, Medium)
+### EVT-1045 — the uncertainty path (46/100, Medium)
 
-Hyena, confidence 0.52 (**< 0.6**), group of 3, 4.0 km from a farm, movement
-**unknown**, 3 historical incidents, dry, 23:05 UTC (outside the peak):
+Leopard, confidence 0.52 (**< 0.6**), group of 3, 4.0 km from a farm, movement
+**unknown**, 3 historical incidents, dry season, 23:05 UTC (outside the peak):
 
 | Factor | Points |
 | --- | --- |
 | Proximity | 18 |
 | Movement | 0 (unknown — no points) |
-| Species impact (hyena) | 10 |
+| Species impact (leopard) | 13 |
 | Historical conflict hotspot | 15 |
 | High-risk time window | 3 (outside peak) |
 | Group size (3) | 5 |
-| Weather / seasonal (dry) | 5 |
+| Weather / seasonal (dry_season) | 5 |
 | Uncertainty adjustment | −8 (missing movement) − 5 (low confidence) = **−13** |
-| **Total** | **43 → Medium** |
+| **Total** | **46 → Medium** |
 
 The demo shows this event as Medium with the uncertainty warning — the honest
 "we don't know" path — instead of a confident but wrong score.

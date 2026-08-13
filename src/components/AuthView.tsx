@@ -388,8 +388,10 @@ function AuthView() {
           </>
         )}
 
-        <p className="mt-6 text-center text-xs text-neutral-400">
-          Each account only ever sees its own data.
+        <p className="mt-6 text-center text-xs leading-relaxed text-neutral-400">
+          {view === 'signin'
+            ? 'Each account only ever sees its own data.'
+            : 'Your data is stored securely and used only for this application. By creating an account, you agree to the GAHM ethics and data policy.'}
         </p>
       </div>
     </div>

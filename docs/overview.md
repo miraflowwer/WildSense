@@ -68,8 +68,15 @@ confidence** (how sure the sensor is that it saw a species) and **conflict risk*
 - **Honest uncertainty** — when movement data is missing, the engine says so and
   lowers the score, rather than pretending everything is known.
 - **Community safety and privacy** — warnings never expose exact wildlife
-  coordinates, are written for basic phones and local languages, and include
-  opt-out; alerts are never prioritized by farm size or economic value.
+  coordinates, are written for basic phones and local languages (English +
+  Hindi), and include opt-out; alerts are never prioritized by farm size or
+  economic value.
+- **Indian legal compliance** — designed with the Digital Personal Data
+  Protection (DPDP) Act, 2023 and the Wildlife (Protection) Act, 1972 in mind:
+  consent, data minimization, and non-lethal, protection-first design.
+
+The full ethics position — ten considerations from project review, each with
+GAHM's design response — is in [`ethics.md`](ethics.md).
 
 ## The key demo moment
 

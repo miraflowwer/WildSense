@@ -12,15 +12,15 @@ _Audience: developers. Companion:
 | --- | --- | --- |
 | `event_id` | `string` | e.g. `EVT-1042` |
 | `timestamp` | `string` (ISO) | Detection time |
-| `sensor_zone` | `string` | Reserve zone (e.g. `North Boundary`) |
-| `species` | `string` | e.g. `elephant` |
+| `sensor_zone` | `string` | Reserve zone (e.g. `North Corridor`) |
+| `species` | `string` | e.g. `elephant`, `leopard` |
 | `detection_confidence` | `number` | 0–1, sensor's confidence in the identification |
 | `estimated_count` | `number` | Group size |
 | `distance_to_farm_km` | `number` | Distance to nearest farm boundary |
 | `movement_toward_farm` | `boolean` | Direction of travel |
 | `movementKnown` | `boolean` | Whether movement data exists (drives uncertainty) |
 | `historical_incidents_nearby` | `number` | Conflict history in the area |
-| `weather_condition` | `string` | `dry`, `clear`, `rain`, `fog`, `drought` |
+| `weather_condition` | `string` | `dry_season`, `post_monsoon`, `pre_monsoon`, `clear`, `monsoon` |
 | `position` | `{ lat, lng }` | Latest location |
 | `trail` | `{ lat, lng, ts }[]` | Movement trail for the map |
 | `speed_kmh` | `number \| null` | Estimated speed from trail (null when < 2 points) |

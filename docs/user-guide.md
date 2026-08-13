@@ -13,6 +13,9 @@ GAHM recommends, you decide.**
 - **No account yet?** Choose **Sign up**, enter your name, email, and a
   password of at least 8 characters (confirm it), then **Create account**. One
   account = one private workspace: each account only ever sees its own data.
+  The sign-up screen shows a brief data privacy notice — your data is stored
+  securely, used only for this application, and covered by the GAHM ethics and
+  data policy (see [`ethics.md`](ethics.md)).
 - **Already have an account?** **Sign in** with your email and password. Tick
   **Stay signed in** to stay logged in on this device for up to 30 days; leave
   it unticked and your session ends when you close the browser tab.
@@ -80,7 +83,7 @@ one step at a time.
 ## Community warning (simulated SMS)
 
 1. **Prepare community warning** from the alert.
-2. Choose **English** or **Kiswahili** — the composed message updates live.
+2. Choose **English** or **Hindi (हिन्दी)** — the composed message updates live.
    It names the zone, tells people to secure livestock, says rangers were
    notified, and asks for a **SAFE** reply.
 3. Review the recipient list (demo numbers in this prototype).

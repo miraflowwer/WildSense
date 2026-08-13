@@ -26,7 +26,7 @@ function NewDetectionForm({ onClose }: NewDetectionFormProps) {
   const [species, setSpecies] = useState('elephant')
   const [count, setCount] = useState('1')
   const [confidence, setConfidence] = useState(0.8)
-  const [weather, setWeather] = useState('dry')
+  const [weather, setWeather] = useState('dry_season')
   const [towardFarm, setTowardFarm] = useState(true)
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null)
   const [picking, setPicking] = useState(false)

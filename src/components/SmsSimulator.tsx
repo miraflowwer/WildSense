@@ -4,12 +4,12 @@ import { findById } from '../store/selectors'
 import { insertSmsLog } from '../auth/api'
 
 const RECIPIENTS = [
-  '+255 700 100 221 — H. Kamau',
-  '+255 700 100 334 — N. Mwangi',
-  '+255 700 100 457 — A. Shayo',
-  '+255 700 100 582 — B. Ntemi',
-  '+255 700 100 603 — K. Macha',
-  '+255 700 100 776 — J. Rutta',
+  '+91 98450 10221 — R. Sharma',
+  '+91 98450 10334 — S. Gowda',
+  '+91 98450 10457 — A. Kumar',
+  '+91 98450 10582 — P. Naik',
+  '+91 98450 10603 — M. Hegde',
+  '+91 98450 10776 — K. Rao',
 ]
 
 const langBtn = (active: boolean) =>
@@ -27,7 +27,7 @@ function fmtAt(iso: string) {
 function SmsSimulator() {
   const { state, dispatch } = useGahm()
   const event = state.sms.openEventId ? findById(state.events, state.sms.openEventId) : undefined
-  const [lang, setLang] = useState<'en' | 'sw'>('en')
+  const [lang, setLang] = useState<'en' | 'hi'>('en')
   const [reply, setReply] = useState('SAFE')
 
   useEffect(() => {
@@ -43,7 +43,7 @@ function SmsSimulator() {
   const message =
     lang === 'en'
       ? `GAHM ALERT: High wildlife risk near ${event.sensor_zone}. Secure livestock and avoid the northern boundary. Rangers have been notified. Reply SAFE when secure.`
-      : `GAHM ILANI: Hatari kubwa ya wanyamapori karibu na ${event.sensor_zone}. Fuga usalama na epuka mpaka wa kaskazini. Wauguzi wamearifiwa tayari. Jibu SAFE ukimaliza.`
+      : `GAHM चेतावनी: ${event.sensor_zone} के पास वन्यजीव ख़तरा। पशुओं को सुरक्षित करें और सीमा से दूर रहें। वनरक्षकों को सूचित कर दिया गया है। सुरक्षित होने पर SAFE जवाब दें।`
 
   const sendWarning = () => {
     dispatch({ type: 'SEND_SMS' })
@@ -96,8 +96,8 @@ function SmsSimulator() {
           <button type="button" onClick={() => setLang('en')} className={langBtn(lang === 'en')}>
             English
           </button>
-          <button type="button" onClick={() => setLang('sw')} className={langBtn(lang === 'sw')}>
-            Kiswahili
+          <button type="button" onClick={() => setLang('hi')} className={langBtn(lang === 'hi')}>
+            Hindi (हिन्दी)
           </button>
         </div>
 

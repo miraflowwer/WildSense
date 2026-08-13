@@ -4,6 +4,7 @@ import {
   SPECIES_IMPACT,
   TIME_WINDOWS,
   WEATHER_FACTOR,
+  WEATHER_DESCRIPTIONS,
   GROUP_SIZE_POINTS,
   MAX_GROUP_SIZE_POINTS,
   type RiskThresholds,
@@ -125,9 +126,7 @@ export function computeRisk(
       label: 'Weather / seasonal',
       points: weather,
       description:
-        input.weather_condition === 'rain' || input.weather_condition === 'clear'
-          ? 'Typical seasonal conditions'
-          : 'Dry conditions push wildlife toward water and farmland',
+        WEATHER_DESCRIPTIONS[input.weather_condition] ?? 'Typical seasonal conditions',
     })
   }
 

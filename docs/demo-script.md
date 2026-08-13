@@ -20,7 +20,7 @@ The official scenario is documented in
 
 1. **Sign in with the demo card** — "Try the demo". (≈ 5 s)
 2. **The list is already prioritized**: EVT-1042 is at the top — **87/100 High**,
-   an elephant group moving toward North Farm at dusk. Point at the red marker
+   an elephant group moving toward Rajapura Farm at dusk. Point at the red marker
    on the map and the movement trail. (≈ 10 s)
 3. **Open EVT-1042 and walk the breakdown** — every contributing signal is
    listed with its points: proximity to farms, movement toward the boundary,
@@ -35,7 +35,7 @@ The official scenario is documented in
    time recorded. This closes the learning loop. (≈ 10 s)
 6. **Show the contrast**: the interior events (EVT-1041, EVT-1044) are green /
    Low — logged quietly. Then open **EVT-1045**: the uncertainty path — Medium
-   (43/100) with the warning *"Risk uncertain: recent movement data is
+   (46/100) with the warning *"Risk uncertain: recent movement data is
    unavailable. Manual review recommended."* The engine admits what it doesn't
    know. (≈ 10 s)
 7. **Reset demo** if a replay is asked for. (2 s)
@@ -55,6 +55,9 @@ Total ≈ 1 minute. Slow sections at will — the flow is the story.
   presented as certainty.
 - **Feedback loop**: outcome recording feeds back into calibration (per the
   plan's metric set: precision/recall, response time, false-alert rate).
+- **Ethics & Indian law**: GAHM is designed with Indian DPDP Act and Wildlife
+  Protection Act compliance in mind — consent, data minimization, non-lethal
+  mitigation (see [`ethics.md`](ethics.md)).
 - **SDG 15**: preventing conflict protects both communities and wildlife — it
   stops crop loss *and* retaliatory harm to animals.
 
@@ -67,6 +70,6 @@ Total ≈ 1 minute. Slow sections at will — the flow is the story.
 | Are real SMS sent? | No — the community warning is simulated on screen (cost/privacy-safe for the hackathon). |
 | Why these weights (25/20/15/…)? | Interpretable, transparent weights chosen to reflect each signal's contribution to conflict likelihood; thresholds are configurable per reserve (the code is the source of truth: `src/engine/config.ts`). |
 | How do you handle bad data? | The uncertainty penalty lowers the score and the panel explains why — EVT-1045 demonstrates exactly that. |
-| Privacy? | Warnings never include exact wildlife coordinates, are short, local-language, low-literacy friendly, with opt-out; alerts are never prioritized by farm size. |
+| Privacy? | Warnings never include exact wildlife coordinates, are short, local-language (English + Hindi), low-literacy friendly, with opt-out; alerts are never prioritized by farm size. The design is aligned with India's DPDP Act 2023 (consent, data minimization) and the Wildlife (Protection) Act 1972 (non-lethal, Schedule I protection). |
 | What would a pilot look like? | Phase 2 in the plan: one partner site, real detection feed, locally calibrated thresholds, community consent (see `initializations.md` §6). |
 

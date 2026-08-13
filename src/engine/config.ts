@@ -19,7 +19,7 @@ export interface RiskThresholds {
 }
 
 export const RESERVE_THRESHOLDS: Record<string, RiskThresholds> = {
-  'Kijani Reserve': { low: 40, high: 70 },
+  'Aranya Corridor Reserve': { low: 40, high: 70 },
 }
 
 export function thresholdsForReserve(reserve: string): RiskThresholds {
@@ -27,28 +27,25 @@ export function thresholdsForReserve(reserve: string): RiskThresholds {
 }
 
 const SENSOR_ZONE_TO_RESERVE: Record<string, string> = {
-  'West Patrol': 'Kijani Reserve',
-  'North Boundary': 'Kijani Reserve',
-  'Reserve Interior': 'Kijani Reserve',
-  'East Boundary': 'Kijani Reserve',
-  'North East': 'Kijani Reserve',
+  'Western Patrol': 'Aranya Corridor Reserve',
+  'North Corridor': 'Aranya Corridor Reserve',
+  'Reserve Interior': 'Aranya Corridor Reserve',
+  'Eastern Buffer': 'Aranya Corridor Reserve',
+  'North East Corridor': 'Aranya Corridor Reserve',
 }
 
 export function thresholdsForZone(sensorZone: string): RiskThresholds {
-  return thresholdsForReserve(SENSOR_ZONE_TO_RESERVE[sensorZone] ?? 'Kijani Reserve')
+  return thresholdsForReserve(SENSOR_ZONE_TO_RESERVE[sensorZone] ?? 'Aranya Corridor Reserve')
 }
 
 export const MAX_PROXIMITY_KM = 12
 
 export const SPECIES_IMPACT: Record<string, number> = {
   elephant: 15,
-  hippo: 14,
-  lion: 12,
-  buffalo: 12,
-  hyena: 10,
-  zebra: 5,
-  impala: 3,
-  gazelle: 3,
+  tiger: 14,
+  leopard: 13,
+  gaur: 10,
+  wild_boar: 8,
 }
 
 export const TIME_WINDOWS = {
@@ -59,11 +56,19 @@ export const TIME_WINDOWS = {
 } as const
 
 export const WEATHER_FACTOR: Record<string, number> = {
-  drought: 5,
-  dry: 5,
-  fog: 4,
+  dry_season: 5,
+  post_monsoon: 5,
+  pre_monsoon: 4,
   clear: 3,
-  rain: 2,
+  monsoon: 2,
+}
+
+export const WEATHER_DESCRIPTIONS: Record<string, string> = {
+  dry_season: 'Dry season conditions push wildlife toward water and farmland',
+  post_monsoon: 'Post-monsoon: fresh vegetation and full water sources draw wildlife to farm edges',
+  pre_monsoon: 'Pre-monsoon heat and shrinking water sources push wildlife toward farmland',
+  monsoon: 'Monsoon rains keep water plentiful and shift wildlife movement patterns',
+  clear: 'Typical seasonal conditions',
 }
 
 export const GROUP_SIZE_POINTS: Record<number, number> = {
