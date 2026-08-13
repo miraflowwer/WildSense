@@ -170,7 +170,12 @@ function AuthView({
   ) : null
 
   const content = (
-    <div className="relative max-h-[90vh] w-full max-w-md overflow-y-auto overscroll-contain rounded-2xl border border-[#E8E2D5] bg-[#FDFBF7] p-5 shadow-2xl sm:p-7">
+    <div
+      data-lenis-prevent
+      className={`relative w-full max-w-md overflow-y-auto overscroll-contain rounded-2xl border border-[#E8E2D5] bg-[#FDFBF7] p-5 shadow-2xl sm:p-7 ${
+        isModal ? 'max-h-[90vh]' : 'max-h-[78vh]'
+      }`}
+    >
       {isModal && onClose ? (
         <button
           type="button"

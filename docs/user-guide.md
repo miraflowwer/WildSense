@@ -26,9 +26,7 @@ GAHM recommends, you decide.**
 
 ## The dashboard at a glance
 
-- **Header**: GAHM brand, your name (or a "Demo data" badge in demo mode), the
-  last sync time, and the actions **Reset demo**, **Log detection** (account
-  mode only), and **Sign out**.
+- **Header**: WildSense brand, your callsign badge, the last sync time, **Notification Bell** (with unread badge and popover feed), **Language Switcher** (English / Kannada / Tamil), **Open team view** (for multi-ranger co-dispatch), and **Overflow Menu (⋯)** containing **Guided tour**, **Risk Engine spec**, **Ethics & Legal**, **Reset demo**, **Log detection**, and **Sign out**.
 - **Operations bar** — five quick numbers:
   - **Active high-risk incidents** — red when there is one;
   - **Unreviewed alerts** — amber when there are any;
@@ -37,11 +35,11 @@ GAHM recommends, you decide.**
   - **Communities affected**.
 - **Map**: reserve boundary, farm zones, communities, sensors, and detection
   markers with movement trails. (The map needs internet for the tiles.)
-- **Filters** — narrow the list by **Species, Risk, Status, Community, or
-  Zone**. The list defaults to "Awaiting review" so it always starts with what
-  needs you, not everything.
-- **Alert list** — sorted by risk score, highest first. Click an alert to open
-  it.
+- **Sidebar rail tabs**:
+  - **Alerts tab**: displays the collapsible filter header and prioritized incident list.
+  - **Team tab**: opens the **On-Duty Sector Roster**, displaying active rangers, their patrol sectors (Kabini, Bandipur, Mudumalai), on-duty timestamps, and real-time logged actions.
+- **Filters** — collapsible panel to narrow the list by **Species, Risk, Status, Community, or Zone**. Shows an active filter counter badge.
+- **Alert list** — sorted by risk score, highest first. Click an alert to open it.
 
 ## Reading an alert
 
@@ -61,21 +59,22 @@ GAHM recommends, you decide.**
   with speed when available), past incidents, weather.
 - **Uncertainty warning** — an amber-striped box appears when data is missing
   or low-confidence (e.g. no recent movement data). When it appears, the score
-  is less certain: review manually. GAHM never pretends missing data is known.
+  is less certain: review manually. WildSense never pretends missing data is known.
 - **Suggested next action** — the engine's recommendation. It is a
   suggestion, not an order.
+- **Response & Audit Trail** — a live timeline documenting who claimed the alert, dispatched rangers, sent SMS warnings, or updated status.
 
 ## Taking action on an alert
 
 | Button | What it does |
 | --- | --- |
-| **Acknowledge** | Claims the event — status → **Under review**, you become the owner, response time starts tracking. |
-| **Monitor** | Marks the event for observation — status → **Monitoring**. |
-| **Contact ranger unit** | Logs that a unit was dispatched (available from Medium risk up). |
-| **Escalate** | Flags it up the chain — status → **Escalated**. |
-| **Prepare community warning** | Opens the SMS warning simulator (available from Medium risk up). |
-| **Mark as false / low concern** | Adds an optional note and dismisses the event — status → **Dismissed**. |
-| **Close & record outcome** | Opens the outcome form; save it to resolve the event. |
+| **Acknowledge** | Claims the event — status → **Under review**, you become the owner, response time starts tracking, logs to audit trail. |
+| **Monitor** | Marks the event for observation — status → **Monitoring**, logs to audit trail. |
+| **Contact ranger unit** | Logs that a unit was dispatched (available from Medium risk up), broadcasts team notification. |
+| **Escalate** | Flags it up the chain — status → **Escalated**, logs to audit trail. |
+| **Prepare community warning** | Opens the SMS warning simulator with verified village subscribers (available from Medium risk up). |
+| **Mark as false / low concern** | Adds an optional note and dismisses the event — status → **Dismissed**, logs to audit trail. |
+| **Close & record outcome** | Opens the outcome form; save it to resolve the event and close the learning loop. |
 
 Which buttons are enabled depends on the current status — the app guides you
 one step at a time.

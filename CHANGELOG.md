@@ -5,6 +5,25 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v1.4.0] — 2026-08-14 — Unified Corridor Operations & Multi-Ranger Collaboration
+
+### Added
+
+- **Unified Corridor Operations & Multi-Ranger Coordination** — all authenticated rangers in a reserve share the active corridor incident feed and map, providing real-time situational awareness across sectors (Kabini, Bandipur, Mudumalai).
+- **On-Duty Sector Roster & Team Board** — new **Team tab** in the sidebar rail displaying active on-duty rangers, their assigned sectors, on-duty timestamps, and real-time logged actions.
+- **In-App Notification Feed** — notification bell in the dashboard header with unread badge counter and popover list displaying live team patrol dispatches, acknowledgments, and community warning updates.
+- **Multi-Ranger Live Synchronization** — support for multi-window team collaboration via real-time WebSocket channels in live mode and browser broadcast sync in demo mode ("Open team view" secondary ranger teammate session).
+- **Live Incident Response Audit Trail** — append-only response timeline in the alert details panel documenting every action taken by rangers on an incident.
+- **Public Corridor Feed & DPDP §6 Self-Registration** — public landing page now includes a live corridor summary cards section and a villager self-subscription form with mandatory DPDP Act 2023 §6 consent verification.
+- **Research & Methodology Section** — landing page section detailing empirical methodology, human–wildlife conflict field statistics, and live dataset links (GBIF, EOS LandViewer, Copernicus Open Access Hub, NASA Earthdata).
+- **Verbatim Legal Statutory Citations** — Ethics & Legal modal and landing page citations updated with exact statutory provisions and official government portal links for DPDP Act 2023 (§6) and Wildlife Protection Act 1972 (§9 & Schedule I).
+- **14-Step Deterministic Guided Tour** — updated Joyride guided tour expanding to 14 steps covering sector team board, notification bell, and operational recap.
+
+### Fixed
+
+- **Modal and Auth Scroll Lockdown** — added `data-lenis-prevent` attributes and scroll locks to Ethics modal, Auth modal, SetPassword view, and full-page auth cards to prevent background scroll leaks.
+- **Collapsible Filters** — filters bar now features a collapsible toggle header with an active filter counter badge.
+
 ## [v1.3.0] — 2026-08-14 — WildSense Branding & Team Credits
 
 ### Changed

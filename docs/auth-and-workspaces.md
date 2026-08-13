@@ -50,29 +50,28 @@ screen exposes them through the "Try the demo" card.
 
 ## Workspaces & Row-Level Security
 
-- Data tables: `events` and `sms_log`. Every row carries `owner_id` (the
-  signed-in Supabase user id).
-- RLS policies keep each account's rows private: `loadEvents()` returns only the
-  caller's rows; inserts set `owner_id` from the session.
-- **Auto-seeding on sign-up**: when a new user signs up and `loadEvents()` returns an
-  empty database (`0` events), `store.tsx` automatically invokes `seedUserEvents()`
-  to seed all 8 standard demo incidents into Supabase under the new user's `owner_id`.
-- The demo account is shared: anyone signing in with it enters `demo` mode,
-  which runs the synthetic in-browser scenario and writes nothing to the
-  database.
+- **Unified Reserve Operations**: All authenticated rangers in a reserve share the active corridor `events` feed, ensuring synchronized incident tracking across sectors.
+- **Data tables**:
+  - `events`: Active wildlife incident reports with `audit_trail` JSON array tracking every action taken by rangers.
+  - `profiles`: Authenticated ranger roster with sector assignments (`Kabini`, `Bandipur`, `Mudumalai`) and live duty status.
+  - `subscribers`: Verified village alert recipients with enforced `consent_given = true` check constraint per DPDP Act §6.
+  - `sms_log`: Record of dispatched community warning transmissions.
+- **Auto-seeding on sign-up**: when a new user signs up and `loadEvents()` returns an empty database (`0` events), `store.tsx` automatically invokes `seedUserEvents()` to seed the standard corridor incidents into Supabase.
+- The demo account is shared: anyone signing in with it enters `demo` mode, which runs the local scenario and communicates via `BroadcastChannel` for multi-window team collaboration without writing to the database.
 
 ## Write-through API (`src/auth/api.ts`)
 
-- `loadEvents()` — all rows for the caller, newest first (`happened_at` desc).
-- `seedUserEvents(events)` — batch seeds initial demo events into Supabase for a new user account.
-- `insertEvent(event)` — new detection (sets `owner_id`).
+- `loadEvents()` — loads corridor incidents, newest first (`happened_at` desc).
+- `seedUserEvents(events)` — batch seeds initial corridor events into Supabase.
+- `insertEvent(event)` — new wildlife detection (sets `owner_id`).
 - `updateEvent(eventId, patch)` — status/ownership/outcome updates by `event_id`.
-- `insertSmsLog(...)` — simulated SMS send records.
+- `appendEventAudit(eventId, entry)` — appends an action to the incident audit trail.
+- `loadProfiles()` / `upsertProfile(profile)` — manages on-duty sector roster.
+- `loadSubscribers()` / `subscribeVillager(...)` / `deleteSubscriber(id)` — manages DPDP §6 verified subscribers.
+- `loadCorridorActivity()` — loads aggregate public activity summary.
+- `insertSmsLog(...)` — SMS dispatch records.
 
-The store dispatches actions first (instant UI) and writes through in the
-background; failures flip `notPersisted` so the UI can indicate offline-ish
-state. Diagnostic logging (`console.error('[GAHM API Error] ...')`) surfaces
-PostgREST and RLS issues in the browser console. See [`data-model.md`](data-model.md) for the action → API mapping.
+The store dispatches actions first (instant UI) and writes through in the background; failures flip `notPersisted` so the UI can indicate offline state. Diagnostic logging (`console.error('[GAHM API Error] ...')`) surfaces PostgREST and RLS issues in the browser console. See [`data-model.md`](data-model.md) for the action → API mapping.
 
 ## Security Hardening (SECURITY DEFINER Functions)
 

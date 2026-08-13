@@ -30,6 +30,7 @@ code in `src/`; if a prose document ever disagrees with the code, the code wins
 | [`docs/risk-algorithm.md`](docs/risk-algorithm.md) | The scoring model: weights, thresholds, uncertainty penalty, worked examples |
 | [`docs/data-model.md`](docs/data-model.md) | Shared types, store state and actions, write-through persistence |
 | [`docs/auth-and-workspaces.md`](docs/auth-and-workspaces.md) | Supabase auth, offline demo mode, stay-signed-in, per-account workspaces |
+| [`docs/unified-operations.md`](docs/unified-operations.md) | Multi-ranger coordination, real-time sync, on-duty roster, in-app notifications, and DPDP §6 subscriptions |
 | [`docs/dev-workflow.md`](docs/dev-workflow.md) | Running, verifying, updating, hosting, uninstalling the app |
 | [`docs/build-optimization.md`](docs/build-optimization.md) | Production bundle chunk splitting: why, the Rolldown config, measured sizes |
 | [`docs/i18n.md`](docs/i18n.md) | Interface languages (English / Kannada / Tamil): scope, catalog structure, per-account preference, adding strings |

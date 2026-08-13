@@ -92,12 +92,26 @@ const STEPS: Step[] = [
     placement: 'left',
   },
   {
+    target: '[data-tour="team-tab"]',
+    content:
+      'Click the Team tab to see the active on-duty sector roster across the corridor, tracking ranger patrol coverage and real-time status.',
+    skipScroll: true,
+    placement: 'left',
+  },
+  {
+    target: '[data-tour="bell-btn"]',
+    content:
+      'The Notification Bell provides a live activity feed of multi-ranger dispatches, SMS broadcasts, and field acknowledgments.',
+    skipScroll: true,
+    placement: 'bottom',
+  },
+  {
     target: '[data-tour="ops-bar"]',
     content: (
       <div className="space-y-1.5">
         <div className="text-sm font-bold text-neutral-900">Guided Tour Complete!</div>
         <p className="text-xs leading-relaxed text-neutral-600">
-          You've explored WildSense's risk engine, ranger dispatch, community SMS warning simulator, and uncertainty penalty system.
+          You've explored WildSense's risk engine, ranger dispatch, community SMS warning simulator, uncertainty penalty system, and team collaboration board.
         </p>
       </div>
     ),
@@ -113,11 +127,6 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
   const evt1042 = state.events.find((e) => e.event_id === 'EVT-1042')
   const evt1045 = state.events.find((e) => e.event_id === 'EVT-1045')
 
-  // Set when the user clicks Back: the stepIndex has already changed, but the store state that
-  // triggered the forward rule is still set (e.g. SMS still open, EVT-1045 still selected), so
-  // the state machine would immediately bounce forward again. The next machine run is skipped —
-  // the sync effect below resets the relevant store state, and re-doing the step action advances
-  // forward normally.
   const skipNextMachineRun = useRef(false)
 
   // Reset step index when tour is activated
@@ -142,18 +151,21 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
       case 0:
       case 1:
         if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
+        if (state.railTab !== 'alerts') dispatch({ type: 'SET_RAIL_TAB', tab: 'alerts' })
         break
 
       case 2:
-        // Step 3 of 12: target alert-EVT-1042 in AlertList
+        // Step 3 of 14: target alert-EVT-1042 in AlertList
         if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
+        if (state.railTab !== 'alerts') dispatch({ type: 'SET_RAIL_TAB', tab: 'alerts' })
         if (state.selectedId !== null) dispatch({ type: 'SELECT_ALERT', id: '' })
         break
 
       case 3:
       case 4:
-        // Step 4 & 5 of 12: target contributing-signals & btn-acknowledge in AlertPanel
+        // Step 4 & 5 of 14: target contributing-signals & btn-acknowledge in AlertPanel
         if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
+        if (state.railTab !== 'alerts') dispatch({ type: 'SET_RAIL_TAB', tab: 'alerts' })
         if (state.selectedId !== 'EVT-1042') dispatch({ type: 'SELECT_ALERT', id: 'EVT-1042' })
         if (evt1042.status !== 'awaiting_review') {
           dispatch({ type: 'RESET_EVENT_STATUS', id: 'EVT-1042', status: 'awaiting_review' })
@@ -161,8 +173,9 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
         break
 
       case 5:
-        // Step 6 of 12: target btn-contact-ranger in AlertPanel
+        // Step 6 of 14: target btn-contact-ranger in AlertPanel
         if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
+        if (state.railTab !== 'alerts') dispatch({ type: 'SET_RAIL_TAB', tab: 'alerts' })
         if (state.selectedId !== 'EVT-1042') dispatch({ type: 'SELECT_ALERT', id: 'EVT-1042' })
         if (evt1042.status === 'awaiting_review') dispatch({ type: 'ACKNOWLEDGE', id: 'EVT-1042' })
         if (evt1042.rangerContactedAt != null) {
@@ -171,7 +184,8 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
         break
 
       case 6:
-        // Step 7 of 12: target btn-prepare-sms in AlertPanel
+        // Step 7 of 14: target btn-prepare-sms in AlertPanel
+        if (state.railTab !== 'alerts') dispatch({ type: 'SET_RAIL_TAB', tab: 'alerts' })
         if (state.selectedId !== 'EVT-1042') dispatch({ type: 'SELECT_ALERT', id: 'EVT-1042' })
         if (evt1042.status === 'awaiting_review') dispatch({ type: 'ACKNOWLEDGE', id: 'EVT-1042' })
         if (!evt1042.rangerContactedAt) dispatch({ type: 'CONTACT_RANGER', id: 'EVT-1042' })
@@ -179,13 +193,14 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
         break
 
       case 7:
-        // Step 8 of 12: target sms-modal in SmsSimulator modal
+        // Step 8 of 14: target sms-modal in SmsSimulator modal
         if (state.selectedId !== 'EVT-1042') dispatch({ type: 'SELECT_ALERT', id: 'EVT-1042' })
         if (state.sms.openEventId !== 'EVT-1042') dispatch({ type: 'OPEN_SMS', id: 'EVT-1042' })
         break
 
       case 8:
-        // Step 9 of 12: target btn-close-record in AlertPanel
+        // Step 9 of 14: target btn-close-record in AlertPanel
+        if (state.railTab !== 'alerts') dispatch({ type: 'SET_RAIL_TAB', tab: 'alerts' })
         if (state.selectedId !== 'EVT-1042') dispatch({ type: 'SELECT_ALERT', id: 'EVT-1042' })
         if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
         if (evt1042.status === 'resolved' || evt1042.status === 'dismissed') {
@@ -194,19 +209,31 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
         break
 
       case 9:
-        // Step 10 of 12: target alert-EVT-1045 in AlertList
+        // Step 10 of 14: target alert-EVT-1045 in AlertList
         if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
+        if (state.railTab !== 'alerts') dispatch({ type: 'SET_RAIL_TAB', tab: 'alerts' })
         if (state.selectedId !== null) dispatch({ type: 'SELECT_ALERT', id: '' })
         break
 
       case 10:
-        // Step 11 of 12: target uncertainty-warning in AlertPanel
+        // Step 11 of 14: target uncertainty-warning in AlertPanel
         if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
+        if (state.railTab !== 'alerts') dispatch({ type: 'SET_RAIL_TAB', tab: 'alerts' })
         if (state.selectedId !== 'EVT-1045') dispatch({ type: 'SELECT_ALERT', id: 'EVT-1045' })
         break
 
       case 11:
-        // Step 12 of 12: final completion prompt
+        // Step 12 of 14: target team-tab
+        if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
+        break
+
+      case 12:
+        // Step 13 of 14: target bell-btn
+        if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
+        break
+
+      case 13:
+        // Step 14 of 14: final completion prompt
         if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
         break
     }
@@ -215,6 +242,7 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
     runTour,
     state.selectedId,
     state.sms.openEventId,
+    state.railTab,
     evt1042?.status,
     evt1042?.rangerContactedAt,
     evt1042,
@@ -226,9 +254,6 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
   useEffect(() => {
     if (!runTour || !evt1042 || !evt1045) return
 
-    // One-run suppression after a Back click: the store state that triggered the previous
-    // forward rule is still set in this render, and the sync effect above resets it in a
-    // follow-up render — skipping this single run prevents the "Back bounces forward" bug.
     const skipThisRun = skipNextMachineRun.current
     skipNextMachineRun.current = false
     if (skipThisRun) return
@@ -253,11 +278,14 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
       setStepIndex(9)
     } else if (stepIndex === 9 && state.selectedId === 'EVT-1045') {
       setStepIndex(10)
+    } else if (stepIndex === 11 && state.railTab === 'team') {
+      setStepIndex(12)
     }
   }, [
     state.selectedId,
     state.sms.openEventId,
     state.sms.sentAt,
+    state.railTab,
     stepIndex,
     runTour,
     evt1042,

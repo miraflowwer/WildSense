@@ -220,6 +220,33 @@ function AlertPanel({
             </p>
           ) : null}
 
+          {/* Audit Trail Timeline */}
+          <section className="rounded-lg border border-neutral-300 bg-white p-3 shadow-2xs space-y-2">
+            <h3 className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-600">
+              {t('alertPanel.auditTrailTitle')}
+            </h3>
+            {event.auditTrail && event.auditTrail.length > 0 ? (
+              <ol className="relative ml-2 space-y-2 border-l border-emerald-300 pl-3">
+                {event.auditTrail.map((entry, idx) => (
+                  <li key={idx} className="relative text-xs">
+                    <span className="absolute -left-[17px] top-1 h-2 w-2 rounded-full border border-white bg-emerald-600 shadow-2xs" />
+                    <div className="flex items-baseline justify-between gap-2">
+                      <span className="font-bold text-neutral-900">{entry.actor}</span>
+                      <span className="text-[10px] text-neutral-400">
+                        {fmtTime(entry.at, LOCALE_IDS[lang])}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-neutral-700 leading-tight mt-0.5">{entry.action}</p>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p className="text-[11px] italic text-neutral-400">
+                {t('alertPanel.noAuditYet')}
+              </p>
+            )}
+          </section>
+
           {settled ? (
             <div className="rounded-lg border border-neutral-300 bg-neutral-100 p-3 text-xs text-neutral-700 shadow-2xs">
               <p className="font-bold text-neutral-900">

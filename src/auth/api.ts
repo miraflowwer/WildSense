@@ -1,5 +1,13 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { DetectionEvent, EventStatus, RiskLevel } from '../types'
+import type {
+  DetectionEvent,
+  EventStatus,
+  RiskLevel,
+  RangerProfile,
+  Subscriber,
+  CorridorActivityZone,
+  AuditTrailEntry,
+} from '../types'
 import { supabase } from './supabase'
 
 interface EventRow {
@@ -27,11 +35,16 @@ interface EventRow {
   reasons: DetectionEvent['reasons'] | null
   uncertainty: DetectionEvent['uncertainty'] | null
   trail: DetectionEvent['trail'] | null
+  audit_trail?: AuditTrailEntry[] | null
 }
 
 function requireClient(): SupabaseClient {
   if (!supabase) throw new Error('Server unreachable')
   return supabase
+}
+
+export function isSupabaseConfigured(): boolean {
+  return Boolean(supabase)
 }
 
 async function currentUserId(): Promise<string> {
@@ -41,7 +54,7 @@ async function currentUserId(): Promise<string> {
   return data.user.id
 }
 
-function rowToEvent(row: EventRow): DetectionEvent {
+export function rowToEvent(row: EventRow): DetectionEvent {
   const riskLevel: RiskLevel =
     row.risk_level === 'low' || row.risk_level === 'medium' || row.risk_level === 'high'
       ? row.risk_level
@@ -69,6 +82,7 @@ function rowToEvent(row: EventRow): DetectionEvent {
     weather_condition: row.weather_condition,
     position: { lat: Number(row.lat), lng: Number(row.lng) },
     trail: row.trail ?? [],
+    auditTrail: row.audit_trail ?? [],
     speed_kmh: null,
     community: row.community ?? '',
     risk_score: Number(row.risk_score),
@@ -119,6 +133,7 @@ export async function seedUserEvents(events: DetectionEvent[]): Promise<void> {
     lat: event.position.lat,
     lng: event.position.lng,
     trail: event.trail,
+    audit_trail: event.auditTrail ?? [],
     community: event.community,
     risk_score: event.risk_score,
     risk_level: event.risk_level,
@@ -156,6 +171,7 @@ export async function insertEvent(event: DetectionEvent): Promise<void> {
     lat: event.position.lat,
     lng: event.position.lng,
     trail: event.trail,
+    audit_trail: event.auditTrail ?? [],
     community: event.community,
     risk_score: event.risk_score,
     risk_level: event.risk_level,
@@ -179,6 +195,19 @@ export async function updateEvent(eventId: string, patch: Record<string, unknown
   if (error) {
     console.error('[GAHM API Error] updateEvent failed:', error.message, error)
     throw new Error(error.message)
+  }
+}
+
+export async function appendEventAudit(
+  eventId: string,
+  entry: AuditTrailEntry,
+  existingAuditTrail: AuditTrailEntry[] = [],
+): Promise<void> {
+  const db = requireClient()
+  const updated = [...existingAuditTrail, entry]
+  const { error } = await db.from('events').update({ audit_trail: updated }).eq('event_id', eventId)
+  if (error) {
+    console.error('[GAHM API Error] appendEventAudit failed:', error.message, error)
   }
 }
 
@@ -231,3 +260,142 @@ export async function saveUserLanguage(lang: string): Promise<void> {
     throw new Error(error.message)
   }
 }
+
+/* =========================================================================
+   PROFILES API (Ranger Roster & Team View)
+   ========================================================================= */
+
+interface ProfileRow {
+  user_id: string
+  name: string
+  sector: string | null
+  on_duty_since: string
+}
+
+export async function loadProfiles(): Promise<RangerProfile[]> {
+  const db = requireClient()
+  const { data, error } = await db.from('profiles').select('*').order('on_duty_since', { ascending: false })
+  if (error) {
+    console.error('[GAHM API Error] loadProfiles failed:', error.message, error)
+    return []
+  }
+  return ((data ?? []) as ProfileRow[]).map((r) => ({
+    userId: r.user_id,
+    name: r.name,
+    sector: r.sector || 'Central Corridor',
+    onDutySince: r.on_duty_since,
+  }))
+}
+
+export async function upsertProfile(name: string, sector = 'Central Corridor'): Promise<void> {
+  const db = requireClient()
+  const userId = await currentUserId()
+  const { error } = await db.from('profiles').upsert(
+    {
+      user_id: userId,
+      name,
+      sector,
+      on_duty_since: new Date().toISOString(),
+    },
+    { onConflict: 'user_id' },
+  )
+  if (error) {
+    console.error('[GAHM API Error] upsertProfile failed:', error.message, error)
+  }
+}
+
+/* =========================================================================
+   SUBSCRIBERS API (DPDP §6 Consent Self-Subscription & Dispatch List)
+   ========================================================================= */
+
+interface SubscriberRow {
+  id: string
+  name: string
+  phone: string
+  community: string
+  consent_given_at: string
+  opted_out: boolean
+}
+
+export async function loadSubscribers(community?: string): Promise<Subscriber[]> {
+  const db = requireClient()
+  let query = db.from('subscribers').select('*').eq('opted_out', false)
+  if (community) {
+    query = query.eq('community', community)
+  }
+  const { data, error } = await query
+  if (error) {
+    console.error('[GAHM API Error] loadSubscribers failed:', error.message, error)
+    return []
+  }
+  return ((data ?? []) as SubscriberRow[]).map((r) => ({
+    id: r.id,
+    name: r.name,
+    phone: r.phone,
+    community: r.community,
+    consentGivenAt: r.consent_given_at,
+    optedOut: r.opted_out,
+  }))
+}
+
+export async function subscribeVillager(params: {
+  name: string
+  phone: string
+  community: string
+}): Promise<{ ok: boolean; error?: string }> {
+  if (!supabase) return { ok: false, error: 'Database not connected' }
+  const { error } = await supabase.from('subscribers').upsert(
+    {
+      name: params.name.trim(),
+      phone: params.phone.trim(),
+      community: params.community,
+      consent_given_at: new Date().toISOString(),
+      terms_version: '2026-08-14',
+      opted_out: false,
+    },
+    { onConflict: 'phone' },
+  )
+  if (error) {
+    console.error('[GAHM API Error] subscribeVillager failed:', error.message, error)
+    return { ok: false, error: error.message }
+  }
+  return { ok: true }
+}
+
+export async function deleteSubscriber(id: string): Promise<boolean> {
+  const db = requireClient()
+  const { error } = await db.from('subscribers').delete().eq('id', id)
+  if (error) {
+    console.error('[GAHM API Error] deleteSubscriber failed:', error.message, error)
+    return false
+  }
+  return true
+}
+
+/* =========================================================================
+   PUBLIC SANITIZED CORRIDOR ACTIVITY (For Landing Page)
+   ========================================================================= */
+
+interface CorridorActivityRow {
+  zone: string
+  community: string
+  risk_level: string
+  detection_count: number
+  recent_activity_at: string
+}
+
+export async function loadCorridorActivity(): Promise<CorridorActivityZone[]> {
+  if (!supabase) return []
+  const { data, error } = await supabase.from('corridor_activity').select('*')
+  if (error) {
+    console.error('[GAHM API Error] loadCorridorActivity failed:', error.message, error)
+    return []
+  }
+  return ((data ?? []) as CorridorActivityRow[]).map((r) => ({
+    zone: r.zone,
+    community: r.community,
+    riskLevel: (r.risk_level === 'high' || r.risk_level === 'low' ? r.risk_level : 'medium') as RiskLevel,
+    count: r.detection_count,
+    recentActivityAt: r.recent_activity_at,
+  }))
+}

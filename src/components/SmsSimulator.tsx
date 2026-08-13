@@ -157,17 +157,48 @@ function SmsSimulator() {
         </div>
 
         <div className="mb-3">
-          <div className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-neutral-500">
-            {t('sms.recipients')}
+          <div className="mb-1 flex items-center justify-between text-[10px] font-semibold uppercase tracking-wide text-neutral-500">
+            <span>{t('sms.recipients')} ({event.community || t('common.all')})</span>
+            {state.mode === 'user' ? (
+              <span className="text-[10px] font-normal text-neutral-400">
+                {t('sms.verifiedSubscribers')}
+              </span>
+            ) : null}
           </div>
-          <ul className="space-y-0.5 rounded-lg border border-neutral-200 p-2">
-            {RECIPIENTS.map((r) => (
-              <li key={r} className="flex items-center gap-1.5 text-xs text-neutral-700">
-                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-sky-400" />
-                {r}
-              </li>
-            ))}
-          </ul>
+
+          {state.mode === 'user' && state.subscribers.filter((s) => !event.community || s.community === event.community).length === 0 ? (
+            <div className="rounded-lg border border-dashed border-neutral-300 bg-neutral-50/70 p-3 text-center text-xs text-neutral-500">
+              <p>{t('sms.noSubscribersInCommunity', { community: event.community || 'this area' })}</p>
+              <p className="mt-1 text-[11px] text-neutral-400">
+                {t('sms.subscribersSelfRegister')}
+              </p>
+            </div>
+          ) : (
+            <ul className="space-y-1 rounded-lg border border-neutral-200 p-2 max-h-36 overflow-y-auto">
+              {(state.mode === 'user'
+                ? state.subscribers.filter((s) => !event.community || s.community === event.community)
+                : RECIPIENTS.map((r, i) => ({ id: `rec-${i}`, name: r.split(' — ')[1] || 'Resident', phone: r.split(' — ')[0] || r }))
+              ).map((sub) => (
+                <li key={sub.id} className="flex items-center justify-between text-xs text-neutral-700">
+                  <div className="flex items-center gap-1.5 truncate">
+                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-sky-400" />
+                    <span className="font-mono text-neutral-500">{sub.phone}</span>
+                    <span className="font-semibold text-neutral-900">— {sub.name}</span>
+                  </div>
+                  {state.mode === 'user' ? (
+                    <button
+                      type="button"
+                      onClick={() => dispatch({ type: 'REMOVE_SUBSCRIBER', id: sub.id })}
+                      title={t('sms.removeSubscriber')}
+                      className="ml-2 text-[11px] text-neutral-400 hover:text-red-600 focus-visible:outline-none"
+                    >
+                      ✕
+                    </button>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         <button

@@ -1,15 +1,17 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState, useRef } from 'react'
 import { useAuth } from './auth/authContext'
 import { useGahm } from './store/storeContext'
 import { findById } from './store/selectors'
 import { formatUtcClock } from './engine/geo'
 import { useI18n } from './i18n/I18nContext'
+import { LOCALE_IDS } from './i18n'
 import LandingView from './components/LandingView'
 import SetPassword from './components/SetPassword'
 import OperationsBar from './components/OperationsBar'
 import FiltersBar from './components/FiltersBar'
 import AlertList from './components/AlertList'
 import AlertPanel from './components/AlertPanel'
+import TeamBoard from './components/TeamBoard'
 import SmsSimulator from './components/SmsSimulator'
 import DemoTour from './components/DemoTour'
 import LanguageSwitcher from './components/LanguageSwitcher'
@@ -25,14 +27,26 @@ function isEmailAddress(val: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim())
 }
 
+function fmtNotificationTime(iso: string, locale: string) {
+  try {
+    const d = new Date(iso)
+    return d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })
+  } catch {
+    return iso
+  }
+}
+
 function App() {
   const { mode, user, serverReachable, isBooting, passwordRecovery, signOut } = useAuth()
   const { state, dispatch } = useGahm()
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
+
+  const isTeammate = typeof window !== 'undefined' && window.location.search.includes('teammate')
 
   const rawRangerName = state.rangerName.trim() || user?.name || ''
-  const displayRangerName =
-    rawRangerName && !isEmailAddress(rawRangerName)
+  const displayRangerName = isTeammate
+    ? 'K. Rao (Masinagudi)'
+    : rawRangerName && !isEmailAddress(rawRangerName)
       ? rawRangerName
       : (user?.email ? user.email.split('@')[0] : '') || 'Ranger'
 
@@ -42,8 +56,13 @@ function App() {
   const [showLanding, setShowLanding] = useState(false)
   const [showAuthPage, setShowAuthPage] = useState(false)
   const [runTour, setRunTour] = useState(false)
+  const [showNotifications, setShowNotifications] = useState(false)
+  const [showOverflowMenu, setShowOverflowMenu] = useState(false)
   const [now, setNow] = useState(() => new Date())
-  const [mobileTab, setMobileTab] = useState<'map' | 'alerts'>('map')
+  const [mobileTab, setMobileTab] = useState<'map' | 'alerts' | 'team'>('map')
+
+  const notifRef = useRef<HTMLDivElement>(null)
+  const overflowRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000)
@@ -54,12 +73,27 @@ function App() {
   useEffect(() => {
     if (state.selectedId) {
       setMobileTab('alerts')
+      dispatch({ type: 'SET_RAIL_TAB', tab: 'alerts' })
     }
-  }, [state.selectedId])
+  }, [state.selectedId, dispatch])
 
-  // Auto-play guided tour for first-time logged-in users upon sign up
+  // Close popovers on outside click
   useEffect(() => {
-    if (isBooting || mode !== 'user' || !user?.email) return
+    const handleOutside = (e: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setShowNotifications(false)
+      }
+      if (overflowRef.current && !overflowRef.current.contains(e.target as Node)) {
+        setShowOverflowMenu(false)
+      }
+    }
+    document.addEventListener('mousedown', handleOutside)
+    return () => document.removeEventListener('mousedown', handleOutside)
+  }, [])
+
+  // Auto-play guided tour for first-time logged-in users upon sign up (unless teammate mode)
+  useEffect(() => {
+    if (isBooting || mode !== 'user' || !user?.email || isTeammate) return
     const tourKey = `gahm_tour_played_${user.email.toLowerCase()}`
     const justSignedUp = sessionStorage.getItem('gahm_just_signed_up') === 'true'
     if (justSignedUp || !localStorage.getItem(tourKey)) {
@@ -68,19 +102,17 @@ function App() {
       dispatch({ type: 'START_TUTORIAL' })
       setRunTour(true)
     }
-  }, [mode, user?.email, isBooting, dispatch])
+  }, [mode, user?.email, isBooting, dispatch, isTeammate])
 
-  // Start tour in demo mode by default
+  // Start tour in demo mode by default (unless teammate mode)
   useEffect(() => {
-    if (mode === 'demo') {
+    if (mode === 'demo' && !isTeammate) {
       setRunTour(true)
     }
-  }, [mode])
+  }, [mode, isTeammate])
 
   const handleStartTour = () => {
     if (mode === 'demo') {
-      // Reset to a pristine scenario so every tour run starts from a clean, scripted state
-      // (a previously resolved EVT-1042 would otherwise be filtered out and stall the tour).
       dispatch({ type: 'RESET_DEMO' })
     } else {
       dispatch({ type: 'START_TUTORIAL' })
@@ -92,6 +124,13 @@ function App() {
     setRunTour(false)
     if (mode === 'user' && state.inTutorial) {
       dispatch({ type: 'FINISH_TUTORIAL' })
+    }
+  }
+
+  const handleOpenTeamView = () => {
+    if (typeof window !== 'undefined') {
+      const url = window.location.origin + window.location.pathname + '?teammate'
+      window.open(url, '_blank')
     }
   }
 
@@ -121,10 +160,24 @@ function App() {
 
   const selected = state.selectedId ? findById(state.events, state.selectedId) : undefined
   const demoMode = mode === 'demo'
+  const unreadCount = state.notifications.filter((n) => !n.read).length
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-neutral-100 font-sans text-neutral-900 antialiased">
       <DemoTour runTour={runTour} onFinishTour={handleFinishTour} />
+
+      {/* Teammate Mode Banner */}
+      {isTeammate ? (
+        <div className="flex items-center justify-between border-b border-sky-400 bg-sky-900 px-4 py-1.5 text-xs font-semibold text-sky-100">
+          <span className="flex items-center gap-2">
+            <span className="h-2 w-2 animate-pulse rounded-full bg-sky-400" />
+            {t('app.teammateBanner', { persona: 'K. Rao — Masinagudi sector' })}
+          </span>
+          <span className="rounded bg-sky-800 px-2 py-0.5 text-[10px] font-bold text-sky-200 uppercase">
+            Live Sync Active
+          </span>
+        </div>
+      ) : null}
 
       {/* Header */}
       <header className="flex h-14 shrink-0 items-center justify-between border-b border-neutral-800 bg-neutral-950 px-4 text-white">
@@ -161,89 +214,184 @@ function App() {
         </div>
 
         {/* Right Nav / Actions */}
-        <nav aria-label={t('app.navLabel')} className="flex items-center gap-2 sm:gap-3">
+        <nav aria-label={t('app.navLabel')} className="flex items-center gap-2 sm:gap-2.5">
           {/* Primary Action: Log detection */}
           <button
             type="button"
             onClick={() => setAdding(true)}
             aria-label={t('app.logDetectionAria')}
-            className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md bg-emerald-700 px-3.5 py-2 text-xs font-semibold text-white shadow-2xs transition-colors hover:bg-emerald-800 active:bg-emerald-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900"
+            className="inline-flex min-h-[40px] items-center justify-center rounded-lg bg-emerald-700 px-3 py-1.5 text-xs font-semibold text-white shadow-2xs transition-colors hover:bg-emerald-800 active:bg-emerald-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
           >
             {t('app.logDetection')}
           </button>
 
-          {/* Secondary Action: Guided Tour (Available for all users) */}
-          <button
-            type="button"
-            onClick={handleStartTour}
-            aria-label={t('app.guidedTourAria')}
-            className="hidden min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-emerald-500/50 bg-emerald-950/60 px-3 py-2 text-xs font-medium text-emerald-300 transition-colors hover:bg-emerald-900/80 hover:text-emerald-200 active:bg-emerald-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 xl:inline-flex"
-          >
-            {t('app.guidedTour')}
-          </button>
-
-          {/* Risk Engine Explanation Button */}
-          <button
-            type="button"
-            onClick={() => setShowRiskModal(true)}
-            aria-label={t('app.riskEngineAria')}
-            className="hidden min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-emerald-500/40 bg-emerald-950/40 px-3 py-2 text-xs font-medium text-emerald-300 transition-colors hover:bg-emerald-900/70 hover:text-emerald-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 md:inline-flex"
-          >
-            {t('app.riskEngine')}
-          </button>
-
-          {/* Visual Divider */}
-          <div className="h-5 w-[1px] bg-neutral-800" aria-hidden="true" />
-
-          {/* Zone 3: User Profile Indicator & Account Actions */}
-          <div className="flex items-center gap-2">
-            <LanguageSwitcher variant="header" />
-
-            {/* User Profile Indicator */}
-            <span
-              className="hidden min-h-[44px] items-center gap-1.5 rounded-md border border-neutral-700/80 bg-neutral-800/90 px-2.5 py-1 text-xs font-medium text-neutral-200 sm:inline-flex"
-              aria-label={t('app.profileAria', { name: displayRangerName })}
+          {/* Open Team View (Presenter 2-window demo launcher) */}
+          {demoMode && !isTeammate ? (
+            <button
+              type="button"
+              onClick={handleOpenTeamView}
+              aria-label={t('app.openTeamViewAria')}
+              className="hidden min-h-[40px] items-center justify-center rounded-lg border border-sky-500/50 bg-sky-950/60 px-2.5 py-1.5 text-xs font-medium text-sky-300 transition-colors hover:bg-sky-900/80 hover:text-sky-200 lg:inline-flex"
             >
-              <span className="h-2 w-2 rounded-full bg-emerald-400" aria-hidden="true" />
-              <span className="hidden lg:inline">{displayRangerName}</span>
-              <span className="lg:hidden">{displayRangerName.split(' ')[0]}</span>
-            </span>
+              👥 {t('app.openTeamView')}
+            </button>
+          ) : null}
 
-            {demoMode ? (
-              <button
-                type="button"
-                onClick={() => {
-                  dispatch({ type: 'RESET_DEMO' })
-                  setRunTour(true)
-                }}
-                aria-label={t('app.resetDemoAria')}
-                className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-neutral-700 bg-neutral-800/80 px-2.5 py-2 text-xs font-medium text-neutral-200 transition-colors hover:bg-neutral-700 hover:text-white active:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900"
-              >
-                {t('app.resetDemo')}
-              </button>
+          {/* Notification Bell Dropdown */}
+          <div ref={notifRef} className="relative">
+            <button
+              type="button"
+              data-tour="bell-btn"
+              onClick={() => setShowNotifications((s) => !s)}
+              aria-label={t('app.notificationsAria', { count: unreadCount })}
+              className="relative inline-flex min-h-[40px] min-w-[40px] items-center justify-center rounded-lg border border-neutral-700 bg-neutral-850 p-2 text-neutral-300 transition-colors hover:bg-neutral-750 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+            >
+              🔔
+              {unreadCount > 0 ? (
+                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[9px] font-black text-neutral-950 animate-pulse">
+                  {unreadCount}
+                </span>
+              ) : null}
+            </button>
+
+            {/* Notification Popover Dropdown */}
+            {showNotifications ? (
+              <div className="absolute right-0 top-12 z-50 w-80 max-w-[90vw] rounded-xl border border-neutral-700 bg-neutral-900 p-3 text-white shadow-2xl space-y-2">
+                <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
+                  <span className="text-xs font-bold">{t('notifications.title')}</span>
+                  {state.notifications.length > 0 ? (
+                    <button
+                      type="button"
+                      onClick={() => dispatch({ type: 'CLEAR_NOTIFICATIONS' })}
+                      className="text-[10px] font-semibold text-neutral-400 hover:text-emerald-400"
+                    >
+                      {t('notifications.clearAll')}
+                    </button>
+                  ) : null}
+                </div>
+
+                <div className="max-h-60 overflow-y-auto space-y-1.5">
+                  {state.notifications.length === 0 ? (
+                    <p className="py-4 text-center text-xs text-neutral-500">
+                      {t('notifications.empty')}
+                    </p>
+                  ) : (
+                    state.notifications.map((n) => (
+                      <div
+                        key={n.id}
+                        onClick={() => dispatch({ type: 'MARK_NOTIFICATION_READ', id: n.id })}
+                        className={`rounded-lg p-2 text-xs transition-colors cursor-pointer ${
+                          n.read ? 'bg-neutral-800/40 text-neutral-400' : 'bg-neutral-800 text-neutral-100'
+                        }`}
+                      >
+                        <div className="flex items-baseline justify-between gap-1">
+                          <span className="font-bold">{n.title}</span>
+                          <span className="text-[10px] text-neutral-400">
+                            {fmtNotificationTime(n.timestamp, LOCALE_IDS[lang])}
+                          </span>
+                        </div>
+                        <p className="mt-0.5 text-[11px] leading-tight text-neutral-300">{n.message}</p>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
             ) : null}
+          </div>
 
+          <LanguageSwitcher variant="header" />
+
+          {/* User Profile Indicator */}
+          <span
+            className="hidden min-h-[40px] items-center gap-1.5 rounded-lg border border-neutral-700/80 bg-neutral-850 px-2.5 py-1 text-xs font-medium text-neutral-200 sm:inline-flex"
+            aria-label={t('app.profileAria', { name: displayRangerName })}
+          >
+            <span className="h-2 w-2 rounded-full bg-emerald-400" aria-hidden="true" />
+            <span className="hidden lg:inline">{displayRangerName}</span>
+            <span className="lg:hidden">{displayRangerName.split(' ')[0]}</span>
+          </span>
+
+          {/* Overflow Menu ("More" / `...`) for Secondary Actions */}
+          <div ref={overflowRef} className="relative">
             <button
               type="button"
-              onClick={() => setShowEthics(true)}
-              aria-label={t('app.ethicsAria')}
-              className="hidden min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-neutral-700 bg-neutral-800/80 px-2.5 py-2 text-xs font-medium text-neutral-300 transition-colors hover:bg-neutral-700 hover:text-white active:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 md:inline-flex"
+              onClick={() => setShowOverflowMenu((s) => !s)}
+              aria-label={t('app.overflowAria')}
+              className="inline-flex min-h-[40px] min-w-[40px] items-center justify-center rounded-lg border border-neutral-700 bg-neutral-850 p-2 text-neutral-300 transition-colors hover:bg-neutral-750 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
             >
-              {t('app.ethicsLegal')}
+              ⋯
             </button>
 
-            <button
-              type="button"
-              onClick={() => {
-                setAdding(false)
-                setShowAuthPage(true)
-                void signOut()
-              }}
-              aria-label={t('app.signOutAria')}
-              className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-transparent px-2.5 py-2 text-xs font-medium text-neutral-300 transition-colors hover:bg-neutral-800 hover:text-white active:bg-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900"
-            >
-              {t('app.signOut')}
-            </button>
+            {showOverflowMenu ? (
+              <div className="absolute right-0 top-12 z-50 w-52 rounded-xl border border-neutral-700 bg-neutral-900 p-1.5 text-white shadow-2xl space-y-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowOverflowMenu(false)
+                    handleStartTour()
+                  }}
+                  className="w-full rounded-lg px-3 py-2 text-left text-xs font-medium text-neutral-200 hover:bg-neutral-800 hover:text-white"
+                >
+                  🎯 {t('app.guidedTour')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowOverflowMenu(false)
+                    setShowRiskModal(true)
+                  }}
+                  className="w-full rounded-lg px-3 py-2 text-left text-xs font-medium text-neutral-200 hover:bg-neutral-800 hover:text-white"
+                >
+                  📊 {t('app.riskEngine')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowOverflowMenu(false)
+                    setShowEthics(true)
+                  }}
+                  className="w-full rounded-lg px-3 py-2 text-left text-xs font-medium text-neutral-200 hover:bg-neutral-800 hover:text-white"
+                >
+                  ⚖️ {t('app.ethicsLegal')}
+                </button>
+                {demoMode ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowOverflowMenu(false)
+                      dispatch({ type: 'RESET_DEMO' })
+                      setRunTour(true)
+                    }}
+                    className="w-full rounded-lg px-3 py-2 text-left text-xs font-medium text-amber-300 hover:bg-neutral-800"
+                  >
+                    🔄 {t('app.resetDemo')}
+                  </button>
+                ) : null}
+                <div className="my-1 border-t border-neutral-800" />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowOverflowMenu(false)
+                    setShowLanding(true)
+                  }}
+                  className="w-full rounded-lg px-3 py-2 text-left text-xs font-medium text-neutral-200 hover:bg-neutral-800"
+                >
+                  🏠 {t('app.landingPage')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowOverflowMenu(false)
+                    setAdding(false)
+                    setShowAuthPage(true)
+                    void signOut()
+                  }}
+                  className="w-full rounded-lg px-3 py-2 text-left text-xs font-medium text-red-400 hover:bg-neutral-800 hover:text-red-300"
+                >
+                  🚪 {t('app.signOut')}
+                </button>
+              </div>
+            ) : null}
           </div>
         </nav>
       </header>
@@ -271,9 +419,11 @@ function App() {
         </div>
       ) : null}
 
-      <OperationsBar />
+      <div data-tour="ops-bar">
+        <OperationsBar />
+      </div>
 
-      {/* Mobile Phone View Mode Switcher (< 768px) */}
+      {/* Mobile View Mode Switcher (< 768px) */}
       <div className="flex border-b border-neutral-300 bg-neutral-200/90 p-1 md:hidden">
         <button
           type="button"
@@ -288,7 +438,10 @@ function App() {
         </button>
         <button
           type="button"
-          onClick={() => setMobileTab('alerts')}
+          onClick={() => {
+            setMobileTab('alerts')
+            dispatch({ type: 'SET_RAIL_TAB', tab: 'alerts' })
+          }}
           className={`flex-1 rounded-md py-2 text-xs font-bold transition-all ${
             mobileTab === 'alerts'
               ? 'bg-emerald-700 text-white shadow-2xs'
@@ -297,9 +450,24 @@ function App() {
         >
           🔔 {t('app.alertsView', { count: state.events.length > 0 ? `(${state.events.length})` : '' })}
         </button>
+        <button
+          type="button"
+          onClick={() => {
+            setMobileTab('team')
+            dispatch({ type: 'SET_RAIL_TAB', tab: 'team' })
+          }}
+          className={`flex-1 rounded-md py-2 text-xs font-bold transition-all ${
+            mobileTab === 'team'
+              ? 'bg-emerald-700 text-white shadow-2xs'
+              : 'text-neutral-700 hover:bg-neutral-300/80'
+          }`}
+        >
+          👥 {t('app.teamView')}
+        </button>
       </div>
 
       <main className="flex min-h-0 flex-1 flex-col md:flex-row">
+        {/* Left / Center: Interactive Map */}
         <div
           className={
             mobileTab === 'map'
@@ -319,23 +487,58 @@ function App() {
             </Suspense>
           </div>
         </div>
+
+        {/* Right: Tabbed Sidebar (Alerts / Team) */}
         <div
           className={
-            mobileTab === 'alerts'
-              ? 'flex min-h-0 flex-1 flex-col border-t border-neutral-300 bg-white md:h-auto md:w-[360px] lg:w-[380px] md:flex-none md:shrink-0 md:border-l md:border-t-0'
-              : 'hidden md:flex md:h-auto md:w-[360px] lg:w-[380px] md:flex-none md:shrink-0 md:flex-col md:border-l md:border-neutral-300 md:bg-white'
+            mobileTab === 'alerts' || mobileTab === 'team'
+              ? 'flex min-h-0 flex-1 flex-col border-t border-neutral-300 bg-white md:h-auto md:w-[360px] lg:w-[390px] md:flex-none md:shrink-0 md:border-l md:border-t-0'
+              : 'hidden md:flex md:h-auto md:w-[360px] lg:w-[390px] md:flex-none md:shrink-0 md:flex-col md:border-l md:border-neutral-300 md:bg-white'
           }
         >
-          <FiltersBar />
-          {selected ? (
-            <AlertPanel event={selected} onOpenRiskExplanation={() => setShowRiskModal(true)} />
+          {/* Sidebar Tab Header */}
+          <div className="flex shrink-0 items-center border-b border-neutral-200 bg-neutral-100/90 p-1.5">
+            <button
+              type="button"
+              data-tour="alerts-tab"
+              onClick={() => dispatch({ type: 'SET_RAIL_TAB', tab: 'alerts' })}
+              className={`flex-1 rounded-md py-1.5 text-xs font-bold transition-all ${
+                state.railTab === 'alerts'
+                  ? 'bg-white text-neutral-900 shadow-2xs'
+                  : 'text-neutral-600 hover:text-neutral-900'
+              }`}
+            >
+              🔔 {t('rail.alertsTab')} ({state.events.length})
+            </button>
+            <button
+              type="button"
+              data-tour="team-tab"
+              onClick={() => dispatch({ type: 'SET_RAIL_TAB', tab: 'team' })}
+              className={`flex-1 rounded-md py-1.5 text-xs font-bold transition-all ${
+                state.railTab === 'team'
+                  ? 'bg-white text-neutral-900 shadow-2xs'
+                  : 'text-neutral-600 hover:text-neutral-900'
+              }`}
+            >
+              👥 {t('rail.teamTab')} ({state.profiles.length || 1})
+            </button>
+          </div>
+
+          {/* Active Sidebar Tab Content */}
+          {state.railTab === 'team' ? (
+            <TeamBoard />
           ) : (
-            <AlertList />
+            <>
+              <FiltersBar />
+              {selected ? (
+                <AlertPanel event={selected} onOpenRiskExplanation={() => setShowRiskModal(true)} />
+              ) : (
+                <AlertList />
+              )}
+            </>
           )}
         </div>
       </main>
-
-
 
       {state.sms.openEventId ? <SmsSimulator /> : null}
       {showEthics ? <EthicsModal onClose={() => setShowEthics(false)} /> : null}
