@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { useGahm } from '../store/store'
+import { useGahm } from '../store/storeContext'
 import { filterEvents } from '../store/selectors'
 import { zones, farmZones, communities, sensors, riskLevelColor } from '../data/demoData'
 import type { DetectionEvent, FarmZone, Community, Sensor, ZonePolygon } from '../types'

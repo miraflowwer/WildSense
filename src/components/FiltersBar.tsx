@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import type { ReactNode } from 'react'
-import { useGahm } from '../store/store'
+import { useGahm } from '../store/storeContext'
 import { communities } from '../data/demoData'
 import type { FilterState } from '../types'
 

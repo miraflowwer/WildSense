@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useGahm } from '../store/store'
+import { useGahm } from '../store/storeContext'
 import { findById } from '../store/selectors'
 import { insertSmsLog } from '../auth/api'
 

@@ -1,7 +1,5 @@
 import {
-  createContext,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -12,34 +10,12 @@ import type { Session, User } from '@supabase/supabase-js'
 import { supabase } from './supabase'
 import { DEMO_EMAIL, isDemoCredentials } from './demoAccount'
 import { clearStaySignedIn, isRememberedSessionExpired, isStaySignedIn } from './storage'
-
-export type AuthMode = 'demo' | 'user'
-
-export interface AuthUser {
-  email: string
-  name: string
-}
-
-export interface AuthContextValue {
-  mode: AuthMode | null
-  user: AuthUser | null
-  serverReachable: boolean
-  isBooting: boolean
-  errorText: string | null
-  pendingVerification: { email: string } | null
-  passwordRecovery: boolean
-  resendCountdown: number
-  signedOutNotice: boolean
-  signUp: (email: string, password: string, name: string) => Promise<void>
-  signIn: (email: string, password: string) => Promise<void>
-  signOut: () => Promise<void>
-  sendVerificationCode: (email: string) => Promise<void>
-  resendCode: () => Promise<void>
-  verifyCode: (email: string, token: string) => Promise<boolean>
-  requestPasswordReset: (email: string) => Promise<boolean>
-  setNewPassword: (password: string) => Promise<boolean>
-  dismissSignedOutNotice: () => void
-}
+import {
+  AuthContext,
+  type AuthContextValue,
+  type AuthMode,
+  type AuthUser,
+} from './authContext'
 
 const UNREACHABLE_MESSAGE = 'Server unreachable — check your connection and try again.'
 const WRONG_CODE_MESSAGE = "That code didn't match — check the email and try again."
@@ -51,8 +27,6 @@ function displayName(u: User): string {
   const local = (u.email ?? '').split('@')[0] ?? ''
   return local.trim() !== '' ? local : 'Ranger'
 }
-
-const AuthContext = createContext<AuthContextValue | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<AuthMode | null>(null)
@@ -335,10 +309,4 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
-
-export function useAuth(): AuthContextValue {
-  const ctx = useContext(AuthContext)
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider')
-  return ctx
 }

@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useGahm } from '../store/store'
+import { useGahm } from '../store/storeContext'
 import { filterEvents, sortedEvents } from '../store/selectors'
 
 const STATUS_LABELS: Record<string, string> = {

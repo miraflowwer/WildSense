@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useGahm } from '../store/store'
+import { useGahm } from '../store/storeContext'
 import type { DetectionEvent } from '../types'
 
 const ACTIONS = ['None', 'Ranger patrol', 'SMS warning', 'Both', 'Escalated']

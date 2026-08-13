@@ -1,13 +1,10 @@
 import {
-  createContext,
-  useContext,
   useCallback,
   useEffect,
   useMemo,
   useReducer,
   useRef,
   type ReactNode,
-  type Dispatch,
 } from 'react'
 import type {
   StoreState,
@@ -21,6 +18,7 @@ import { buildDemoState, sensors, farmZones, USER } from '../data/demoData'
 import { haversineKm } from '../engine/geo'
 import { useAuth } from '../auth/authContext'
 import { loadEvents, insertEvent, updateEvent } from '../auth/api'
+import { StoreContext, type StoreContextValue } from './storeContext'
 
 const EMPTY_SMS: SmsState = {
   openEventId: null,
@@ -300,13 +298,6 @@ function persistAction(action: StoreAction, s: StoreState): Promise<void> | null
   }
 }
 
-interface StoreContextValue {
-  state: StoreState
-  dispatch: Dispatch<StoreAction>
-}
-
-const StoreContext = createContext<StoreContextValue | null>(null)
-
 export function GahmProvider({ children }: { children: ReactNode }) {
   const auth = useAuth()
   const [state, rawDispatch] = useReducer(reducer, undefined, () => initialState('user'))
@@ -364,10 +355,4 @@ export function GahmProvider({ children }: { children: ReactNode }) {
     [fullState, dispatch],
   )
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>
-}
-
-export function useGahm(): StoreContextValue {
-  const ctx = useContext(StoreContext)
-  if (!ctx) throw new Error('useGahm must be used within GahmProvider')
-  return ctx
 }

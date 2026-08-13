@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useGahm } from '../store/store'
+import { useGahm } from '../store/storeContext'
 import type { DetectionEvent } from '../types'
 import OutcomeForm from './OutcomeForm'
 

@@ -1,9 +1,8 @@
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { useAuth } from './auth/authContext'
-import { useGahm } from './store/store'
+import { useGahm } from './store/storeContext'
 import { findById } from './store/selectors'
 import { formatTime } from './engine/geo'
-import MapView from './components/MapView'
 import AuthView from './components/AuthView'
 import SetPassword from './components/SetPassword'
 import OperationsBar from './components/OperationsBar'
@@ -11,7 +10,9 @@ import FiltersBar from './components/FiltersBar'
 import AlertList from './components/AlertList'
 import AlertPanel from './components/AlertPanel'
 import SmsSimulator from './components/SmsSimulator'
-import NewDetectionForm from './components/NewDetectionForm'
+
+const MapView = lazy(() => import('./components/MapView'))
+const NewDetectionForm = lazy(() => import('./components/NewDetectionForm'))
 
 function App() {
   const { mode, serverReachable, isBooting, passwordRecovery, signOut } = useAuth()
@@ -108,7 +109,15 @@ function App() {
       <main className="flex min-h-0 flex-1 flex-col md:flex-row">
         <div className="min-h-0 min-w-0 flex-1">
           <div className="h-full w-full">
-            <MapView />
+            <Suspense
+              fallback={
+                <div className="flex h-full w-full items-center justify-center bg-neutral-200 text-xs text-neutral-500">
+                  Loading map…
+                </div>
+              }
+            >
+              <MapView />
+            </Suspense>
           </div>
         </div>
         <div className="flex h-[40%] min-h-0 w-full shrink-0 flex-col border-t border-neutral-200 bg-white md:h-auto md:w-[360px] md:border-l md:border-t-0">
@@ -118,7 +127,19 @@ function App() {
       </main>
 
       {state.sms.openEventId ? <SmsSimulator /> : null}
-      {adding ? <NewDetectionForm onClose={() => setAdding(false)} /> : null}
+      {adding ? (
+        <Suspense
+          fallback={
+            <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 p-4">
+              <div className="rounded-md bg-white px-4 py-3 text-xs text-neutral-600">
+                Loading form…
+              </div>
+            </div>
+          }
+        >
+          <NewDetectionForm onClose={() => setAdding(false)} />
+        </Suspense>
+      ) : null}
     </div>
   )
 }
