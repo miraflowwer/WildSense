@@ -136,7 +136,13 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
 
   const handleJoyrideEvent = (data: EventData) => {
     const { action, index, status, type } = data
-    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
+    if (
+      status === STATUS.FINISHED ||
+      status === STATUS.SKIPPED ||
+      action === 'close' ||
+      action === 'skip' ||
+      action === 'stop'
+    ) {
       onFinishTour()
       return
     }
@@ -240,6 +246,8 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
         showProgress: true,
         zIndex: 10000,
         overlayClickAction: false,
+        closeButtonAction: 'skip',
+        dismissKeyAction: 'close',
         width: 310,
       }}
       styles={{

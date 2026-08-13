@@ -5,6 +5,12 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v0.4.4] — 2026-08-13 — Guided Tour Close (X) Backdrop Fix
+
+### Fixed
+
+- Fixed grey backdrop overlay remaining stuck on screen when closing the tour via the "X" button. Configured `closeButtonAction: 'skip'` in Joyride options and added explicit `action === 'close' || action === 'skip' || action === 'stop'` handling in `handleJoyrideEvent` to invoke `onFinishTour()`, immediately unmounting Joyride and restoring full workspace visibility.
+
 ## [v0.4.3] — 2026-08-13 — Guided Tour Scrolling, Alignment & Interaction Fixes
 
 ### Fixed
