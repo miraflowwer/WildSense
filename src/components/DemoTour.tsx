@@ -9,7 +9,7 @@ interface DemoTourProps {
 }
 
 export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
-  const { state } = useGahm()
+  const { state, dispatch } = useGahm()
   const [stepIndex, setStepIndex] = useState(0)
 
   const evt1042 = state.events.find((e) => e.event_id === 'EVT-1042')
@@ -22,7 +22,80 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
     }
   }, [runTour])
 
-  // Reactive state machine: advance steps automatically as demo actions are performed
+  // Synchronize workspace UI state so required DOM targets exist for stepIndex
+  useEffect(() => {
+    if (!runTour || !evt1042 || !evt1045) return
+
+    switch (stepIndex) {
+      case 0:
+      case 1:
+        if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
+        break
+
+      case 2:
+        // Step 3 of 10: target alert-EVT-1042 in AlertList
+        if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
+        if (state.selectedId !== null) dispatch({ type: 'SELECT_ALERT', id: '' })
+        break
+
+      case 3:
+        // Step 4 of 10: target btn-acknowledge in AlertPanel
+        if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
+        if (state.selectedId !== 'EVT-1042') dispatch({ type: 'SELECT_ALERT', id: 'EVT-1042' })
+        break
+
+      case 4:
+        // Step 5 of 10: target btn-contact-ranger in AlertPanel
+        if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
+        if (state.selectedId !== 'EVT-1042') dispatch({ type: 'SELECT_ALERT', id: 'EVT-1042' })
+        if (evt1042.status === 'awaiting_review') dispatch({ type: 'ACKNOWLEDGE', id: 'EVT-1042' })
+        break
+
+      case 5:
+        // Step 6 of 10: target btn-prepare-sms in AlertPanel
+        if (state.selectedId !== 'EVT-1042') dispatch({ type: 'SELECT_ALERT', id: 'EVT-1042' })
+        if (evt1042.status === 'awaiting_review') dispatch({ type: 'ACKNOWLEDGE', id: 'EVT-1042' })
+        if (!evt1042.rangerContactedAt) dispatch({ type: 'CONTACT_RANGER', id: 'EVT-1042' })
+        if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
+        break
+
+      case 6:
+        // Step 7 of 10: target btn-send-sms in SmsSimulator modal
+        if (state.selectedId !== 'EVT-1042') dispatch({ type: 'SELECT_ALERT', id: 'EVT-1042' })
+        if (state.sms.openEventId !== 'EVT-1042') dispatch({ type: 'OPEN_SMS', id: 'EVT-1042' })
+        break
+
+      case 7:
+        // Step 8 of 10: target btn-close-record in AlertPanel
+        if (state.selectedId !== 'EVT-1042') dispatch({ type: 'SELECT_ALERT', id: 'EVT-1042' })
+        if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
+        break
+
+      case 8:
+        // Step 9 of 10: target alert-EVT-1045 in AlertList
+        if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
+        if (state.selectedId !== null) dispatch({ type: 'SELECT_ALERT', id: '' })
+        break
+
+      case 9:
+        // Step 10 of 10: target uncertainty-warning in AlertPanel
+        if (state.sms.openEventId) dispatch({ type: 'CLOSE_SMS' })
+        if (state.selectedId !== 'EVT-1045') dispatch({ type: 'SELECT_ALERT', id: 'EVT-1045' })
+        break
+    }
+  }, [
+    stepIndex,
+    runTour,
+    state.selectedId,
+    state.sms.openEventId,
+    evt1042?.status,
+    evt1042?.rangerContactedAt,
+    evt1042,
+    evt1045,
+    dispatch,
+  ])
+
+  // Reactive state machine: advance steps automatically as demo actions are performed in UI
   useEffect(() => {
     if (!runTour || !evt1042 || !evt1045) return
 
@@ -38,14 +111,25 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
       setStepIndex(7)
     } else if (
       stepIndex === 7 &&
-      (evt1042.status === 'resolved' || evt1042.status === 'dismissed') &&
-      !state.selectedId
+      (evt1042.status === 'resolved' || evt1042.status === 'dismissed')
     ) {
+      if (state.selectedId) {
+        dispatch({ type: 'SELECT_ALERT', id: '' })
+      }
       setStepIndex(8)
     } else if (stepIndex === 8 && state.selectedId === 'EVT-1045') {
       setStepIndex(9)
     }
-  }, [state, stepIndex, runTour, evt1042, evt1045])
+  }, [
+    state.selectedId,
+    state.sms.openEventId,
+    state.sms.sentAt,
+    stepIndex,
+    runTour,
+    evt1042,
+    evt1045,
+    dispatch,
+  ])
 
   const handleJoyrideEvent = (data: EventData) => {
     const { action, index, status, type } = data
@@ -75,7 +159,8 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
       target: '[data-tour="map-view"]',
       content:
         'Interactive reserve map displaying farm zones (amber), protected boundaries (green), communities (purple), sensors, and detection movement trails.',
-      placement: 'right',
+      skipBeacon: true,
+      placement: 'center',
     },
     {
       target: '[data-tour="alert-EVT-1042"]',
@@ -133,6 +218,7 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
       stepIndex={stepIndex}
       onEvent={handleJoyrideEvent}
       continuous
+      loaderComponent={null}
       options={{
         primaryColor: '#059669',
         textColor: '#171717',
@@ -140,6 +226,7 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
         overlayColor: 'rgba(0, 0, 0, 0.45)',
         showProgress: true,
         zIndex: 10000,
+        overlayClickAction: false,
       }}
       styles={{
         buttonPrimary: {
@@ -166,3 +253,4 @@ export default function DemoTour({ runTour, onFinishTour }: DemoTourProps) {
     />
   )
 }
+

@@ -5,6 +5,14 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v0.4.2] — 2026-08-13 — Guided Tour Position & Target Sync Fixes
+
+### Fixed
+
+- Resolved step 2 map tooltip top boundary clipping issue by setting step placement to `'center'`, preventing Floater positioning fallback overflow above the browser viewport top.
+- Fixed step 4 and subsequent step loading spinner and disappearing tour bug by implementing full UI state synchronization (`useEffect`) in `DemoTour`. Guaranteed that target DOM elements (`AlertList`, `AlertPanel`, `SmsSimulator`) are rendered before Joyride targets them when advancing via "Next" or "Back" buttons.
+- Disabled Joyride loader fallback (`loaderComponent={null}`) and set `overlayClickAction: false` to avoid accidental tour cancellation and prevent hanging loading spinners during step transitions.
+
 ## [v0.4.1] — 2026-08-13 — Demo Mode Detection Logging & Expanded Species
 
 ### Added
