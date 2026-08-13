@@ -13,16 +13,11 @@ export interface AuthContextValue {
   serverReachable: boolean
   isBooting: boolean
   errorText: string | null
-  pendingVerification: { email: string } | null
   passwordRecovery: boolean
-  resendCountdown: number
   signedOutNotice: boolean
   signUp: (email: string, password: string, name: string) => Promise<void>
   signIn: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
-  sendVerificationCode: (email: string) => Promise<void>
-  resendCode: () => Promise<void>
-  verifyCode: (email: string, token: string) => Promise<boolean>
   requestPasswordReset: (email: string) => Promise<boolean>
   setNewPassword: (password: string) => Promise<boolean>
   dismissSignedOutNotice: () => void

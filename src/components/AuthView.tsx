@@ -1,12 +1,10 @@
-import { useRef, useState } from 'react'
-import type { ClipboardEvent, FormEvent, KeyboardEvent, ReactNode } from 'react'
+import { useState } from 'react'
+import type { FormEvent, KeyboardEvent } from 'react'
 import { useAuth } from '../auth/authContext'
 import { DEMO_EMAIL, DEMO_PASSWORD, DEMO_MODE_HINT } from '../auth/demoAccount'
 import { isStaySignedIn, setStaySignedIn } from '../auth/storage'
 
 const MIN_PASSWORD = 8
-const MAX_FAILS = 5
-const CODE_LENGTH = 6
 
 const inputCls =
   'w-full rounded-md border border-neutral-300 px-3 py-2 pr-12 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-emerald-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40'
@@ -23,24 +21,11 @@ function BrandLockup() {
   )
 }
 
-function AriaText({ children }: { children: ReactNode }) {
-  return (
-    <span aria-live="polite" className="sr-only">
-      {children}
-    </span>
-  )
-}
-
 function AuthView() {
   const {
     signIn,
     signUp,
-    signOut,
     errorText,
-    pendingVerification,
-    resendCountdown,
-    resendCode,
-    verifyCode,
     requestPasswordReset,
     signedOutNotice,
     dismissSignedOutNotice,
@@ -59,11 +44,6 @@ function AuthView() {
   const [capsLock, setCapsLock] = useState(false)
   const [pwFocused, setPwFocused] = useState(false)
   const [busy, setBusy] = useState(false)
-
-  const [code, setCode] = useState('')
-  const [codeBusy, setCodeBusy] = useState(false)
-  const [failCount, setFailCount] = useState(0)
-  const boxesRef = useRef<(HTMLInputElement | null)[]>([])
 
   const [forgotEmail, setForgotEmail] = useState('')
   const [forgotBusy, setForgotBusy] = useState(false)
@@ -125,85 +105,6 @@ function AuthView() {
     setCapsLock(e.getModifierState?.('CapsLock') ?? false)
   }
 
-  const onDigit = (index: number, raw: string) => {
-    const char = raw.replace(/\D/g, '').slice(-1)
-    if (!char) return
-    const next = code.slice(0, index) + char + code.slice(index + 1)
-    setCode(next)
-    if (index < CODE_LENGTH - 1) boxesRef.current[index + 1]?.focus()
-    if (next.length === CODE_LENGTH && !codeBusy) void submitCode(next)
-  }
-
-  const onDigitKeyDown = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace') {
-      e.preventDefault()
-      const next = code.slice(0, index) + code.slice(index + 1)
-      setCode(next)
-      if (index > 0) boxesRef.current[index - 1]?.focus()
-      else boxesRef.current[0]?.focus()
-    } else if (e.key === 'ArrowLeft' && index > 0) {
-      boxesRef.current[index - 1]?.focus()
-    } else if (e.key === 'ArrowRight' && index < CODE_LENGTH - 1) {
-      boxesRef.current[index + 1]?.focus()
-    }
-  }
-
-  const onCodePaste = (e: ClipboardEvent<HTMLInputElement>) => {
-    const digits = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, CODE_LENGTH)
-    if (digits === '') return
-    e.preventDefault()
-    setCode(digits)
-    if (digits.length === CODE_LENGTH && !codeBusy) void submitCode(digits)
-  }
-
-  const submitCode = async (value: string) => {
-    if (!pendingVerification || codeBusy) return
-    setCodeBusy(true)
-    const ok = await verifyCode(pendingVerification.email, value)
-    setCodeBusy(false)
-    if (!ok) {
-      setFailCount((f) => f + 1)
-      setCode('')
-      boxesRef.current[0]?.focus()
-    }
-  }
-
-  const requestNewCode = async () => {
-    await resendCode()
-    setFailCount(0)
-    setCode('')
-    boxesRef.current[0]?.focus()
-  }
-
-  const backFromCode = async () => {
-    setCode('')
-    setFailCount(0)
-    clearError()
-    await signOut()
-  }
-
-  const tooManyFails = failCount >= MAX_FAILS
-
-  const codeBoxes = Array.from({ length: CODE_LENGTH }, (_, i) => (
-    <input
-      key={i}
-      ref={(el) => {
-        boxesRef.current[i] = el
-      }}
-      id={`code-${i}`}
-      aria-label={`Digit ${i + 1} of ${CODE_LENGTH}`}
-      inputMode="numeric"
-      autoComplete="one-time-code"
-      maxLength={1}
-      value={code[i] ?? ''}
-      disabled={codeBusy || tooManyFails}
-      onChange={(e) => onDigit(i, e.target.value)}
-      onKeyDown={(e) => onDigitKeyDown(i, e)}
-      onPaste={onCodePaste}
-      className="h-12 w-11 rounded-md border border-neutral-300 text-center text-xl font-semibold text-neutral-900 focus:border-emerald-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 disabled:cursor-not-allowed disabled:opacity-50"
-    />
-  ))
-
   const demoCard = (
     <div className="mt-6 rounded-xl border border-neutral-200 bg-neutral-50 p-4">
       <div className="mb-1 text-sm font-bold text-neutral-900">Try the demo</div>
@@ -245,51 +146,7 @@ function AuthView() {
           </div>
         ) : null}
 
-        {pendingVerification ? (
-          <>
-            <h1 className="text-xl font-bold tracking-tight text-neutral-900">Verify your email</h1>
-            <p className="mb-6 mt-1 text-sm leading-relaxed text-neutral-600">
-              We emailed a sign-in link and a 6-digit code to{' '}
-              <span className="font-semibold text-neutral-800">{pendingVerification.email}</span>.
-              Use the link in the email, or enter the code below. Both expire in
-              15 minutes.
-            </p>
-            <AriaText>Verification code sent to {pendingVerification.email}</AriaText>
-
-            <div className="flex justify-between gap-2">{codeBoxes}</div>
-
-            <div
-              role="alert"
-              aria-live="polite"
-              className="mt-3 min-h-[2.5rem] text-xs leading-relaxed text-red-700"
-            >
-              {errorText}
-              {tooManyFails ? 'Too many attempts — request a new code, then try again.' : ''}
-            </div>
-
-            <div className="mt-2 flex items-center justify-between text-xs">
-              <span className="text-neutral-500">Check your spam folder if it takes a moment.</span>
-              <button
-                type="button"
-                onClick={() => void requestNewCode()}
-                disabled={resendCountdown > 0 || codeBusy}
-                className="font-semibold text-emerald-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {resendCountdown > 0 ? `Resend in ${resendCountdown}s` : 'Resend code'}
-              </button>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => void backFromCode()}
-              disabled={codeBusy}
-              className="mt-4 w-full rounded-md border border-neutral-300 px-4 py-2 text-sm font-semibold text-neutral-600 transition-colors hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Back to sign in
-            </button>
-            {demoCard}
-          </>
-        ) : step === 'forgot' || step === 'forgot-sent' ? (
+        {step === 'forgot' || step === 'forgot-sent' ? (
           <>
             <h1 className="text-xl font-bold tracking-tight text-neutral-900">Reset your password</h1>
             <p className="mb-6 mt-1 text-sm leading-relaxed text-neutral-600">

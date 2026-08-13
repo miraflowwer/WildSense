@@ -6,7 +6,7 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import type { Session, User } from '@supabase/supabase-js'
+import { isAuthApiError, type Session, type User } from '@supabase/supabase-js'
 import { supabase } from './supabase'
 import { DEMO_EMAIL, isDemoCredentials } from './demoAccount'
 import { clearStaySignedIn, isRememberedSessionExpired, isStaySignedIn } from './storage'
@@ -18,7 +18,7 @@ import {
 } from './authContext'
 
 const UNREACHABLE_MESSAGE = 'Server unreachable — check your connection and try again.'
-const WRONG_CODE_MESSAGE = "That code didn't match — check the email and try again."
+const SESSION_VALIDATION_TIMEOUT_MS = 8000
 const DEMO_USER: AuthUser = { email: DEMO_EMAIL, name: 'Ranger Demo' }
 
 function displayName(u: User): string {
@@ -34,61 +34,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [serverReachable, setServerReachable] = useState(true)
   const [isBooting, setIsBooting] = useState(true)
   const [errorText, setErrorText] = useState<string | null>(null)
-  const [pendingVerification, setPendingVerification] = useState<{ email: string } | null>(null)
   const [passwordRecovery, setPasswordRecovery] = useState(false)
-  const [resendCountdown, setResendCountdown] = useState(0)
   const [signedOutNotice, setSignedOutNotice] = useState(false)
 
   const mountedRef = useRef(true)
-  const pendingRef = useRef<string | null>(null)
-  const suppressAutoSendRef = useRef(false)
+  const userInitiatedSignOutRef = useRef(false)
 
-  const sendVerificationCode = useCallback(async (email: string) => {
-    if (!supabase) return
-    setErrorText(null)
-    setResendCountdown(60)
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        shouldCreateUser: false,
-        emailRedirectTo: window.location.origin,
-      },
+  const applySession = useCallback((session: Session | null) => {
+    if (!mountedRef.current) return
+    if (!session) {
+      setMode(null)
+      setUser(null)
+      return
+    }
+    const email = (session.user.email ?? '').trim().toLowerCase()
+    if (email === DEMO_EMAIL) {
+      setMode('demo')
+      setUser(DEMO_USER)
+      return
+    }
+    setMode('user')
+    setUser({
+      email: session.user.email ?? session.user.id,
+      name: displayName(session.user),
     })
-    if (error) setErrorText(error.message)
   }, [])
-
-  const applySession = useCallback(
-    (session: Session | null) => {
-      if (!mountedRef.current) return
-      if (!session) {
-        setMode(null)
-        setUser(null)
-        return
-      }
-      const email = (session.user.email ?? '').trim().toLowerCase()
-      if (email === DEMO_EMAIL) {
-        setMode('demo')
-        setUser(DEMO_USER)
-        return
-      }
-      if (session.user.email_confirmed_at == null) {
-        setMode(null)
-        setUser(null)
-        if (!pendingRef.current && !suppressAutoSendRef.current) {
-          void sendVerificationCode(email)
-          pendingRef.current = email
-          setPendingVerification({ email })
-        }
-        return
-      }
-      setMode('user')
-      setUser({
-        email: session.user.email ?? session.user.id,
-        name: displayName(session.user),
-      })
-    },
-    [sendVerificationCode],
-  )
 
   useEffect(() => {
     const db = supabase
@@ -101,10 +71,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const boot = async () => {
       if (isStaySignedIn() && isRememberedSessionExpired()) {
         clearStaySignedIn()
-        await db.auth.signOut()
+        userInitiatedSignOutRef.current = true
+        try {
+          await db.auth.signOut()
+        } finally {
+          userInitiatedSignOutRef.current = false
+        }
       }
       const { data } = await db.auth.getSession()
       if (!mounted) return
+      if (data.session) {
+        let sessionRejected = false
+        let timer: number | undefined
+        try {
+          const timeout = new Promise<never>((_, reject) => {
+            timer = window.setTimeout(
+              () => reject(new Error('Session validation timed out')),
+              SESSION_VALIDATION_TIMEOUT_MS,
+            )
+          })
+          const { error } = await Promise.race([db.auth.getUser(), timeout])
+          sessionRejected = !!error && isAuthApiError(error)
+        } catch {
+          sessionRejected = false
+        } finally {
+          if (timer != null) window.clearTimeout(timer)
+        }
+        if (!mounted) return
+        if (sessionRejected) {
+          userInitiatedSignOutRef.current = true
+          try {
+            clearStaySignedIn()
+            void db.auth.signOut()
+            setMode(null)
+            setUser(null)
+            setSignedOutNotice(true)
+          } finally {
+            userInitiatedSignOutRef.current = false
+          }
+          setIsBooting(false)
+          return
+        }
+      }
       setIsBooting(false)
       applySession(data.session)
     }
@@ -113,11 +121,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (event === 'PASSWORD_RECOVERY') {
         setErrorText(null)
         setPasswordRecovery(true)
-        pendingRef.current = null
-        setPendingVerification(null)
         setMode(null)
         setUser(null)
         return
+      }
+      if (event === 'SIGNED_OUT' && !userInitiatedSignOutRef.current) {
+        setSignedOutNotice(true)
       }
       applySession(session)
     })
@@ -127,12 +136,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       listener.subscription.unsubscribe()
     }
   }, [applySession])
-
-  useEffect(() => {
-    if (resendCountdown <= 0) return
-    const id = window.setInterval(() => setResendCountdown((c) => (c > 0 ? c - 1 : 0)), 1000)
-    return () => window.clearInterval(id)
-  }, [resendCountdown])
 
   const signIn = useCallback(async (email: string, password: string) => {
     setErrorText(null)
@@ -146,100 +149,58 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setErrorText(UNREACHABLE_MESSAGE)
       return
     }
-    suppressAutoSendRef.current = true
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-      if (error) {
-        if (isDemoCredentials(email, password)) {
-          setMode('demo')
-          setUser(DEMO_USER)
-          setServerReachable(false)
-          return
-        }
-        setErrorText(error.message)
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) {
+      if (isDemoCredentials(email, password)) {
+        setMode('demo')
+        setUser(DEMO_USER)
+        setServerReachable(false)
         return
       }
-      setServerReachable(true)
-      if (data.user?.email_confirmed_at == null) {
-        await supabase.auth.signOut()
-        await sendVerificationCode(email)
-        pendingRef.current = email
-        setPendingVerification({ email })
-      }
-    } finally {
-      suppressAutoSendRef.current = false
+      setErrorText(error.message)
+      return
     }
-  }, [sendVerificationCode])
+    setServerReachable(true)
+    // The session flows in via onAuthStateChange → applySession.
+  }, [])
 
-  const signUp = useCallback(
-    async (email: string, password: string, name: string) => {
-      setErrorText(null)
-      if (!supabase) {
-        setErrorText(UNREACHABLE_MESSAGE)
-        return
-      }
-suppressAutoSendRef.current = true
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { full_name: name } },
-      })
-      if (error) {
-        setErrorText(error.message)
-        return
-      }
-      await supabase.auth.signOut()
-      pendingRef.current = email
-      setPendingVerification({ email })
-      await sendVerificationCode(email)
-    } finally {
-      suppressAutoSendRef.current = false
+  const signUp = useCallback(async (email: string, password: string, name: string) => {
+    setErrorText(null)
+    if (!supabase) {
+      setErrorText(UNREACHABLE_MESSAGE)
+      return
     }
-  },
-    [sendVerificationCode],
-  )
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: name } },
+    })
+    if (error) {
+      setErrorText(error.message)
+      return
+    }
+    // Email confirmation is removed: with "Confirm email" OFF in the dashboard,
+    // signUp returns a session and the SIGNED_IN event signs the user in.
+    if (!data.session) {
+      setErrorText('Sign-up did not complete — "Confirm email" must be OFF in the Supabase dashboard.')
+      return
+    }
+  }, [])
 
   const signOut = useCallback(async () => {
     setErrorText(null)
     setMode(null)
     setUser(null)
     clearStaySignedIn()
-    pendingRef.current = null
-    setPendingVerification(null)
     setPasswordRecovery(false)
     setSignedOutNotice(true)
-    if (supabase) await supabase.auth.signOut()
+    userInitiatedSignOutRef.current = true
+    try {
+      if (supabase) await supabase.auth.signOut()
+    } finally {
+      userInitiatedSignOutRef.current = false
+    }
   }, [])
-
-  const resendCode = useCallback(async () => {
-    if (!pendingRef.current) return
-    await sendVerificationCode(pendingRef.current)
-  }, [sendVerificationCode])
-
-  const verifyCode = useCallback(
-    async (email: string, token: string) => {
-      if (!supabase) {
-        setErrorText(UNREACHABLE_MESSAGE)
-        return false
-      }
-      setErrorText(null)
-      const { data, error } = await supabase.auth.verifyOtp({
-        email,
-        token,
-        type: 'email',
-      })
-      if (error) {
-        setErrorText(WRONG_CODE_MESSAGE)
-        return false
-      }
-      pendingRef.current = null
-      setPendingVerification(null)
-      if (data.session) applySession(data.session)
-      return true
-    },
-    [applySession],
-  )
 
   const requestPasswordReset = useCallback(async (email: string) => {
     setErrorText(null)
@@ -283,16 +244,11 @@ suppressAutoSendRef.current = true
       serverReachable,
       isBooting,
       errorText,
-      pendingVerification,
       passwordRecovery,
-      resendCountdown,
       signedOutNotice,
       signUp,
       signIn,
       signOut,
-      sendVerificationCode,
-      resendCode,
-      verifyCode,
       requestPasswordReset,
       setNewPassword,
       dismissSignedOutNotice,
@@ -304,16 +260,11 @@ suppressAutoSendRef.current = true
       serverReachable,
       isBooting,
       errorText,
-      pendingVerification,
       passwordRecovery,
-      resendCountdown,
       signedOutNotice,
       signUp,
       signIn,
       signOut,
-      sendVerificationCode,
-      resendCode,
-      verifyCode,
       requestPasswordReset,
       setNewPassword,
       dismissSignedOutNotice,
