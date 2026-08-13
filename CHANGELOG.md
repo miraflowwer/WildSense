@@ -5,6 +5,13 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v0.3.2] — 2026-08-13 — Demo mode server reachability fix
+
+### Fixed
+
+- Resolved issue where signing in with demo credentials (`demo@gahm.org`) incorrectly set `serverReachable` to `false` even when Supabase backend was reachable, causing the "Server unreachable — demo mode" banner to appear erroneously.
+- Updated `AuthProvider` error handling to distinguish between Supabase API responses (`isAuthApiError`) and actual network connection failures.
+
 ## [v0.3.1] — 2026-08-13 — Supabase project update & security hardening
 
 ### Changed

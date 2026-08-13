@@ -63,6 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const db = supabase
     if (!db) {
+      setServerReachable(false)
       setIsBooting(false)
       return
     }
@@ -78,9 +79,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           userInitiatedSignOutRef.current = false
         }
       }
-      const { data } = await db.auth.getSession()
+      const { data, error: sessionError } = await db.auth.getSession()
       if (!mounted) return
-      if (data.session) {
+      if (sessionError && !isAuthApiError(sessionError)) {
+        setServerReachable(false)
+      } else {
+        setServerReachable(true)
+      }
+      if (data?.session) {
         let sessionRejected = false
         let timer: number | undefined
         try {
@@ -92,6 +98,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           })
           const { error } = await Promise.race([db.auth.getUser(), timeout])
           sessionRejected = !!error && isAuthApiError(error)
+          if (error && !isAuthApiError(error)) {
+            setServerReachable(false)
+          }
         } catch {
           sessionRejected = false
         } finally {
@@ -114,7 +123,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
       setIsBooting(false)
-      applySession(data.session)
+      applySession(data?.session ?? null)
     }
     void boot()
     const { data: listener } = db.auth.onAuthStateChange((event, session) => {
@@ -154,10 +163,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (isDemoCredentials(email, password)) {
         setMode('demo')
         setUser(DEMO_USER)
-        setServerReachable(false)
+        setServerReachable(isAuthApiError(error))
         return
       }
-      setErrorText(error.message)
+      if (!isAuthApiError(error)) {
+        setServerReachable(false)
+        setErrorText(UNREACHABLE_MESSAGE)
+      } else {
+        setServerReachable(true)
+        setErrorText(error.message)
+      }
       return
     }
     setServerReachable(true)
@@ -176,9 +191,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       options: { data: { full_name: name } },
     })
     if (error) {
-      setErrorText(error.message)
+      if (!isAuthApiError(error)) {
+        setServerReachable(false)
+        setErrorText(UNREACHABLE_MESSAGE)
+      } else {
+        setServerReachable(true)
+        setErrorText(error.message)
+      }
       return
     }
+    setServerReachable(true)
     // Email confirmation is removed: with "Confirm email" OFF in the dashboard,
     // signUp returns a session and the SIGNED_IN event signs the user in.
     if (!data.session) {
@@ -212,9 +234,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       redirectTo: window.location.origin,
     })
     if (error) {
-      setErrorText(error.message)
+      if (!isAuthApiError(error)) {
+        setServerReachable(false)
+        setErrorText(UNREACHABLE_MESSAGE)
+      } else {
+        setServerReachable(true)
+        setErrorText(error.message)
+      }
       return false
     }
+    setServerReachable(true)
     setSignedOutNotice(false)
     return true
   }, [])
@@ -227,9 +256,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     const { error } = await supabase.auth.updateUser({ password })
     if (error) {
-      setErrorText(error.message)
+      if (!isAuthApiError(error)) {
+        setServerReachable(false)
+        setErrorText(UNREACHABLE_MESSAGE)
+      } else {
+        setServerReachable(true)
+        setErrorText(error.message)
+      }
       return false
     }
+    setServerReachable(true)
     setPasswordRecovery(false)
     return true
   }, [])
