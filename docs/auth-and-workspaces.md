@@ -1,12 +1,9 @@
 # Auth & User Workspaces
 
-_Audience: developers. The agreed
-security plan lives in
-[`docs/implementations/improved-auth-security.md`](../../docs/implementations/improved-auth-security.md)
-(read it before touching `src/auth/`); the historical backend plan is in
-[`docs/implementations/auth-and-user-workspaces.md`](../../docs/implementations/auth-and-user-workspaces.md)
-and the boot-session validation in
-[`docs/implementations/boot-session-validation.md`](../../docs/implementations/boot-session-validation.md)._
+_Audience: developers. This is the versioned record of GAHM's auth design:
+two modes, stay-signed-in, per-account workspaces, and boot session validation.
+The team's detailed security plans live in the workspace docs outside this
+repo; if this document ever disagrees with `src/auth/`, **the code wins**._
 
 ## Two modes
 
@@ -26,8 +23,7 @@ screen exposes them through the "Try the demo" card.
 - **Boot**: if "stay signed in" is on but the 30-day window expired, the flag is
   cleared and the session signed out. The existing session is then validated via
   `getUser()` with an 8-second timeout; a rejected (deleted-account) session is
-  signed out with a notice instead of flashing stale state — see
-  `boot-session-validation.md`.
+  signed out with a notice instead of flashing stale state.
 - **Mode mapping**: email `demo@gahm.org` → `mode: 'demo'` (synthetic in-browser
   scenario, nothing persisted); any other account → `mode: 'user'` (backend
   workspace).
@@ -37,11 +33,10 @@ screen exposes them through the "Try the demo" card.
   configuration error.
 - **Forgot password**: `resetPasswordForEmail` with `redirectTo: window.location.origin`
   → Supabase fires `PASSWORD_RECOVERY` → the app shows `SetPassword` →
-  `updateUser({ password })`. The email template is customized via Brevo SMTP
-  (see `personalized-signin-email.md`).
+  `updateUser({ password })`. The email template is customized via Brevo SMTP.
 - **Sign-out** clears the stay-signed-in flag and surfaces a signed-out notice.
 - **Error hygiene**: the context exposes `clearError()` so views can clear stale
-  cross-view errors (see `demo-polish-2026-08-13.md`).
+  cross-view errors on view switches.
 
 ## Stay signed in (`src/auth/storage.ts`)
 

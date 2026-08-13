@@ -1,8 +1,7 @@
 # GAHM in Plain Language
 
 _Audience: users, judges, mentors, and anyone new to the project — no code
-required. For the full product spec, see
-[`docs/implementations/initializations.md`](../../docs/implementations/initializations.md)._
+required._
 
 ## The problem
 

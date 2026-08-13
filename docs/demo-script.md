@@ -2,9 +2,8 @@
 
 _Audience: demo-day presenters. Goal: the full detection → decision workflow in
 **under one minute**, ending on the contrast that makes the product memorable.
-The official scenario is documented in
-[`docs/implementations/initializations.md`](../../docs/implementations/initializations.md)
-(§ Demo-Day Scenario)._
+The scenario is the scripted 8-event demo built into the app (see
+[`data-model.md`](data-model.md) and `src/data/demoData.ts`)._
 
 ## Before you start
 
@@ -71,5 +70,5 @@ Total ≈ 1 minute. Slow sections at will — the flow is the story.
 | Why these weights (25/20/15/…)? | Interpretable, transparent weights chosen to reflect each signal's contribution to conflict likelihood; thresholds are configurable per reserve (the code is the source of truth: `src/engine/config.ts`). |
 | How do you handle bad data? | The uncertainty penalty lowers the score and the panel explains why — EVT-1045 demonstrates exactly that. |
 | Privacy? | Warnings never include exact wildlife coordinates, are short, local-language (English + Hindi), low-literacy friendly, with opt-out; alerts are never prioritized by farm size. The design is aligned with India's DPDP Act 2023 (consent, data minimization) and the Wildlife (Protection) Act 1972 (non-lethal, Schedule I protection). |
-| What would a pilot look like? | Phase 2 in the plan: one partner site, real detection feed, locally calibrated thresholds, community consent (see `initializations.md` §6). |
+| What would a pilot look like? | The natural next phase after the demo: one partner reserve, a real detection feed, locally calibrated thresholds, and community prior consent. |
 

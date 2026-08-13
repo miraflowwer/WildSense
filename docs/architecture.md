@@ -1,7 +1,11 @@
 # Architecture
 
-_Audience: developers. Pairs with the product spec in
-[`docs/implementations/initializations.md`](../../docs/implementations/initializations.md)._
+_Audience: developers. Pairs with
+[`risk-algorithm.md`](risk-algorithm.md) (the scoring model),
+[`data-model.md`](data-model.md) (state and persistence), and
+[`auth-and-workspaces.md`](auth-and-workspaces.md). Every claim here is
+verifiable against `src/`; if this document disagrees with the code, the code
+wins._
 
 ## Stack
 
