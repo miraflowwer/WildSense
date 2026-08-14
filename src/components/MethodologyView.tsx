@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import frontlineStaffingImg from '../img/frontline_staffing.png'
 import bandipurSurveyImg from '../img/bandipur_survey.png'
+import logoImg from '../img/logo.png'
 import { Latex } from './Latex'
 
 interface MethodologyViewProps {
@@ -36,9 +37,12 @@ export default function MethodologyView({ onBack }: MethodologyViewProps) {
               <span>Back to Overview</span>
             </button>
             <div className="hidden sm:block h-5 w-px bg-[#E8E2D5]" />
-            <div className="hidden sm:flex flex-col">
-              <span className="text-sm font-extrabold text-[#123524]">Scientific Methodology &amp; Research</span>
-              <span className="text-xs font-bold text-[#C05621]">Empirical Foundation · India Corridor Focus</span>
+            <div className="hidden sm:flex items-center gap-2.5">
+              <img src={logoImg} alt="WildSense Logo" className="h-8 w-8 object-contain rounded-lg shrink-0 shadow-2xs" />
+              <div className="flex flex-col">
+                <span className="text-sm font-extrabold text-[#123524] leading-tight">Scientific Methodology &amp; Research</span>
+                <span className="text-xs font-bold text-[#C05621] leading-tight">Empirical Foundation · India Corridor Focus</span>
+              </div>
             </div>
           </div>
 
@@ -70,7 +74,8 @@ export default function MethodologyView({ onBack }: MethodologyViewProps) {
       <section id="overview" className="border-b border-[#E8E2D5] bg-gradient-to-b from-[#123524] to-[#1B4D3E] px-4 py-14 text-white sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl space-y-4 text-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/30 bg-white/10 px-4 py-1 text-xs font-bold tracking-wide text-amber-200 backdrop-blur-xs">
-            <span>🔬 Scientific Rationale &amp; Empirical Literature</span>
+            <img src={logoImg} alt="" className="h-4 w-4 object-contain rounded-sm" aria-hidden="true" />
+            <span>Scientific Rationale &amp; Empirical Literature</span>
           </div>
           <h1 className="text-3xl font-black tracking-tight sm:text-5xl leading-tight">
             Predictive Conflict Mitigation <br />
@@ -667,8 +672,9 @@ export default function MethodologyView({ onBack }: MethodologyViewProps) {
 
         {/* Back to Overview Bottom Bar */}
         <div className="border-t border-[#E8E2D5] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="text-xs text-neutral-500">
-            WildSense Scientific Whitepaper &amp; Methodology Specification &middot; GAHM
+          <div className="flex items-center gap-2.5 text-xs text-neutral-600">
+            <img src={logoImg} alt="WildSense Logo" className="h-5 w-5 object-contain rounded-md shrink-0 opacity-80" />
+            <span>WildSense Scientific Whitepaper &amp; Methodology Specification &middot; GAHM</span>
           </div>
           <button
             type="button"

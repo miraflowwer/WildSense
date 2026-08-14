@@ -5,6 +5,7 @@ import { insertSmsLog } from '../auth/api'
 import { useI18n } from '../i18n/I18nContext'
 import { LOCALE_IDS } from '../i18n'
 import { communities } from '../data/demoData'
+import logoImg from '../img/logo.png'
 
 type SmsLang = 'en' | 'hi' | 'kn' | 'ta'
 
@@ -110,11 +111,14 @@ function SmsSimulator() {
     <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 p-4">
       <div data-tour="sms-modal" className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-xl bg-white p-5 shadow-2xl">
         <div className="mb-3 flex items-start justify-between">
-          <div>
-            <h3 className="text-base font-bold text-neutral-900">{t('sms.title')}</h3>
-            <p className="text-xs text-neutral-500">
-              {t('sms.zone', { zone: event.sensor_zone, id: event.event_id })}
-            </p>
+          <div className="flex items-center gap-3">
+            <img src={logoImg} alt="WildSense Logo" className="h-9 w-9 object-contain rounded-lg shadow-2xs shrink-0" />
+            <div>
+              <h3 className="text-base font-bold text-neutral-900 leading-tight">{t('sms.title')}</h3>
+              <p className="text-xs text-neutral-500">
+                {t('sms.zone', { zone: event.sensor_zone, id: event.event_id })}
+              </p>
+            </div>
           </div>
           <button
             type="button"

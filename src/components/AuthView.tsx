@@ -6,6 +6,7 @@ import { DEMO_EMAIL, DEMO_PASSWORD } from '../auth/demoAccount'
 import { isStaySignedIn, setStaySignedIn } from '../auth/storage'
 import { useI18n } from '../i18n/I18nContext'
 import LanguageSwitcher from './LanguageSwitcher'
+import logoImg from '../img/logo.png'
 
 const MIN_PASSWORD = 8
 
@@ -16,10 +17,13 @@ const labelCls = 'mb-1 block text-[11px] font-semibold uppercase tracking-widest
 function BrandLockup() {
   const { t } = useI18n()
   return (
-    <div className="mb-6">
-      <div className="mb-1 text-3xl font-bold tracking-tight text-neutral-900">WildSense</div>
-      <div className="text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
-        {t('app.brandTagline')}
+    <div className="mb-6 flex items-center gap-3.5">
+      <img src={logoImg} alt="WildSense Logo" className="h-12 w-12 object-contain rounded-xl shadow-xs shrink-0" />
+      <div>
+        <div className="text-2xl font-bold tracking-tight text-neutral-900 leading-tight">WildSense</div>
+        <div className="text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
+          {t('app.brandTagline')}
+        </div>
       </div>
     </div>
   )

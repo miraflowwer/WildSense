@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useI18n } from '../i18n/I18nContext'
+import logoImg from '../img/logo.png'
 
 interface RiskExplanationModalProps {
   onClose: () => void
@@ -26,16 +27,19 @@ export default function RiskExplanationModal({ onClose }: RiskExplanationModalPr
       >
         {/* Header */}
         <div className="flex items-start justify-between border-b border-neutral-200 pb-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="rounded-md bg-emerald-100 px-2 py-0.5 text-xs font-extrabold uppercase tracking-wider text-emerald-800">
-                {t('riskExplain.badge')}
-              </span>
-              <span className="text-xs font-medium text-neutral-500">{t('riskExplain.sdg')}</span>
+          <div className="flex items-center gap-3">
+            <img src={logoImg} alt="WildSense Logo" className="h-10 w-10 object-contain rounded-xl shadow-2xs shrink-0" />
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="rounded-md bg-emerald-100 px-2 py-0.5 text-xs font-extrabold uppercase tracking-wider text-emerald-800">
+                  {t('riskExplain.badge')}
+                </span>
+                <span className="text-xs font-medium text-neutral-500">{t('riskExplain.sdg')}</span>
+              </div>
+              <h2 id="risk-explanation-title" className="mt-1 text-xl font-black tracking-tight text-neutral-900">
+                {t('riskExplain.title')}
+              </h2>
             </div>
-            <h2 id="risk-explanation-title" className="mt-1 text-xl font-black tracking-tight text-neutral-900">
-              {t('riskExplain.title')}
-            </h2>
           </div>
           <button
             type="button"

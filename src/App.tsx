@@ -19,6 +19,7 @@ import LanguageSwitcher from './components/LanguageSwitcher'
 import EthicsModal from './components/EthicsModal'
 import RiskExplanationModal from './components/RiskExplanationModal'
 import AuthView from './components/AuthView'
+import logoImg from './img/logo.png'
 
 const MapView = lazy(() => import('./components/MapView'))
 const NewDetectionForm = lazy(() => import('./components/NewDetectionForm'))
@@ -150,8 +151,11 @@ function App() {
 
   if (isBooting) {
     return (
-      <div className="flex h-dvh items-center justify-center bg-neutral-900 text-white">
-        {t('app.boot')}
+      <div className="flex h-dvh flex-col items-center justify-center gap-4 bg-neutral-950 text-white">
+        <img src={logoImg} alt="WildSense Logo" className="h-16 w-16 animate-pulse object-contain rounded-2xl shadow-xl" />
+        <div className="text-sm font-semibold tracking-wide text-neutral-300">
+          {t('app.boot')}
+        </div>
       </div>
     )
   }
@@ -207,9 +211,10 @@ function App() {
               type="button"
               onClick={() => setShowLanding(true)}
               aria-label={t('app.brandAria')}
-              className="text-base font-extrabold tracking-tight text-white transition-colors hover:text-emerald-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 sm:text-lg"
+              className="group flex items-center gap-2.5 rounded-lg py-1 px-1 -ml-1 text-base font-extrabold tracking-tight text-white transition-colors hover:text-emerald-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 sm:text-lg"
             >
-              WildSense
+              <img src={logoImg} alt="WildSense Logo" className="h-7 w-7 object-contain rounded-lg shadow-xs shrink-0 transition-transform group-hover:scale-105" />
+              <span>WildSense</span>
             </button>
             <span className="hidden text-xs font-medium text-neutral-400 sm:inline">
               {t('app.brandTagline')}

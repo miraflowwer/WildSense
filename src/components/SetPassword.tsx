@@ -4,6 +4,7 @@ import { useAuth } from '../auth/authContext'
 import { UNREACHABLE_MESSAGE } from '../auth/AuthProvider'
 import { useI18n } from '../i18n/I18nContext'
 import LanguageSwitcher from './LanguageSwitcher'
+import logoImg from '../img/logo.png'
 
 const MIN_PASSWORD = 8
 
@@ -40,10 +41,13 @@ function SetPassword() {
   return (
     <div className="flex h-dvh items-center justify-center overflow-hidden bg-neutral-900 p-4">
       <div data-lenis-prevent className="max-h-[85vh] w-full max-w-md overflow-y-auto overscroll-contain rounded-2xl bg-white p-4 shadow-2xl sm:p-6">
-        <div className="mb-6">
-          <div className="mb-1 text-3xl font-bold tracking-tight text-neutral-900">WildSense</div>
-          <div className="text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
-            {t('app.brandTagline')}
+        <div className="mb-6 flex items-center gap-3.5">
+          <img src={logoImg} alt="WildSense Logo" className="h-12 w-12 object-contain rounded-xl shadow-xs shrink-0" />
+          <div>
+            <div className="text-2xl font-bold tracking-tight text-neutral-900 leading-tight">WildSense</div>
+            <div className="text-[11px] font-semibold uppercase tracking-widest text-neutral-400">
+              {t('app.brandTagline')}
+            </div>
           </div>
         </div>
 

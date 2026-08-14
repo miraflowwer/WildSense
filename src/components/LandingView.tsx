@@ -15,6 +15,7 @@ import EthicsModal from './EthicsModal'
 import MethodologyView from './MethodologyView'
 import frontlineStaffingImg from '../img/frontline_staffing.png'
 import bandipurSurveyImg from '../img/bandipur_survey.png'
+import logoImg from '../img/logo.png'
 import { Latex } from './Latex'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -329,11 +330,12 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* Brand Lockup with Full Name */}
           <div className="flex items-center gap-3">
+            <img src={logoImg} alt="WildSense Logo" className="h-10 w-10 sm:h-11 sm:w-11 object-contain rounded-xl shadow-xs shrink-0" />
             <div className="flex flex-col">
-              <span className="text-xl font-extrabold tracking-tight text-[#123524] sm:text-2xl">
+              <span className="text-xl font-extrabold tracking-tight text-[#123524] sm:text-2xl leading-none">
                 WildSense
               </span>
-              <span className="text-sm font-bold text-[#C05621]">
+              <span className="text-xs sm:text-sm font-bold text-[#C05621] leading-tight">
                 Wildlife Conflict Risk Engine · by GAHM
               </span>
             </div>
@@ -395,8 +397,9 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
       <main className="relative z-10 mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 space-y-20">
         {/* Section 1: Hero Section */}
         <section ref={heroRef} className="relative pt-6 text-center lg:pt-14 space-y-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#123524]/20 bg-white/80 backdrop-blur-xs px-4 py-1.5 text-sm font-bold text-[#123524] shadow-xs">
-            <span>🌿 WildSense: Wildlife Conflict Risk Engine · by GAHM</span>
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#123524]/20 bg-white/90 backdrop-blur-xs px-4 py-1.5 text-sm font-bold text-[#123524] shadow-xs">
+            <img src={logoImg} alt="" className="h-4 w-4 object-contain rounded-sm" aria-hidden="true" />
+            <span>WildSense: Wildlife Conflict Risk Engine · by GAHM</span>
           </div>
 
           <h1 className="mx-auto max-w-4xl text-3xl font-black tracking-tight text-[#123524] sm:text-5xl lg:text-6xl leading-[1.15]">
@@ -1610,7 +1613,7 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
             </div>
           </div>
 
-          <div className="border-t border-[#E8E2D5] pt-8 text-sm text-neutral-500 space-y-2">
+          <div className="border-t border-[#E8E2D5] pt-8 text-sm text-neutral-500 space-y-2.5">
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs font-semibold text-[#123524]">
               <button
                 type="button"
@@ -1628,8 +1631,9 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
                 Ethics &amp; Legal Charter
               </button>
             </div>
-            <div>
-              WildSense — Wildlife Conflict Risk Engine · by GAHM (Global Actions on Habitats and Marines) · Teens in AI Incubator 2026
+            <div className="flex items-center justify-center gap-2">
+              <img src={logoImg} alt="WildSense Logo" className="h-5 w-5 object-contain rounded-md shrink-0 opacity-80" />
+              <span>WildSense — Wildlife Conflict Risk Engine · by GAHM (Global Actions on Habitats and Marines) · Teens in AI Incubator 2026</span>
             </div>
             <div>
               Built by Team GAHM — Harima K. (Project Lead) · Mathew M. (Prototype Lead) · Gabriel L. (Technical Lead)

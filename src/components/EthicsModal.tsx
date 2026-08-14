@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import logoImg from '../img/logo.png'
 
 interface EthicsModalProps {
   onClose: () => void
@@ -17,11 +18,14 @@ export default function EthicsModal({ onClose }: EthicsModalProps) {
     <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
       <div data-lenis-prevent className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl space-y-4">
         <div className="flex items-start justify-between border-b border-neutral-100 pb-3">
-          <div>
-            <h2 className="text-lg font-bold text-neutral-900">Ethics &amp; Legal Compliance Charter</h2>
-            <p className="text-xs text-neutral-500">
-              Responsible AI Principles &amp; Statutory Indian Legal Framework
-            </p>
+          <div className="flex items-center gap-3">
+            <img src={logoImg} alt="WildSense Logo" className="h-10 w-10 object-contain rounded-xl shadow-2xs shrink-0" />
+            <div>
+              <h2 className="text-lg font-bold text-neutral-900 leading-tight">Ethics &amp; Legal Compliance Charter</h2>
+              <p className="text-xs text-neutral-500">
+                Responsible AI Principles &amp; Statutory Indian Legal Framework
+              </p>
+            </div>
           </div>
           <button
             type="button"
