@@ -340,6 +340,17 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
 
             <button
               type="button"
+              onClick={() => setShowEthics(true)}
+              className="hidden md:inline-flex items-center gap-1.5 rounded-xl border border-[#E8E2D5] bg-white px-3.5 py-2 text-sm font-bold text-[#123524] shadow-2xs transition-all hover:bg-[#F6F2EA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#123524]"
+            >
+              <svg className="h-4 w-4 text-emerald-800 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+              </svg>
+              <span>Ethics Charter</span>
+            </button>
+
+            <button
+              type="button"
               onClick={handleOpenMethodology}
               className="hidden md:inline-flex items-center gap-1.5 rounded-xl border border-[#E8E2D5] bg-white px-3.5 py-2 text-sm font-bold text-[#123524] shadow-2xs transition-all hover:bg-[#F6F2EA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#123524]"
             >

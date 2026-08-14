@@ -5,6 +5,13 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v1.6.1] — 2026-08-14 — Header Ethics Charter Action & Methodology Sub-Navigation Polish
+
+### Added
+
+- **Top Header Ethics Charter Button (`LandingView.tsx`)** — added a prominent "Ethics Charter" action button with a shield icon directly into the sticky top navigation header, opening the comprehensive WLPA 1972 (§9) & DPDP Act 2023 (§6) statutory compliance charter modal with full backdrop blur and Lenis scroll prevention.
+- **Methodology Sub-Navigation & Active Scroll Tracking (`MethodologyView.tsx`)** — implemented programmatic smooth scrolling with dynamic active tab highlights and `scroll-mt-24` offsets across all 6 scientific paper sections (*Overview*, *Field Figures*, *Telemetry Layers*, *7 Signals*, *Indian Law*, *Bibliography*).
+
 ## [v1.6.0] — 2026-08-14 — Header SMS Early Warnings Button & Interactive Public Community Map View
 
 ### Added
