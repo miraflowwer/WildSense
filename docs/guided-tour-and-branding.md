@@ -153,3 +153,9 @@ The official high-resolution transparent WildSense brand logo (`src/img/logo.png
    - Sticky breadcrumb header, research pill badge, and whitepaper footer bar.
 6. **Key Dialog Modals** (`EthicsModal.tsx`, `RiskExplanationModal.tsx`, `SmsSimulator.tsx`):
    - Headers styled consistently with the brand mark.
+
+### Step 2 Map Spotlight & Interactivity (v1.7.1, 2026-08-14)
+
+Step 2 of the guided tour (`[data-tour="map-view"]`) was updated to provide a superior demo experience:
+1. **Side Tooltip Placement** (`DemoTour.tsx`): Placement updated from `'center'` to `'right'`. This eliminates blocking the center of the reserve map where key corridor villages (Beechanahalli, Hangala) and animal trails (EVT-1042) are situated.
+2. **Spotlight Mask & Full Interactivity** (`index.css`): With `[data-tour="map-view"]` targeted and placement on the side, Joyride renders a clear spotlight cutout over the entire map with the rest of the workspace dimmed. Active lockdown CSS exemptions were added for `.leaflet-container`, `.leaflet-pane`, `.leaflet-interactive`, `.leaflet-control`, and grab cursors so presenters can pan, zoom, click detection markers, and hover freely during Step 2.

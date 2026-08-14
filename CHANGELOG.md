@@ -5,6 +5,13 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v1.7.1] — 2026-08-14 — Demo Tour Step 2 Map Spotlight Highlight, Side Placement & Interactivity
+
+### Enhanced
+
+- **Demo Tour Step 2 Map Highlight & Side Tooltip Placement (`DemoTour.tsx`)** — updated Step 2 (`[data-tour="map-view"]`) tooltip placement from `'center'` to `'right'`. The entire interactive reserve map is now cleanly spotlighted and highlighted with surrounding panels dimmed, while the tooltip sits at the side of the map rather than obstructing the central corridor villages and animal trails.
+- **Interactive Map Lockdown Exemption & Pointer Support (`index.css`)** — enabled full Leaflet map interactivity during the guided tour when the map is spotlighted. Overrode tour lockdown rules for `.leaflet-container`, `.leaflet-pane`, `.leaflet-interactive`, `.leaflet-control`, and grab/grabbing cursors, enabling users to pan, zoom, click detection markers, and explore the reserve map seamlessly during Step 2.
+
 ## [v1.7.0] — 2026-08-14 — Cinematic Wildlife Video Background & Hero Wave Divider
 
 ### Added

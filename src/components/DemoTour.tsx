@@ -31,7 +31,7 @@ const STEPS: Step[] = [
     ),
     skipBeacon: true,
     skipScroll: true,
-    placement: 'center',
+    placement: 'right',
   },
   {
     target: '[data-tour="alert-EVT-1042"]',

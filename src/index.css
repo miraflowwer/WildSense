@@ -56,3 +56,34 @@ body.tour-active [data-tour-active] [role="button"],
 #react-joyride-portal [role="button"] {
   cursor: pointer !important;
 }
+
+/* Ensure Leaflet map is fully interactive and has proper cursors when active in tour */
+body.tour-active [data-tour-active].leaflet-container,
+body.tour-active [data-tour-active] .leaflet-container,
+body.tour-active [data-tour-active] .leaflet-pane,
+body.tour-active [data-tour-active] .leaflet-pane *,
+body.tour-active [data-tour-active] .leaflet-tile-pane,
+body.tour-active [data-tour-active] .leaflet-overlay-pane,
+body.tour-active [data-tour-active] .leaflet-marker-pane,
+body.tour-active [data-tour-active] .leaflet-interactive,
+body.tour-active [data-tour-active] .leaflet-control,
+body.tour-active [data-tour-active] .leaflet-control * {
+  pointer-events: auto !important;
+}
+
+body.tour-active [data-tour-active] .leaflet-interactive,
+body.tour-active [data-tour-active] .leaflet-control a,
+body.tour-active [data-tour-active] .leaflet-control button {
+  cursor: pointer !important;
+}
+
+body.tour-active [data-tour-active].leaflet-grab,
+body.tour-active [data-tour-active] .leaflet-grab,
+body.tour-active [data-tour-active].leaflet-container {
+  cursor: grab !important;
+}
+
+body.tour-active [data-tour-active].leaflet-grabbing,
+body.tour-active [data-tour-active] .leaflet-grabbing {
+  cursor: grabbing !important;
+}
