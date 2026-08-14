@@ -396,10 +396,24 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
       {/* Main Content Container */}
       <main className="relative z-10 mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 space-y-20">
         {/* Section 1: Hero Section */}
-        <section ref={heroRef} className="relative pt-6 text-center lg:pt-14 space-y-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#123524]/20 bg-white/90 backdrop-blur-xs px-4 py-1.5 text-sm font-bold text-[#123524] shadow-xs">
-            <img src={logoImg} alt="" className="h-4 w-4 object-contain rounded-sm" aria-hidden="true" />
-            <span>WildSense: Wildlife Conflict Risk Engine · by GAHM</span>
+        <section ref={heroRef} className="relative pt-4 text-center lg:pt-10 space-y-6">
+          {/* Prominent Hero Logo Showcase */}
+          <div className="flex flex-col items-center justify-center gap-3.5">
+            <div className="relative group">
+              <div className="absolute -inset-2 rounded-3xl bg-gradient-to-r from-emerald-600/25 via-amber-500/20 to-emerald-600/25 blur-xl opacity-75 transition-all duration-500 group-hover:opacity-100 group-hover:blur-2xl" />
+              <div className="relative flex h-24 w-24 sm:h-28 sm:w-28 items-center justify-center rounded-3xl border border-[#E8E2D5] bg-white p-3.5 shadow-xl backdrop-blur-md transition-transform duration-300 group-hover:scale-105">
+                <img
+                  src={logoImg}
+                  alt="WildSense Brand Logo"
+                  className="h-full w-full object-contain drop-shadow-sm"
+                />
+              </div>
+            </div>
+
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-[#123524]/20 bg-white/90 backdrop-blur-xs px-4 py-1.5 text-sm font-bold text-[#123524] shadow-xs">
+              <span className="flex h-2 w-2 rounded-full bg-emerald-600 animate-pulse" />
+              <span>WildSense: Wildlife Conflict Risk Engine · by GAHM</span>
+            </div>
           </div>
 
           <h1 className="mx-auto max-w-4xl text-3xl font-black tracking-tight text-[#123524] sm:text-5xl lg:text-6xl leading-[1.15]">
