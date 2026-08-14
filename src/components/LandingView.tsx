@@ -46,6 +46,21 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
   const [corridorActivity, setCorridorActivity] = useState<CorridorActivityZone[]>([])
   const [activityLastUpdated, setActivityLastUpdated] = useState<Date>(() => new Date())
 
+  // Video Background State & Ref
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [isVideoPlaying, setIsVideoPlaying] = useState(true)
+
+  const toggleVideoPlay = () => {
+    if (!videoRef.current) return
+    if (videoRef.current.paused) {
+      void videoRef.current.play()
+      setIsVideoPlaying(true)
+    } else {
+      videoRef.current.pause()
+      setIsVideoPlaying(false)
+    }
+  }
+
   // Refs for GSAP scroll animations
   const heroRef = useRef<HTMLDivElement>(null)
   const corridorRef = useRef<HTMLDivElement>(null)
@@ -399,30 +414,72 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
       </header>
 
 
-      {/* Main Content Container */}
-      <main className="relative z-10 mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 space-y-20">
-        {/* Section 1: Hero Section */}
-        <section ref={heroRef} className="relative pt-2 text-center lg:pt-6 space-y-6">
+      {/* Hero Section with Video Background and Wave Divider */}
+      <section className="relative w-full overflow-hidden bg-[#0A1A12] text-white pt-6 sm:pt-10 pb-28 sm:pb-36 md:pb-44 lg:pb-48">
+        {/* Background Video with Graceful Fallback & Scrim Overlays */}
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none">
+          <video
+            ref={videoRef}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="h-full w-full object-cover opacity-45 sm:opacity-50 transition-opacity duration-700 scale-105"
+          >
+            <source src="/videos/hero-wildlife.webm" type="video/webm" />
+            <source src="https://upload.wikimedia.org/wikipedia/commons/a/a9/African_bush_elephants_%28Loxodonta_africana%29.webm" type="video/webm" />
+          </video>
+          {/* Subtle gradient scrim & vignette overlays */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0A1A12]/85 via-[#0A1A12]/50 to-[#0A1A12]/95" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(10,26,18,0.85)_100%)]" />
+        </div>
+
+        {/* Video Play/Pause toggle in corner */}
+        <button
+          type="button"
+          onClick={toggleVideoPlay}
+          aria-label={isVideoPlaying ? 'Pause background video' : 'Play background video'}
+          className="absolute right-4 top-4 z-20 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-black/40 px-3 py-1 text-xs font-semibold text-white/80 backdrop-blur-md transition-all hover:bg-black/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+        >
+          {isVideoPlaying ? (
+            <>
+              <svg className="h-3.5 w-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+              </svg>
+              <span className="hidden sm:inline">Pause Video</span>
+            </>
+          ) : (
+            <>
+              <svg className="h-3.5 w-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+              <span className="hidden sm:inline">Play Video</span>
+            </>
+          )}
+        </button>
+
+        {/* Hero Content Container */}
+        <div ref={heroRef} className="relative z-10 mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8 space-y-6">
           {/* Huge Transparent Hero Logo */}
           <div className="flex flex-col items-center justify-center gap-4">
             <img
               src={logoImg}
               alt="WildSense Logo"
-              className="h-44 w-auto sm:h-56 md:h-64 max-w-full object-contain select-none transition-transform duration-300 hover:scale-105"
+              className="h-40 w-auto sm:h-52 md:h-60 max-w-full object-contain select-none transition-transform duration-300 hover:scale-105 filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.6)]"
             />
 
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-[#123524]/20 bg-white/90 backdrop-blur-xs px-4 py-1.5 text-sm font-bold text-[#123524] shadow-xs">
-              <span className="flex h-2 w-2 rounded-full bg-emerald-600 animate-pulse" />
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-emerald-400/30 bg-black/50 backdrop-blur-md px-4 py-1.5 text-sm font-bold text-emerald-300 shadow-sm">
+              <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
               <span>WildSense: Wildlife Conflict Risk Engine · by GAHM</span>
             </div>
           </div>
 
-          <h1 className="mx-auto max-w-4xl text-3xl font-black tracking-tight text-[#123524] sm:text-5xl lg:text-6xl leading-[1.15]">
+          <h1 className="mx-auto max-w-4xl text-3xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl leading-[1.15] drop-shadow-md">
             Predict &amp; Mitigate Human-Wildlife Conflict <br className="hidden sm:inline" />
-            <span className="text-[#C05621]">Before Encounters Escalate</span>
+            <span className="text-[#F6AD55]">Before Encounters Escalate</span>
           </h1>
 
-          <p className="mx-auto max-w-2xl text-lg leading-relaxed text-neutral-700 sm:text-xl">
+          <p className="mx-auto max-w-2xl text-lg leading-relaxed text-neutral-200 sm:text-xl drop-shadow-sm">
             WildSense turns weak environmental signals into transparent conflict risk scores, empowering forest rangers and fringe agricultural communities with early warning alerts, anti-poaching privacy guards, and non-lethal mitigation dispatches. It is built by GAHM (Global Actions on Habitats and Marines).
           </p>
 
@@ -432,21 +489,21 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
               type="button"
               onClick={() => void handleEnterDemo()}
               disabled={demoBusy}
-              className="w-full rounded-xl bg-[#123524] px-7 py-3.5 text-base font-bold text-white shadow-md transition-all hover:bg-[#1B4D3E] sm:w-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#123524] disabled:opacity-50"
+              className="w-full rounded-xl bg-emerald-600 px-7 py-3.5 text-base font-bold text-white shadow-lg shadow-emerald-950/50 transition-all hover:bg-emerald-500 hover:shadow-emerald-600/30 sm:w-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:opacity-50"
             >
               {demoBusy ? 'Launching Demo…' : 'Explore Interactive Demo'}
             </button>
             <button
               type="button"
               onClick={() => setAuthModal({ open: true, view: 'signup' })}
-              className="w-full rounded-xl border border-[#E8E2D5] bg-white px-7 py-3.5 text-base font-bold text-[#1A202C] shadow-xs transition-all hover:bg-[#F6F2EA] sm:w-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#123524]"
+              className="w-full rounded-xl border border-white/30 bg-white/10 px-7 py-3.5 text-base font-bold text-white backdrop-blur-md shadow-xs transition-all hover:bg-white/20 hover:border-white/50 sm:w-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
               Create Account
             </button>
           </div>
 
           {/* Key Stats Banner */}
-          <div className="mt-14 grid grid-cols-2 gap-4 rounded-3xl border border-[#E8E2D5] bg-white/90 p-6 shadow-xl backdrop-blur-md sm:grid-cols-4 sm:p-8">
+          <div className="mt-14 grid grid-cols-2 gap-4 rounded-3xl border border-[#E8E2D5] bg-white/95 p-6 shadow-2xl backdrop-blur-md sm:grid-cols-4 sm:p-8 text-[#1A202C]">
             <div className="space-y-1 border-r border-[#E8E2D5]/60 pr-2">
               <div className="text-3xl font-black text-[#123524]">100%</div>
               <div className="text-sm font-bold text-neutral-500 uppercase tracking-wider">
@@ -481,13 +538,38 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
           </div>
 
           {/* Scroll Cue */}
-          <div className="pt-6 text-center text-sm font-semibold text-neutral-400">
+          <div className="pt-6 text-center text-sm font-semibold text-emerald-200/80">
             <span className="inline-flex items-center gap-2">
               Scroll to follow the story
               <span className="animate-bounce" aria-hidden="true">↓</span>
             </span>
           </div>
-        </section>
+        </div>
+
+        {/* Wave Divider Effect */}
+        <div className="absolute bottom-0 inset-x-0 w-full overflow-hidden leading-none z-10 pointer-events-none translate-y-[1px]">
+          <svg
+            viewBox="0 0 1440 120"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="relative block w-full h-12 sm:h-16 md:h-20 lg:h-24"
+            preserveAspectRatio="none"
+          >
+            <path
+              d="M0,36 C288,88 576,12 864,52 C1152,92 1344,40 1440,64 L1440,120 L0,120 Z"
+              fill="#FDFBF7"
+              fillOpacity="0.45"
+            />
+            <path
+              d="M0,64 C360,116 720,32 1080,80 C1260,104 1380,68 1440,84 L1440,120 L0,120 Z"
+              fill="#FDFBF7"
+            />
+          </svg>
+        </div>
+      </section>
+
+      {/* Main Content Container */}
+      <main className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-20">
 
         {/* Section 1.5: Live Corridor Activity & Community Map */}
         <section

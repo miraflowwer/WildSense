@@ -5,6 +5,13 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v1.7.0] — 2026-08-14 — Cinematic Wildlife Video Background & Hero Wave Divider
+
+### Added
+
+- **Cinematic Wildlife Video Hero Background (`LandingView.tsx`)** — enhanced the landing page Hero section with a full-bleed looping video background featuring elephants in their natural forest habitat (`/videos/hero-wildlife.webm` with CDN fallback). Crafted with dark emerald gradient scrims, subtle vignette overlays, and an accessible Play/Pause toggle in the upper right corner.
+- **Organic Wave Divider Transition (`LandingView.tsx`)** — added a fluid multi-layered SVG wave divider effect at the bottom of the hero section that blends seamlessly into the `#FDFBF7` canvas background for the public corridor map and subsequent narrative sections.
+
 ## [v1.6.1] — 2026-08-14 — Header Ethics Charter Action & Methodology Sub-Navigation Polish
 
 ### Added
