@@ -9,6 +9,13 @@ project adheres to [Semantic Versioning](https://semver.org).
 
 ### Added
 
+- **WildSense Brand Logo Integration Across Webapp** — integrated the official WildSense transparent brand logo (`app/src/img/logo.png`, `public/logo.png`, `public/favicon.png`) across all user-facing surfaces:
+  - **Landing Page Hero & Navigation**: Large, borderless transparent brand centerpiece in the Hero section (`LandingView.tsx`), top sticky header brand lockup, hero pill badge, and footer credits.
+  - **Browser & HTML Metadata**: Replaced default Vite favicon with `/logo.png` / `/favicon.png` in `index.html` and updated browser title.
+  - **Dashboard Shell & Boot**: Added animated brand logo on app boot splash and header lockup button with landing return action (`App.tsx`).
+  - **Authentication & Account Flow**: Integrated logo into `BrandLockup` in both modal and standalone views for Sign In, Registration, and Password Reset (`AuthView.tsx`, `SetPassword.tsx`).
+  - **Scientific Methodology Whitepaper**: Integrated logo into the sticky breadcrumb header, literature hero badge, and citation footer (`MethodologyView.tsx`).
+  - **Charter & Risk Modals**: Integrated logo into headers for Ethics & Legal Charter modal, 7-Signal Risk Engine modal, and SMS Community Broadcast simulation modal (`EthicsModal.tsx`, `RiskExplanationModal.tsx`, `SmsSimulator.tsx`).
 - **Dedicated Methodology Page & Deep Linking (`MethodologyView.tsx`)** — full-page, deep-linkable (`#methodology`) scientific methodology view accessible from the landing page header, footer, and research section. Includes a sticky navigation bar with section anchors, executive summary, figure breakdowns, 4 telemetry layers, mathematical algorithm formula, statutory compliance, and a comprehensive peer-reviewed bibliography with direct verified publication links.
 - **KaTeX-Powered LaTeX Mathematical Equations (`Latex.tsx`)** — integrated lightweight client-side LaTeX rendering for the core 7-signal multi-criteria risk formula, individual signal sub-formulations, and the uncertainty regularization penalty. Added Rolldown vendor chunk splitting for `katex` in `vite.config.ts`.
 - **Uniform Parchment & Card Visual Architecture** — Section 4.5 styled to seamlessly match the landing page design language (`rounded-3xl border border-[#E8E2D5] bg-white/95 shadow-2xl backdrop-blur-md`), framing empirical evidence with balanced typographic rhythm and soft contrast.

@@ -132,3 +132,24 @@ footer now adds "Built by Team GAHM — Harima K. (Project Lead) · Mathew M.
   replaced by `app.brandAria`; values updated in all three catalogs.
 - GAHM remains the org name everywhere ("· by GAHM", footer credits).
 - Version bump 1.2.0 → **1.3.0** (`package.json`, landing footer).
+
+### Brand Logo Asset Integration (v1.5.0, 2026-08-14)
+
+The official high-resolution transparent WildSense brand logo (`src/img/logo.png`, `public/logo.png`, `public/favicon.png`) was integrated across all primary web application components:
+
+1. **HTML Favicon & Metadata** (`index.html`):
+   - Favicon links updated from default Vite SVG to `/logo.png` and `/favicon.png`.
+   - Title updated to **WildSense — Wildlife Conflict Risk Engine**.
+2. **Landing Page** (`LandingView.tsx`):
+   - **Hero Section**: Prominent, borderless transparent logo centerpiece (`h-44` to `h-64` responsive scale) above the primary headline.
+   - **Header**: Compact brand lockup (`h-10` to `h-11`) beside the title.
+   - **Hero Pill & Footer**: Embedded logo icon beside the GAHM attribution strings.
+3. **Dashboard & Boot View** (`App.tsx`):
+   - Booting splash screen displays an animated pulse of the WildSense brand logo.
+   - Top dashboard navbar brand button displays the logo icon with hover scaling and landing return navigation.
+4. **Authentication Views** (`AuthView.tsx`, `SetPassword.tsx`):
+   - `BrandLockup` displays the logo (`h-12 w-12`) beside the application title and tagline.
+5. **Methodology Whitepaper** (`MethodologyView.tsx`):
+   - Sticky breadcrumb header, research pill badge, and whitepaper footer bar.
+6. **Key Dialog Modals** (`EthicsModal.tsx`, `RiskExplanationModal.tsx`, `SmsSimulator.tsx`):
+   - Headers styled consistently with the brand mark.
