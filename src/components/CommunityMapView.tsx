@@ -384,7 +384,7 @@ export default function CommunityMapView({
         <div ref={containerRef} className="h-full w-full" />
 
         {/* Floating Privacy Guarantee Badge */}
-        <div className="pointer-events-none absolute top-3 left-3 z-[400] max-w-[280px] rounded-xl border border-[#123524]/20 bg-white/95 p-2.5 text-[11px] text-neutral-700 shadow-md backdrop-blur-xs">
+        <div className="pointer-events-none absolute top-3 right-3 z-[400] max-w-[240px] sm:max-w-[280px] rounded-xl border border-[#123524]/20 bg-white/95 p-2.5 text-[11px] text-neutral-700 shadow-md backdrop-blur-xs">
           <div className="flex items-center gap-1.5 font-bold text-[#123524]">
             <span>🛡️</span>
             <span>Public Corridor View</span>
