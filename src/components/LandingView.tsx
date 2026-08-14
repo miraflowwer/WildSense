@@ -86,9 +86,9 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
   // Hash sync for deep linking (#methodology)
   useEffect(() => {
     const handleHash = () => {
-      if (window.location.hash === '#methodology') {
+      if (window.location.hash === '#methodology' || window.location.hash.startsWith('#methodology')) {
         setCurrentView('methodology')
-      } else {
+      } else if (!window.location.hash) {
         setCurrentView('overview')
       }
     }

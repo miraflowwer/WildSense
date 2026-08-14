@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import frontlineStaffingImg from '../img/frontline_staffing.png'
 import bandipurSurveyImg from '../img/bandipur_survey.png'
 import logoImg from '../img/logo.png'
@@ -8,10 +8,48 @@ interface MethodologyViewProps {
   onBack: () => void
 }
 
+const NAV_ITEMS = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'field-evidence', label: 'Field Figures' },
+  { id: 'telemetry-layers', label: 'Telemetry Layers' },
+  { id: 'algorithm-weights', label: '7 Signals' },
+  { id: 'statutory-ethics', label: 'Indian Law' },
+  { id: 'bibliography', label: 'Bibliography' },
+]
+
 export default function MethodologyView({ onBack }: MethodologyViewProps) {
+  const [activeSection, setActiveSection] = useState<string>('overview')
+
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
+
+  // Track active section on scroll
+  useEffect(() => {
+    const sectionIds = NAV_ITEMS.map((item) => item.id)
+    const handleScroll = () => {
+      const scrollPos = window.scrollY + 140
+      for (let i = sectionIds.length - 1; i >= 0; i--) {
+        const el = document.getElementById(sectionIds[i])
+        if (el && el.offsetTop <= scrollPos) {
+          setActiveSection(sectionIds[i])
+          break
+        }
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    handleScroll()
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  const scrollTo = (id: string) => {
+    const el = document.getElementById(id)
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      setActiveSection(id)
+    }
+  }
 
   return (
     <div className="min-h-dvh bg-[#FDFBF7] font-sans text-[#1A202C] selection:bg-[#123524] selection:text-white">
@@ -46,32 +84,31 @@ export default function MethodologyView({ onBack }: MethodologyViewProps) {
             </div>
           </div>
 
-          {/* Quick Nav Anchors */}
-          <nav aria-label="Methodology sections" className="hidden lg:flex items-center gap-1.5 text-xs font-bold text-[#123524]">
-            <a href="#overview" className="rounded-lg px-2.5 py-1 hover:bg-[#123524]/10 transition-colors">
-              Overview
-            </a>
-            <a href="#field-evidence" className="rounded-lg px-2.5 py-1 hover:bg-[#123524]/10 transition-colors">
-              Field Figures
-            </a>
-            <a href="#telemetry-layers" className="rounded-lg px-2.5 py-1 hover:bg-[#123524]/10 transition-colors">
-              Telemetry Layers
-            </a>
-            <a href="#algorithm-weights" className="rounded-lg px-2.5 py-1 hover:bg-[#123524]/10 transition-colors">
-              7 Signals
-            </a>
-            <a href="#statutory-ethics" className="rounded-lg px-2.5 py-1 hover:bg-[#123524]/10 transition-colors">
-              Indian Law
-            </a>
-            <a href="#bibliography" className="rounded-lg px-2.5 py-1 hover:bg-[#123524]/10 transition-colors">
-              Bibliography
-            </a>
+          {/* Quick Nav Buttons */}
+          <nav aria-label="Methodology sections" className="hidden lg:flex items-center gap-1 text-xs font-bold text-[#123524]">
+            {NAV_ITEMS.map((tab) => {
+              const isActive = activeSection === tab.id
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => scrollTo(tab.id)}
+                  className={`rounded-lg px-2.5 py-1 transition-all ${
+                    isActive
+                      ? 'bg-[#123524] text-white shadow-2xs'
+                      : 'text-[#123524] hover:bg-[#123524]/10'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              )
+            })}
           </nav>
         </div>
       </header>
 
       {/* Hero Banner */}
-      <section id="overview" className="border-b border-[#E8E2D5] bg-gradient-to-b from-[#123524] to-[#1B4D3E] px-4 py-14 text-white sm:px-6 lg:px-8">
+      <section id="overview" className="scroll-mt-20 border-b border-[#E8E2D5] bg-gradient-to-b from-[#123524] to-[#1B4D3E] px-4 py-14 text-white sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl space-y-4 text-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/30 bg-white/10 px-4 py-1 text-xs font-bold tracking-wide text-amber-200 backdrop-blur-xs">
             <img src={logoImg} alt="" className="h-4 w-4 object-contain rounded-sm" aria-hidden="true" />
@@ -133,7 +170,7 @@ export default function MethodologyView({ onBack }: MethodologyViewProps) {
         </section>
 
         {/* Section 2: Scientific Field Figures & Evidence */}
-        <section id="field-evidence" className="space-y-8">
+        <section id="field-evidence" className="scroll-mt-24 space-y-8">
           <div className="border-b border-[#E8E2D5] pb-4">
             <span className="text-xs font-bold uppercase tracking-wider text-[#C05621]">Section 02 · Empirical Research</span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#123524] mt-1">
@@ -289,7 +326,7 @@ export default function MethodologyView({ onBack }: MethodologyViewProps) {
         </section>
 
         {/* Section 3: Ingested Datasets & Telemetry Layers */}
-        <section id="telemetry-layers" className="rounded-3xl border border-[#E8E2D5] bg-white p-8 sm:p-10 shadow-lg space-y-6">
+        <section id="telemetry-layers" className="scroll-mt-24 rounded-3xl border border-[#E8E2D5] bg-white p-8 sm:p-10 shadow-lg space-y-6">
           <div className="border-b border-[#E8E2D5] pb-4">
             <span className="text-xs font-bold uppercase tracking-wider text-[#C05621]">Section 03 · Data Architecture</span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#123524] mt-1">
@@ -420,7 +457,7 @@ export default function MethodologyView({ onBack }: MethodologyViewProps) {
         </section>
 
         {/* Section 4: 7-Signal Mathematical Weight Formulation */}
-        <section id="algorithm-weights" className="rounded-3xl border border-[#E8E2D5] bg-white p-8 sm:p-10 shadow-lg space-y-6">
+        <section id="algorithm-weights" className="scroll-mt-24 rounded-3xl border border-[#E8E2D5] bg-white p-8 sm:p-10 shadow-lg space-y-6">
           <div className="border-b border-[#E8E2D5] pb-4">
             <span className="text-xs font-bold uppercase tracking-wider text-[#C05621]">Section 04 · Mathematical Formulation</span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#123524] mt-1">
@@ -542,7 +579,7 @@ export default function MethodologyView({ onBack }: MethodologyViewProps) {
         </section>
 
         {/* Section 5: Statutory Compliance & Indian Legal Directives */}
-        <section id="statutory-ethics" className="rounded-3xl border border-[#E8E2D5] bg-white p-8 sm:p-10 shadow-lg space-y-6">
+        <section id="statutory-ethics" className="scroll-mt-24 rounded-3xl border border-[#E8E2D5] bg-white p-8 sm:p-10 shadow-lg space-y-6">
           <div className="border-b border-[#E8E2D5] pb-4">
             <span className="text-xs font-bold uppercase tracking-wider text-[#C05621]">Section 05 · Legal &amp; Ethical Framework</span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#123524] mt-1">
@@ -574,7 +611,7 @@ export default function MethodologyView({ onBack }: MethodologyViewProps) {
         </section>
 
         {/* Section 6: Comprehensive Academic & Government Citation Bibliography */}
-        <section id="bibliography" className="rounded-3xl border border-[#E8E2D5] bg-white p-8 sm:p-10 shadow-lg space-y-6">
+        <section id="bibliography" className="scroll-mt-24 rounded-3xl border border-[#E8E2D5] bg-white p-8 sm:p-10 shadow-lg space-y-6">
           <div className="border-b border-[#E8E2D5] pb-4">
             <span className="text-xs font-bold uppercase tracking-wider text-[#C05621]">Section 06 · References</span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#123524] mt-1">
