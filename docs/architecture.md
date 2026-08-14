@@ -48,6 +48,10 @@ src/
 │   └── lenisHolder.ts          Shared handle to the single Lenis instance (scroll-locked deck)
 └── components/
     ├── LandingView.tsx         Cream-white public landing page with GSAP reveals + Lenis smooth scroll
+    ├── CommunityMapView.tsx    Public interactive corridor map view (Leaflet, zero login required)
+    ├── SubscribeModal.tsx      DPDP §6 verified community SMS early warning subscription modal
+    ├── MethodologyView.tsx     Full scientific methodology whitepaper with figures & LaTeX formulas
+    ├── Latex.tsx               KaTeX-rendered mathematical equation component
     ├── FeatureCarousel.tsx     Scroll-locked feature deck: Lenis stop/start lock + wheel/touch stepping
     ├── MapView.tsx             Leaflet map (React.lazy)
     ├── NewDetectionForm.tsx    Manual detection entry (React.lazy)

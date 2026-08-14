@@ -1,17 +1,17 @@
 import { useState, useEffect, useRef } from 'react'
-import type { FormEvent } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lenis from 'lenis'
 import { useAuth } from '../auth/authContext'
 import { DEMO_EMAIL, DEMO_PASSWORD } from '../auth/demoAccount'
-import { loadCorridorActivity, subscribeVillager } from '../auth/api'
-import { communities } from '../data/demoData'
+import { loadCorridorActivity } from '../auth/api'
 import type { CorridorActivityZone } from '../types'
 import { lenisHolder } from '../lib/lenisHolder'
 import FeatureCarousel from './FeatureCarousel'
 import AuthView from './AuthView'
 import EthicsModal from './EthicsModal'
+import SubscribeModal from './SubscribeModal'
+import CommunityMapView from './CommunityMapView'
 import MethodologyView from './MethodologyView'
 import frontlineStaffingImg from '../img/frontline_staffing.png'
 import bandipurSurveyImg from '../img/bandipur_survey.png'
@@ -37,18 +37,14 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
     view: 'signin',
   })
   const [showEthics, setShowEthics] = useState(false)
+  const [showSubscribeModal, setShowSubscribeModal] = useState(false)
+  const [selectedSubscribeCommunity, setSelectedSubscribeCommunity] = useState('Hangala')
   const [demoBusy, setDemoBusy] = useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
 
-  // Live Corridor Activity & Subscription State
+  // Live Corridor Activity State
   const [corridorActivity, setCorridorActivity] = useState<CorridorActivityZone[]>([])
   const [activityLastUpdated, setActivityLastUpdated] = useState<Date>(() => new Date())
-  const [subName, setSubName] = useState('')
-  const [subPhone, setSubPhone] = useState('')
-  const [subCommunity, setSubCommunity] = useState('Hangala')
-  const [subConsent, setSubConsent] = useState(false)
-  const [subStatus, setSubStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
-  const [subError, setSubError] = useState('')
 
   // Refs for GSAP scroll animations
   const heroRef = useRef<HTMLDivElement>(null)
@@ -229,9 +225,9 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
     }
   }, [])
 
-  // Lock background scroll while the auth modal or ethics modal is open (S1 fix)
+  // Lock background scroll while the auth modal, ethics modal, or subscribe modal is open (S1 fix)
   useEffect(() => {
-    if (!authModal.open && !showEthics) return
+    if (!authModal.open && !showEthics && !showSubscribeModal) return
     const lenis = lenisHolder.instance
     lenis?.stop()
     document.body.style.overflow = 'hidden'
@@ -239,7 +235,7 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
       lenis?.start()
       document.body.style.overflow = ''
     }
-  }, [authModal.open, showEthics])
+  }, [authModal.open, showEthics, showSubscribeModal])
 
   const handleEnterDemo = async () => {
     if (demoBusy) return
@@ -252,32 +248,6 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
       }
     } finally {
       setDemoBusy(false)
-    }
-  }
-
-  const handleSubscribeSubmit = async (e: FormEvent) => {
-    e.preventDefault()
-    if (!subName.trim() || !subPhone.trim() || !subConsent) return
-    setSubStatus('submitting')
-    setSubError('')
-    try {
-      const res = await subscribeVillager({
-        name: subName,
-        phone: subPhone,
-        community: subCommunity,
-      })
-      if (res.ok) {
-        setSubStatus('success')
-        setSubName('')
-        setSubPhone('')
-        setSubConsent(false)
-      } else {
-        setSubStatus('error')
-        setSubError(res.error || 'Subscription failed. Please check your details.')
-      }
-    } catch {
-      setSubStatus('error')
-      setSubError('Failed to connect to subscription service.')
     }
   }
 
@@ -325,6 +295,17 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
       {/* Ethics Modal */}
       {showEthics && <EthicsModal onClose={() => setShowEthics(false)} />}
 
+      {/* Subscribe Modal */}
+      <SubscribeModal
+        isOpen={showSubscribeModal}
+        onClose={() => setShowSubscribeModal(false)}
+        onOpenEthics={() => {
+          setShowSubscribeModal(false)
+          setShowEthics(true)
+        }}
+        initialCommunity={selectedSubscribeCommunity}
+      />
+
       {/* Top Header */}
       <header className="sticky top-0 z-50 border-b border-[#E8E2D5] bg-[#FDFBF7]/90 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -343,6 +324,20 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
 
           {/* Header Action Buttons */}
           <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedSubscribeCommunity('Hangala')
+                setShowSubscribeModal(true)
+              }}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-800/25 bg-emerald-50/90 px-3 py-2 text-xs sm:text-sm font-bold text-emerald-950 shadow-2xs transition-all hover:bg-emerald-100 hover:border-emerald-800/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700"
+            >
+              <svg className="h-4 w-4 text-emerald-700 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+              </svg>
+              <span>SMS Alerts</span>
+            </button>
+
             <button
               type="button"
               onClick={handleOpenMethodology}
@@ -367,14 +362,14 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
                 <button
                   type="button"
                   onClick={() => setAuthModal({ open: true, view: 'signin' })}
-                  className="rounded-xl border border-[#E8E2D5] bg-white px-4 py-2 text-sm font-bold text-[#1A202C] shadow-xs transition-colors hover:bg-[#F6F2EA] sm:text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#123524]"
+                  className="rounded-xl border border-[#E8E2D5] bg-white px-3.5 py-2 text-xs sm:text-sm font-bold text-[#1A202C] shadow-xs transition-colors hover:bg-[#F6F2EA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#123524]"
                 >
                   Log in
                 </button>
                 <button
                   type="button"
                   onClick={() => setAuthModal({ open: true, view: 'signup' })}
-                  className="rounded-xl bg-[#123524] px-4 py-2 text-sm font-bold text-white shadow-sm transition-colors hover:bg-[#1B4D3E] sm:text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#123524]"
+                  className="rounded-xl bg-[#123524] px-3.5 py-2 text-xs sm:text-sm font-bold text-white shadow-sm transition-colors hover:bg-[#1B4D3E] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#123524]"
                 >
                   Register
                 </button>
@@ -382,7 +377,7 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
                   type="button"
                   onClick={() => void handleEnterDemo()}
                   disabled={demoBusy}
-                  className="hidden rounded-xl border border-[#C05621] bg-[#C05621]/10 px-4 py-2 text-sm font-bold text-[#C05621] transition-colors hover:bg-[#C05621] hover:text-white sm:inline-block sm:text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C05621] disabled:opacity-50"
+                  className="hidden rounded-xl border border-[#C05621] bg-[#C05621]/10 px-3.5 py-2 text-xs sm:text-sm font-bold text-[#C05621] transition-colors hover:bg-[#C05621] hover:text-white sm:inline-block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C05621] disabled:opacity-50"
                 >
                   {demoBusy ? 'Launching…' : 'Try Live Demo'}
                 </button>
@@ -483,15 +478,15 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
           </div>
         </section>
 
-        {/* Section 1.5: Live Corridor Activity & Early Warning Alerts */}
+        {/* Section 1.5: Live Corridor Activity & Community Map */}
         <section
           ref={corridorRef}
-          className="rounded-3xl border border-[#E8E2D5] bg-white/95 p-8 sm:p-12 shadow-2xl backdrop-blur-md space-y-8"
+          className="rounded-3xl border border-[#E8E2D5] bg-white/95 p-6 sm:p-10 shadow-xl backdrop-blur-md space-y-6"
         >
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E8E2D5] pb-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E8E2D5] pb-5">
             <div>
               <div className="flex items-center gap-2">
-                <span className="inline-block rounded-full bg-emerald-100 px-3 py-0.5 text-xs font-bold text-emerald-800 border border-emerald-300">
+                <span className="inline-flex items-center rounded-full bg-emerald-100 px-3 py-0.5 text-xs font-bold text-emerald-800 border border-emerald-300">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 inline-block mr-1.5 animate-pulse" />
                   Live Corridor Feed
                 </span>
@@ -499,48 +494,61 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
                   Updated {activityLastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
-              <h2 className="text-3xl font-extrabold text-[#123524] mt-2">
-                Live Corridor Activity &amp; Community Warnings
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-[#123524] mt-2">
+                Live Corridor Activity &amp; Community Map
               </h2>
-              <p className="mt-1 text-sm text-neutral-600 max-w-2xl leading-relaxed">
-                Aggregated, privacy-sanitized zone activity across fringe settlements. Exact wildlife telemetry is quarantined to protect Schedule I species from poaching.
+              <p className="mt-1 text-xs sm:text-sm text-neutral-600 max-w-2xl leading-relaxed">
+                Public real-time zone risk levels across fringe settlements. Exact wildlife telemetry is quarantined to protect Schedule I species from poaching.
               </p>
             </div>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedSubscribeCommunity('Hangala')
+                setShowSubscribeModal(true)
+              }}
+              className="self-start md:self-auto inline-flex items-center gap-2 rounded-xl bg-emerald-800 px-4 py-2.5 text-xs sm:text-sm font-bold text-white shadow-xs hover:bg-emerald-900 transition-colors shrink-0"
+            >
+              <span>Get SMS Early Warnings</span>
+              <span>→</span>
+            </button>
           </div>
 
           {/* Zone Activity Cards Grid */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             {corridorActivity.map((zone, idx) => {
               const isHigh = zone.riskLevel === 'high'
               const isMed = zone.riskLevel === 'medium'
               return (
                 <div
                   key={idx}
-                  className="rounded-2xl border border-[#E8E2D5] bg-[#FDFBF7] p-5 shadow-xs transition-all hover:border-[#123524]/30"
+                  className="rounded-2xl border border-[#E8E2D5] bg-[#FDFBF7] p-4 shadow-xs transition-all hover:border-[#123524]/30 flex flex-col justify-between"
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="text-base font-bold text-[#123524]">{zone.zone}</span>
-                    <span
-                      className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
-                        isHigh
-                          ? 'bg-red-100 text-red-800 border border-red-200'
-                          : isMed
-                            ? 'bg-amber-100 text-amber-800 border border-amber-200'
-                            : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                      }`}
-                    >
-                      {zone.riskLevel.toUpperCase()} RISK
-                    </span>
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-bold text-[#123524]">{zone.zone}</span>
+                      <span
+                        className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
+                          isHigh
+                            ? 'bg-red-100 text-red-800 border border-red-200'
+                            : isMed
+                              ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                              : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                        }`}
+                      >
+                        {zone.riskLevel.toUpperCase()} RISK
+                      </span>
+                    </div>
+                    <div className="mt-2 text-xs text-neutral-600">
+                      Community: <strong className="text-neutral-900">{zone.community}</strong>
+                    </div>
+                    <div className="mt-0.5 text-xs text-neutral-500">
+                      Active detections: <strong className="text-neutral-900">{zone.count}</strong>
+                    </div>
                   </div>
-                  <div className="mt-2 text-xs text-neutral-600">
-                    Community: <strong className="text-neutral-900">{zone.community}</strong>
-                  </div>
-                  <div className="mt-1 text-xs text-neutral-500">
-                    Active detections: <strong className="text-neutral-900">{zone.count}</strong>
-                  </div>
-                  <div className="mt-3 flex items-center justify-between border-t border-[#E8E2D5]/70 pt-2 text-[11px] text-neutral-400">
+                  <div className="mt-3 flex items-center justify-between border-t border-[#E8E2D5]/70 pt-2 text-[10px] text-neutral-400">
                     <span>Corridor status</span>
-                    <span className="rounded bg-neutral-200/60 px-1.5 py-0.5 text-[10px] font-semibold text-neutral-700">
+                    <span className="rounded bg-neutral-200/60 px-1.5 py-0.5 text-[9px] font-semibold text-neutral-700">
                       Demo data
                     </span>
                   </div>
@@ -549,135 +557,14 @@ export default function LandingView({ onReturnToDashboard }: LandingViewProps) {
             })}
           </div>
 
-          {/* Villager Self-Subscription Form */}
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-6 sm:p-8 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-200/60 pb-3">
-              <div>
-                <h3 className="text-xl font-bold text-emerald-950">
-                  Subscribe for Community SMS Early Warnings
-                </h3>
-                <p className="text-xs text-emerald-800">
-                  Receive direct early warnings on any mobile phone before animals approach your agricultural boundary.
-                </p>
-              </div>
-              <span className="self-start rounded-full bg-emerald-200/60 px-3 py-1 text-xs font-bold text-emerald-900">
-                DPDP Act 2023 Compliant
-              </span>
-            </div>
-
-            {subStatus === 'success' ? (
-              <div className="rounded-xl border border-emerald-300 bg-emerald-100/90 p-4 text-emerald-900 space-y-1">
-                <div className="flex items-center gap-2 font-bold text-sm">
-                  <span>✓</span> Successfully Subscribed to Corridor Alerts!
-                </div>
-                <p className="text-xs leading-relaxed">
-                  Your phone is now registered for early warning notifications in <strong>{subCommunity}</strong>. You can opt out anytime by replying <strong>STOP</strong>.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setSubStatus('idle')}
-                  className="mt-2 text-xs font-bold text-emerald-950 underline hover:text-emerald-800"
-                >
-                  Register another number
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleSubscribeSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                  <div>
-                    <label htmlFor="sub-name" className="block text-xs font-bold uppercase tracking-wider text-emerald-950 mb-1">
-                      Full Name
-                    </label>
-                    <input
-                      id="sub-name"
-                      type="text"
-                      required
-                      value={subName}
-                      onChange={(e) => setSubName(e.target.value)}
-                      placeholder="e.g. Ramesh Gowda"
-                      className="w-full rounded-xl border border-neutral-300 bg-white px-3.5 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-emerald-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="sub-phone" className="block text-xs font-bold uppercase tracking-wider text-emerald-950 mb-1">
-                      Mobile Number
-                    </label>
-                    <input
-                      id="sub-phone"
-                      type="tel"
-                      required
-                      value={subPhone}
-                      onChange={(e) => setSubPhone(e.target.value)}
-                      placeholder="+91 98450 12345"
-                      className="w-full rounded-xl border border-neutral-300 bg-white px-3.5 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-emerald-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="sub-comm" className="block text-xs font-bold uppercase tracking-wider text-emerald-950 mb-1">
-                      Corridor Community
-                    </label>
-                    <select
-                      id="sub-comm"
-                      value={subCommunity}
-                      onChange={(e) => setSubCommunity(e.target.value)}
-                      className="w-full rounded-xl border border-neutral-300 bg-white px-3.5 py-2 text-sm font-medium text-neutral-900 focus:border-emerald-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
-                    >
-                      {communities.map((c) => (
-                        <option key={c.id} value={c.name}>
-                          {c.name} ({c.preferredLanguage})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                {/* DPDP Section 6 Consent Checkbox */}
-                <div className="rounded-xl border border-emerald-200/80 bg-white/70 p-3.5">
-                  <label className="flex items-start gap-3 text-xs leading-relaxed text-emerald-950 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      required
-                      checked={subConsent}
-                      onChange={(e) => setSubConsent(e.target.checked)}
-                      className="mt-0.5 h-4 w-4 rounded border-neutral-300 text-emerald-700 focus:ring-2 focus:ring-emerald-500/40"
-                    />
-                    <span>
-                      <strong>Consent under DPDP Act 2023 (§6):</strong> I provide free, specific, and informed consent to receive wildlife early warning SMS messages from the corridor ranger patrol. I understand exact animal GPS coordinates are scrubbed for conservation privacy, and I can reply <strong>STOP</strong> at any time to instantly revoke consent and delete my number. (
-                      <button
-                        type="button"
-                        onClick={() => setShowEthics(true)}
-                        className="font-bold underline hover:text-emerald-800"
-                      >
-                        Read Ethics Charter
-                      </button>
-                      )
-                    </span>
-                  </label>
-                </div>
-
-                {subError ? (
-                  <div className="rounded-lg bg-red-100 p-2.5 text-xs font-medium text-red-800">
-                    {subError}
-                  </div>
-                ) : null}
-
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
-                  <p className="text-[11px] text-emerald-800">
-                    🔒 Zero commercial sharing · Scrubbed coordinates · Instant STOP opt-out
-                  </p>
-                  <button
-                    type="submit"
-                    disabled={subStatus === 'submitting' || !subConsent}
-                    className="w-full sm:w-auto rounded-xl bg-emerald-800 px-6 py-2.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-emerald-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:opacity-50"
-                  >
-                    {subStatus === 'submitting' ? 'Registering…' : 'Subscribe to Warnings'}
-                  </button>
-                </div>
-              </form>
-            )}
-          </div>
+          {/* General Public Community Map View */}
+          <CommunityMapView
+            corridorActivity={corridorActivity}
+            onSubscribeForCommunity={(communityName) => {
+              setSelectedSubscribeCommunity(communityName)
+              setShowSubscribeModal(true)
+            }}
+          />
         </section>
 
         {/* Section 2: Where Is This Set? */}

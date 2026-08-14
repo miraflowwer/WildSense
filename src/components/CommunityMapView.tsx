@@ -59,8 +59,26 @@ export default function CommunityMapView({
 }: CommunityMapViewProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<L.Map | null>(null)
+
+  const sectors: SectorInfo[] = DEFAULT_SECTORS.map((def) => {
+    const matched = corridorActivity?.find(
+      (ca) => ca.community.toLowerCase() === def.community.toLowerCase(),
+    )
+    if (matched) {
+      return {
+        ...def,
+        riskLevel: matched.riskLevel,
+        count: matched.count,
+      }
+    }
+    return def
+  })
+
+  const sectorsRef = useRef(sectors)
+  sectorsRef.current = sectors
+
   const [selectedSector, setSelectedSector] = useState<string>('all')
-  const [activeInfo, setActiveInfo] = useState<SectorInfo | null>(DEFAULT_SECTORS[0])
+  const [activeInfo, setActiveInfo] = useState<SectorInfo | null>(sectors[0])
   const [showSensors, setShowSensors] = useState<boolean>(true)
   const [showBuffers, setShowBuffers] = useState<boolean>(true)
 
@@ -182,7 +200,7 @@ export default function CommunityMapView({
 
       L.marker([c.center[0], c.center[1]], { icon: customIcon })
         .on('click', () => {
-          const matched = DEFAULT_SECTORS.find((s) => s.community === c.name)
+          const matched = sectorsRef.current.find((s) => s.community === c.name)
           if (matched) {
             setSelectedSector(matched.id)
             setActiveInfo(matched)
@@ -259,7 +277,7 @@ export default function CommunityMapView({
         map.fitBounds(L.latLngBounds(allPts), { padding: [30, 30] })
       }
     } else {
-      const matched = DEFAULT_SECTORS.find((s) => s.id === sectorId)
+      const matched = sectors.find((s) => s.id === sectorId)
       if (matched) {
         setActiveInfo(matched)
         map.flyTo(matched.center, matched.zoom, { duration: 1.2 })
@@ -310,7 +328,7 @@ export default function CommunityMapView({
           >
             Entire Corridor
           </button>
-          {DEFAULT_SECTORS.map((s) => {
+          {sectors.map((s) => {
             const isSel = selectedSector === s.id
             return (
               <button

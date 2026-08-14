@@ -5,6 +5,19 @@ All notable changes to the GAHM demo app are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com), and this
 project adheres to [Semantic Versioning](https://semver.org).
 
+## [v1.6.0] — 2026-08-14 — Header SMS Early Warnings Button & Interactive Public Community Map View
+
+### Added
+
+- **Header SMS Early Warnings Button & Dedicated Modal (`SubscribeModal.tsx`)** — converted the landing page inline subscription form into a prominent "SMS Alerts" button in the sticky top navigation header, opening a dedicated DPDP Act 2023 (§6) verified modal with full keyboard accessibility, community settlement selection, live consent validation, and instant confirmation.
+- **Interactive Public Community Map View (`CommunityMapView.tsx`)** — added a general community corridor map to Section 1.5 of the landing page, enabling community residents, farmers, and visitors to inspect live area status and safety advisories without needing an account:
+  - **Zero Sign-In Required**: Public interactive view displaying reserve boundaries, agricultural buffer perimeters, settlement markers, and telemetry gateway nodes.
+  - **Privacy-Sanitized Zone Highlighting**: Aggregated risk heatmaps (Bandipur Buffer: High Risk, Nagarhole Gap: Medium Risk, Mudumalai Fringe: Low Risk) safeguarding Schedule I wildlife against poaching.
+  - **Interactive Sector Filters & Navigation**: Quick-filter pills to smoothly fly and focus on specific communities (Hangala, Beechanahalli, Masinagudi).
+  - **Live Sector Advisory Cards**: Real-time sector safety notices with active alert counts and 1-click prefilled SMS alert subscription triggers.
+  - **Layer Controls & Legend**: Toggles for Agricultural Buffers and Telemetry Sensors, with full Lenis scroll isolation (`data-lenis-prevent`).
+- **Concise Landing Copy Architecture** — streamlined copy across Section 1.5, zone cards, and map overlays for punchy, high-impact readability.
+
 ## [v1.5.0] — 2026-08-14 — Dedicated Scientific Methodology, LaTeX Math & Uniform Research Interface
 
 ### Added
